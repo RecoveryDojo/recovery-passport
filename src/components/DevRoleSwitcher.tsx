@@ -20,6 +20,32 @@ const DevRoleSwitcher = () => {
   const isDev = import.meta.env.DEV;
   if (!isDev || !user || user.email?.toLowerCase() !== DEV_EMAIL) return null;
 
+  const ensureProfile = async (newRole: "participant" | "peer_specialist" | "admin") => {
+    if (newRole === "participant") {
+      const { data } = await supabase
+        .from("participant_profiles")
+        .select("id")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (!data) {
+        await supabase
+          .from("participant_profiles")
+          .insert({ user_id: user!.id, first_name: "Test", last_name: "User" });
+      }
+    } else if (newRole === "peer_specialist") {
+      const { data } = await supabase
+        .from("peer_specialist_profiles")
+        .select("id")
+        .eq("user_id", user!.id)
+        .maybeSingle();
+      if (!data) {
+        await supabase
+          .from("peer_specialist_profiles")
+          .insert({ user_id: user!.id, first_name: "Test", last_name: "User" });
+      }
+    }
+  };
+
   const switchRole = async (newRole: "participant" | "peer_specialist" | "admin") => {
     if (newRole === role || switching) return;
     setSwitching(true);
@@ -29,6 +55,7 @@ const DevRoleSwitcher = () => {
         .update({ role: newRole })
         .eq("id", user.id);
       if (error) throw error;
+      await ensureProfile(newRole);
       toast.success(`Switched to ${newRole}. Reloading…`);
       setTimeout(() => window.location.reload(), 600);
     } catch (e: any) {
