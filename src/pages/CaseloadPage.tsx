@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
-import { Check, X, Clock, AlertCircle, ChevronRight } from "lucide-react";
+import { Check, X, Clock, AlertCircle, ChevronRight, Heart } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -200,6 +200,24 @@ const CaseloadPage = () => {
     onError: () => toast.error("Failed to decline request"),
   });
 
+  // Self-care check banner
+  const { data: lastSelfCare } = useQuery({
+    queryKey: ["last-self-care", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("self_care_checks")
+        .select("created_at")
+        .eq("peer_specialist_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const selfCareOverdue = !lastSelfCare || differenceInDays(new Date(), new Date(lastSelfCare.created_at)) > 14;
+
   const isLoading = loadingRequests || loadingCaseload;
 
   if (isLoading) {
@@ -213,6 +231,23 @@ const CaseloadPage = () => {
   return (
     <div className="px-4 pt-6 pb-4 max-w-lg mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-foreground">My Caseload</h1>
+
+      {/* Self-care banner */}
+      {selfCareOverdue && (
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-center gap-3">
+          <Heart className="h-5 w-5 text-amber-600 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-amber-800 font-medium">
+              💛 Time for your self-care check-in. This is private — just for you.
+            </p>
+          </div>
+          <Link to="/crps/selfcare">
+            <Button size="sm" variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-100 shrink-0">
+              Take a Moment →
+            </Button>
+          </Link>
+        </div>
+      )}
 
       {/* Pending Requests */}
       {pendingRequests.length > 0 && (

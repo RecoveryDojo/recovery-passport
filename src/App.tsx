@@ -29,6 +29,7 @@ import {
   IntakePage,
 } from "@/pages/placeholder-pages";
 import CrpsPage from "@/pages/CrpsPage";
+import SelfCarePage from "@/pages/SelfCarePage";
 import PassportConfigPage from "@/pages/PassportConfigPage";
 import ParticipantCheckInsPage from "@/pages/ParticipantCheckInsPage";
 import AdminParticipantCheckInsPage from "@/pages/AdminParticipantCheckInsPage";
@@ -95,6 +96,7 @@ const App = () => (
               <Route path="/caseload/:participantId" element={<ParticipantDetailPage />} />
               <Route path="/caseload/:participantId/checkin" element={<CheckInFormPage />} />
               <Route path="/crps" element={<CrpsPage />} />
+              <Route path="/crps/selfcare" element={<SelfCarePage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
             </Route>
 

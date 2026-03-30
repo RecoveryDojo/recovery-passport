@@ -9,7 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ArrowLeft, CheckCircle2, Clock, Play, Award, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, Play, Award, ShieldCheck, AlertTriangle } from "lucide-react";
+import { differenceInDays } from "date-fns";
 import type { Database } from "@/integrations/supabase/types";
 
 type HourCategory = Database["public"]["Enums"]["crps_hour_category"];
@@ -131,7 +132,24 @@ const AdminPeerDetailPage = () => {
     onError: () => toast.error("Failed to verify"),
   });
 
+  // Last self-care date (admin only sees date, not details)
+  const { data: lastSelfCareDate } = useQuery({
+    queryKey: ["admin-peer-selfcare", peerId],
+    enabled: !!peerId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("self_care_checks")
+        .select("created_at")
+        .eq("peer_specialist_id", peerId!)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data?.created_at ?? null;
+    },
+  });
+
   const peerName = peerProfile ? `${peerProfile.first_name} ${peerProfile.last_name}` : "Peer Specialist";
+  const selfCareOverdue = !lastSelfCareDate || differenceInDays(new Date(), new Date(lastSelfCareDate)) > 14;
   const tools = competencies.filter((c) => c.type === "tool");
   const skills = competencies.filter((c) => c.type === "skill");
   const demonstratedItems = competencies.filter((c) => c.status === "demonstrated");
@@ -145,6 +163,11 @@ const AdminPeerDetailPage = () => {
         <div>
           <h1 className="text-xl font-bold text-foreground">{peerName}</h1>
           <p className="text-sm text-muted-foreground">CRPS Certification Progress</p>
+          <p className={`text-xs mt-0.5 ${selfCareOverdue ? "text-amber-600 font-medium" : "text-muted-foreground"}`}>
+            {selfCareOverdue
+              ? "⚠️ Self-care check overdue (14+ days)"
+              : `Self-care check: last completed ${format(new Date(lastSelfCareDate!), "MMM d, yyyy")}`}
+          </p>
         </div>
       </div>
 
