@@ -9,7 +9,8 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ArrowLeft, CheckCircle2, Clock, Play, Award, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Clock, Play, Award, ShieldCheck, AlertTriangle } from "lucide-react";
+import { differenceInDays } from "date-fns";
 import type { Database } from "@/integrations/supabase/types";
 
 type HourCategory = Database["public"]["Enums"]["crps_hour_category"];
