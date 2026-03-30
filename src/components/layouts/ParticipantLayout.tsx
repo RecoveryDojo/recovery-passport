@@ -1,12 +1,13 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
-import { Home, ClipboardList, MapPin, QrCode } from "lucide-react";
+import { Home, ClipboardList, MapPin, QrCode, UserCircle } from "lucide-react";
 
 const navItems = [
   { to: "/card", label: "My Card", icon: Home },
   { to: "/plan", label: "My Plan", icon: ClipboardList },
   { to: "/resources", label: "Resources", icon: MapPin },
   { to: "/passport", label: "Passport", icon: QrCode },
+  { to: "/profile", label: "Profile", icon: UserCircle },
 ];
 
 const ParticipantLayout = () => {
