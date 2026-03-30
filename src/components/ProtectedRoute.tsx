@@ -13,9 +13,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedRouteProps) => {
   const { user, role, approvalStatus, loading } = useAuth();
   const location = useLocation();
-  const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">(
-    skipProfileCheck ? "complete" : "loading"
-  );
+  const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
   const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
 
   useEffect(() => {
@@ -23,7 +21,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
       return;
     }
 
-    if (skipProfileCheck && role !== "peer_specialist") {
+    if (skipProfileCheck && role === "peer_specialist") {
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
       return;
@@ -36,8 +34,12 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
         .from("participant_profiles")
         .select("first_name")
         .eq("user_id", user.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) {
+            setProfileCheck("incomplete");
+            return;
+          }
           setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
         });
     } else if (role === "peer_specialist") {
@@ -47,8 +49,12 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
         .from("peer_specialist_profiles")
         .select("first_name, bio")
         .eq("user_id", user.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) {
+            setPeerProfileCheck("incomplete");
+            return;
+          }
           setPeerProfileCheck(!data || !data.first_name || !data.bio ? "incomplete" : "complete");
         });
     } else {
@@ -90,8 +96,14 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     return <PeerPendingApproval />;
   }
 
-  if (!skipProfileCheck && role === "participant" && profileCheck === "incomplete") {
-    return <Navigate to="/profile/setup" replace />;
+  if (role === "participant") {
+    if (profileCheck === "incomplete" && location.pathname !== "/profile/setup") {
+      return <Navigate to="/profile/setup" replace />;
+    }
+
+    if (profileCheck === "complete" && location.pathname === "/profile/setup") {
+      return <Navigate to="/card" replace />;
+    }
   }
 
   return <>{children}</>;
