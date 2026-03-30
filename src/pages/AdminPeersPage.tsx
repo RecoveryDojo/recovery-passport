@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Ban, RotateCcw, Eye, AlertTriangle, Users } from "lucide-react";
+import { CheckCircle, XCircle, Ban, RotateCcw, Eye, AlertTriangle, Users, GraduationCap } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type PeerProfile = Tables<"peer_specialist_profiles">;
