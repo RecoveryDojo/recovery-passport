@@ -176,22 +176,32 @@ const CardPage = () => {
     },
   });
 
-  // Latest RC score
-  const { data: rcScore } = useQuery({
-    queryKey: ["rc-score", profile?.id],
+  // Latest 2 RC scores (for trend) — include unconfirmed
+  const { data: assessmentData } = useQuery({
+    queryKey: ["rc-scores", profile?.id],
     enabled: !!profile?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from("assessment_sessions")
-        .select("overall_score")
+        .select("overall_score, confirmed_by")
         .eq("participant_id", profile!.id)
-        .not("confirmed_by", "is", null)
         .order("completed_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data?.overall_score ?? null;
+        .limit(2);
+      return data ?? [];
     },
   });
+
+  const latestAssessment = assessmentData?.[0] ?? null;
+  const prevAssessment = assessmentData?.[1] ?? null;
+  const rcScore = latestAssessment?.overall_score ?? null;
+  const isUnconfirmed = latestAssessment ? !latestAssessment.confirmed_by : false;
+  const trendIndicator = (() => {
+    if (!latestAssessment || !prevAssessment) return null;
+    const diff = (latestAssessment.overall_score ?? 0) - (prevAssessment.overall_score ?? 0);
+    if (diff > 0) return "↑";
+    if (diff < 0) return "↓";
+    return "→";
+  })();
 
   // Recent earned milestones (last 3)
   const { data: recentMilestones } = useQuery({
