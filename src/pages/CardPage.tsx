@@ -135,6 +135,31 @@ const CardPage = () => {
     };
   }, [profile?.id, user?.id, queryClient]);
 
+  // Realtime subscription on assessment_sessions for confirmation updates
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    const channel = supabase
+      .channel(`assessments-${profile.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "assessment_sessions",
+          filter: `participant_id=eq.${profile.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["rc-scores", profile.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id, queryClient]);
+
   // Track previous level
   useEffect(() => {
     if (profile?.card_level) {
