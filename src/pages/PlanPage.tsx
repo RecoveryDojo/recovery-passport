@@ -266,6 +266,7 @@ const PlanPage = () => {
                     toggleStepMutation.mutate({
                       stepId: step.id,
                       completed: !!checked,
+                      phaseId: step.phase_id,
                     })
                   }
                   className="mt-0.5"
