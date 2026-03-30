@@ -95,6 +95,21 @@ const AdminPeersPage = () => {
         .eq("user_id", userId);
       if (error) throw error;
 
+      // Audit: peer approval action
+      const actionMap: Record<string, string> = {
+        approved: "approve_peer",
+        rejected: "reject_peer",
+        suspended: "suspend_peer",
+        pending: "reinstate_peer",
+      };
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: actionMap[status] || `peer_status_${status}`,
+        target_type: "peer_specialist_profiles",
+        target_id: userId,
+        metadata: { new_status: status, ...(reason ? { reason } : {}) },
+      });
+
       // Create notification for the peer
       if (status === "approved") {
         await supabase.from("notifications").insert({

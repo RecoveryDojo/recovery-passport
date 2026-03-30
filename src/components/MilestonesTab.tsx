@@ -106,13 +106,22 @@ const MilestonesTab = ({ participantId, participantName, assignedPeerId }: Miles
   const unlockMutation = useMutation({
     mutationFn: async ({ milestoneId, milestoneName }: { milestoneId: string; milestoneName: string }) => {
       // 1. Insert participant_milestone
-      const { error: insertErr } = await supabase.from("participant_milestones").insert({
+      const { data: inserted, error: insertErr } = await supabase.from("participant_milestones").insert({
         participant_id: participantId,
         milestone_id: milestoneId,
         unlocked_by: user!.id,
         note: note.trim() || null,
-      });
+      }).select("id").single();
       if (insertErr) throw insertErr;
+
+      // Audit: unlock_milestone
+      await supabase.from("audit_log").insert({
+        user_id: user!.id,
+        action: "unlock_milestone",
+        target_type: "participant_milestones",
+        target_id: inserted.id,
+        metadata: { milestone_name: milestoneName, participant_id: participantId },
+      });
 
       // 2. Recalculate card level
       await supabase.rpc("recalculate_card_level", { p_participant_id: participantId });

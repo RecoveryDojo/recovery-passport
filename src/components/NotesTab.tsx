@@ -111,6 +111,15 @@ const NotesTab = ({ participantId, participantName, viewerRole = "peer" }: Notes
         .single();
       if (error) throw error;
 
+      // Audit: submit_note
+      await supabase.from("audit_log").insert({
+        user_id: user.id,
+        action: "submit_note",
+        target_type: "progress_notes",
+        target_id: data.id,
+        metadata: { note_type: noteType, participant_id: participantId },
+      });
+
       // Crisis-specific actions
       if (noteType === "crisis") {
         // Log CRPS hours

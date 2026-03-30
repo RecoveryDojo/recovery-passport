@@ -61,6 +61,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(newSession?.user ?? null);
 
         if (newSession?.user) {
+          // Log login event
+          if (event === "SIGNED_IN") {
+            setTimeout(() => {
+              supabase.from("audit_log").insert({
+                user_id: newSession.user.id,
+                action: "login",
+              }).then(() => {});
+            }, 0);
+          }
           // Defer to avoid Supabase client deadlock
           setTimeout(() => fetchUserRole(newSession.user.id), 0);
         } else {
