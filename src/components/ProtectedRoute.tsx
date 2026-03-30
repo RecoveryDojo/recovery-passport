@@ -96,8 +96,14 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     return <PeerPendingApproval />;
   }
 
-  if (!skipProfileCheck && role === "participant" && profileCheck === "incomplete") {
-    return <Navigate to="/profile/setup" replace />;
+  if (role === "participant") {
+    if (profileCheck === "incomplete" && location.pathname !== "/profile/setup") {
+      return <Navigate to="/profile/setup" replace />;
+    }
+
+    if (profileCheck === "complete" && location.pathname === "/profile/setup") {
+      return <Navigate to="/card" replace />;
+    }
   }
 
   return <>{children}</>;
