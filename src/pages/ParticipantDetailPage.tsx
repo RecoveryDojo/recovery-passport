@@ -173,7 +173,10 @@ const ParticipantDetailPage = () => {
           />
         </TabsContent>
         <TabsContent value="plan" className="mt-4">
-          <PlaceholderTab label="Plan" />
+          <PeerPlanTab
+            participantId={participantId!}
+            participantUserId={profile.user_id}
+          />
         </TabsContent>
         <TabsContent value="checkins" className="mt-4">
           <PlaceholderTab label="Check-Ins" />
