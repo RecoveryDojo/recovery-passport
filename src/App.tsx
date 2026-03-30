@@ -44,7 +44,7 @@ const App = () => (
 
             {/* Profile setup (participant only, before layout) */}
             <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]} skipProfileCheck><ProfileSetup /></ProtectedRoute>} />
-            <Route path="/peers/setup" element={<ProtectedRoute allowedRoles={["peer_specialist"]} skipProfileCheck><PeerProfileSetup /></ProtectedRoute>} />
+            <Route path="/peers/setup" element={<ProtectedRoute allowedRoles={["peer_specialist"]}><PeerProfileSetup /></ProtectedRoute>} />
 
             {/* Role redirect */}
             <Route path="/" element={<RoleRedirect />} />
