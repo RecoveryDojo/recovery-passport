@@ -27,6 +27,7 @@ import {
   IntakePage,
 } from "@/pages/placeholder-pages";
 import AdminPeersPage from "@/pages/AdminPeersPage";
+import AdminMilestonesPage from "@/pages/AdminMilestonesPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
 import CaseloadPage from "@/pages/CaseloadPage";
 import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
@@ -83,6 +84,7 @@ const App = () => (
               <Route path="/admin/peers" element={<AdminPeersPage />} />
               <Route path="/admin/content" element={<AdminContent />} />
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
+              <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/audit" element={<AdminAudit />} />
             </Route>
