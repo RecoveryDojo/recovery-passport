@@ -158,7 +158,11 @@ const ParticipantDetailPage = () => {
         </TabsList>
 
         <TabsContent value="milestones" className="mt-4">
-          <PlaceholderTab label="Milestones" />
+          <MilestonesTab
+            participantId={participantId!}
+            participantName={fullName}
+            assignedPeerId={profile.assigned_peer_id}
+          />
         </TabsContent>
         <TabsContent value="assessments" className="mt-4">
           <PlaceholderTab label="Assessments" />
