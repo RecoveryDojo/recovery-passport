@@ -59,7 +59,7 @@ import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
 import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient(); // v2
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
