@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarIcon, X, ArrowLeft, Save } from "lucide-react";
+import { CalendarIcon, X, ArrowLeft, Save, LogOut } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -33,7 +33,7 @@ interface Program {
 }
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -282,8 +282,13 @@ const Profile = () => {
         {saving ? "Saving..." : "Save Changes"}
       </Button>
 
-      <div className="text-center pt-4">
-        <button className="text-sm text-destructive hover:underline" onClick={() => toast.info("Account deletion coming soon")}>
+      <Button variant="outline" onClick={signOut} className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10">
+        <LogOut className="h-4 w-4" />
+        Sign Out
+      </Button>
+
+      <div className="text-center pt-2">
+        <button className="text-sm text-destructive/60 hover:underline" onClick={() => toast.info("Account deletion coming soon")}>
           Delete My Account
         </button>
       </div>
