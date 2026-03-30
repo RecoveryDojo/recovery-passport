@@ -166,7 +166,10 @@ const ParticipantDetailPage = () => {
           />
         </TabsContent>
         <TabsContent value="assessments" className="mt-4">
-          <PlaceholderTab label="Assessments" />
+          <AssessmentsTab
+            participantId={participantId!}
+            participantName={fullName}
+          />
         </TabsContent>
         <TabsContent value="plan" className="mt-4">
           <PlaceholderTab label="Plan" />
