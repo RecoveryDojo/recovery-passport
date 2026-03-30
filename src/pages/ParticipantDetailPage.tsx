@@ -165,13 +165,14 @@ const ParticipantDetailPage = () => {
 
       {/* Tabs */}
       <Tabs defaultValue={defaultTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-6 h-auto">
+        <TabsList className="w-full grid grid-cols-7 h-auto">
           <TabsTrigger value="milestones" className="text-xs py-2">Milestones</TabsTrigger>
           <TabsTrigger value="assessments" className="text-xs py-2">Assessments</TabsTrigger>
           <TabsTrigger value="plan" className="text-xs py-2">Plan</TabsTrigger>
           <TabsTrigger value="checkins" className="text-xs py-2">Check-Ins</TabsTrigger>
           <TabsTrigger value="payments" className="text-xs py-2">Payments</TabsTrigger>
           <TabsTrigger value="notes" className="text-xs py-2">Notes</TabsTrigger>
+          <TabsTrigger value="transitions" className="text-xs py-2">Transitions</TabsTrigger>
         </TabsList>
 
         <TabsContent value="milestones" className="mt-4">
