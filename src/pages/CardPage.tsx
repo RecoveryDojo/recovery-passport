@@ -209,6 +209,23 @@ const CardPage = () => {
     },
   });
 
+  // Unread milestone notifications
+  const { data: unreadMilestoneCount } = useQuery({
+    queryKey: ["unread-milestone-notifications", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id)
+        .eq("is_read", false)
+        .eq("type", "milestone_unlocked");
+      return count ?? 0;
+    },
+  });
+
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
