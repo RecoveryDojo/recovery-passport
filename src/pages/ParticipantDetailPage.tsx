@@ -12,6 +12,7 @@ import type { Database } from "@/integrations/supabase/types";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssessmentsTab from "@/components/AssessmentsTab";
 import PeerPlanTab from "@/components/PeerPlanTab";
+import CheckInsTab from "@/components/CheckInsTab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
