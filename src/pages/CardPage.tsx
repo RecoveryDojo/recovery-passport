@@ -284,10 +284,12 @@ const CardPage = () => {
           {/* ROW 2 — Stats */}
           <div className="grid grid-cols-3 gap-3">
             <StatBox value={String(daysInRecovery)} label="Days" />
-            <StatBox
-              value={`${milestoneStats?.earned ?? 0} / ${milestoneStats?.total ?? 0}`}
-              label="Milestones"
-            />
+            <Link to="/milestones" className="cursor-pointer">
+              <StatBox
+                value={`${milestoneStats?.earned ?? 0} / ${milestoneStats?.total ?? 0}`}
+                label="Milestones"
+              />
+            </Link>
             <StatBox
               value={rcScore != null ? String(rcScore) : "—"}
               label="RC Score"
