@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { differenceInDays } from "date-fns";
 import { ArrowLeft, Star } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import MilestonesTab from "@/components/MilestonesTab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -157,7 +158,11 @@ const ParticipantDetailPage = () => {
         </TabsList>
 
         <TabsContent value="milestones" className="mt-4">
-          <PlaceholderTab label="Milestones" />
+          <MilestonesTab
+            participantId={participantId!}
+            participantName={fullName}
+            assignedPeerId={profile.assigned_peer_id}
+          />
         </TabsContent>
         <TabsContent value="assessments" className="mt-4">
           <PlaceholderTab label="Assessments" />
