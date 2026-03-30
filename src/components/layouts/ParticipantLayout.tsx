@@ -1,6 +1,9 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { Home, ClipboardList, MapPin, QrCode, UserCircle } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const navItems = [
   { to: "/card", label: "My Card", icon: Home },
@@ -12,6 +15,20 @@ const navItems = [
 
 const ParticipantLayout = () => {
   const location = useLocation();
+  const { user } = useAuth();
+
+  const { data: unreadCount } = useQuery({
+    queryKey: ["unread-notifications", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id)
+        .eq("is_read", false);
+      return count ?? 0;
+    },
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -26,11 +43,14 @@ const ParticipantLayout = () => {
               <NavLink
                 key={item.to}
                 to={item.to}
-                className={`flex flex-col items-center gap-1 px-3 py-2 text-xs transition-colors ${active ? "text-accent" : "text-muted-foreground"}`}
+                className={`flex flex-col items-center gap-1 px-3 py-2 text-xs transition-colors relative ${active ? "text-accent" : "text-muted-foreground"}`}
                 activeClassName="text-accent"
               >
                 <item.icon className="h-5 w-5" />
                 <span>{item.label}</span>
+                {item.to === "/card" && (unreadCount ?? 0) > 0 && (
+                  <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-destructive" />
+                )}
               </NavLink>
             );
           })}

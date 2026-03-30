@@ -19,6 +19,7 @@ import PeerProfile from "@/pages/PeerProfile";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import CardPage from "@/pages/CardPage";
+import ParticipantMilestonesPage from "@/pages/ParticipantMilestonesPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   PlanPage, ResourcesPage, PassportPage,
@@ -61,6 +62,7 @@ const App = () => (
             {/* Participant */}
             <Route element={<ProtectedRoute allowedRoles={["participant"]}><ParticipantLayout /></ProtectedRoute>}>
               <Route path="/card" element={<CardPage />} />
+              <Route path="/milestones" element={<ParticipantMilestonesPage />} />
               <Route path="/plan" element={<PlanPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/passport" element={<PassportPage />} />

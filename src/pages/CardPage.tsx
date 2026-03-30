@@ -8,6 +8,7 @@ import { Check, ChevronRight, Star } from "lucide-react";
 import { differenceInDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -107,6 +108,33 @@ const CardPage = () => {
     };
   }, [profile?.id, user?.id, queryClient]);
 
+  // Realtime subscription on participant_milestones for new unlocks
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    const channel = supabase
+      .channel(`milestones-${profile.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "participant_milestones",
+          filter: `participant_id=eq.${profile.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["milestone-stats", profile.id] });
+          queryClient.invalidateQueries({ queryKey: ["recent-milestones", profile.id] });
+          queryClient.invalidateQueries({ queryKey: ["unread-milestone-notifications", user?.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id, user?.id, queryClient]);
+
   // Track previous level
   useEffect(() => {
     if (profile?.card_level) {
@@ -181,6 +209,23 @@ const CardPage = () => {
     },
   });
 
+  // Unread milestone notifications
+  const { data: unreadMilestoneCount } = useQuery({
+    queryKey: ["unread-milestone-notifications", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { count } = await supabase
+        .from("notifications")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", user!.id)
+        .eq("is_read", false)
+        .eq("type", "milestone_unlocked");
+      return count ?? 0;
+    },
+  });
+
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
   if (!profile) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -203,6 +248,23 @@ const CardPage = () => {
 
   return (
     <div className="px-4 pt-6 pb-4 max-w-lg mx-auto space-y-6">
+      {/* Unread milestone banner */}
+      {!bannerDismissed && (unreadMilestoneCount ?? 0) > 0 && (
+        <Link
+          to="/milestones"
+          className="flex items-center justify-between bg-accent/10 border border-accent/30 rounded-xl px-4 py-3"
+        >
+          <span className="text-sm font-medium text-foreground">
+            🎉 You have {unreadMilestoneCount} new milestone{unreadMilestoneCount !== 1 ? "s" : ""}!
+          </span>
+          <button
+            onClick={(e) => { e.preventDefault(); setBannerDismissed(true); }}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </Link>
+      )}
       {/* === BASEBALL CARD === */}
       <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>
         {/* Card body */}
@@ -239,10 +301,12 @@ const CardPage = () => {
           {/* ROW 2 — Stats */}
           <div className="grid grid-cols-3 gap-3">
             <StatBox value={String(daysInRecovery)} label="Days" />
-            <StatBox
-              value={`${milestoneStats?.earned ?? 0} / ${milestoneStats?.total ?? 0}`}
-              label="Milestones"
-            />
+            <Link to="/milestones" className="cursor-pointer">
+              <StatBox
+                value={`${milestoneStats?.earned ?? 0} / ${milestoneStats?.total ?? 0}`}
+                label="Milestones"
+              />
+            </Link>
             <StatBox
               value={rcScore != null ? String(rcScore) : "—"}
               label="RC Score"
