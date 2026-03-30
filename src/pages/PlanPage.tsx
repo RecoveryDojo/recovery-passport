@@ -29,7 +29,7 @@ const PlanPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("participant_profiles")
-        .select("id, user_id")
+        .select("id, user_id, created_at")
         .eq("user_id", user!.id)
         .single();
       if (error) throw error;
