@@ -18,11 +18,11 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
   const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
 
   useEffect(() => {
-    if (skipProfileCheck || !user || !role) {
-      if (!user || !role) {
-        // Keep loading until auth resolves — don't prematurely mark complete
-        return;
-      }
+    if (!user || !role) {
+      return;
+    }
+
+    if (skipProfileCheck && role !== "peer_specialist") {
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
       return;
