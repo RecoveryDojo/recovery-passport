@@ -20,6 +20,7 @@ import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import CardPage from "@/pages/CardPage";
 import ParticipantMilestonesPage from "@/pages/ParticipantMilestonesPage";
+import AssessmentTakePage from "@/pages/AssessmentTakePage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   PlanPage, ResourcesPage, PassportPage,
