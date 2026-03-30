@@ -15,16 +15,14 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
   const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">(
     skipProfileCheck ? "complete" : "loading"
   );
-  const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">(
-    skipProfileCheck ? "complete" : "loading"
-  );
+  const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
 
   useEffect(() => {
-    if (skipProfileCheck || !user || !role) {
-      if (!user || !role) {
-        // Keep loading until auth resolves — don't prematurely mark complete
-        return;
-      }
+    if (!user || !role) {
+      return;
+    }
+
+    if (skipProfileCheck && role !== "peer_specialist") {
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
       return;
@@ -78,12 +76,13 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     return <Navigate to={home} replace />;
   }
 
-  // Peer specialist: profile incomplete → setup page
-  if (!skipProfileCheck && role === "peer_specialist" && peerProfileCheck === "incomplete") {
+  // Peer specialist: profile incomplete → setup page (always, regardless of skipProfileCheck)
+  if (role === "peer_specialist" && peerProfileCheck === "incomplete") {
     return <Navigate to="/peers/setup" replace />;
   }
 
-  if (role === "peer_specialist" && approvalStatus !== "approved") {
+  // Peer specialist: profile complete but not approved → pending/rejected/suspended screen
+  if (role === "peer_specialist" && peerProfileCheck === "complete" && approvalStatus !== "approved") {
     return <PeerPendingApproval />;
   }
 
