@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { updateCrpsCompetencies } from "@/lib/crps-updater";
 import { format } from "date-fns";
 
 interface MilestonesTabProps {
@@ -128,6 +129,9 @@ const MilestonesTab = ({ participantId, participantName, assignedPeerId }: Miles
           related_type: "milestone",
         });
       }
+
+      // Update CRPS competencies
+      updateCrpsCompetencies({ action: "milestone_unlocked", peer_id: user!.id });
 
       return milestoneName;
     },

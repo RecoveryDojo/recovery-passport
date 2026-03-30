@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
+import { updateCrpsCompetencies } from "@/lib/crps-updater";
 
 type SituationTag = Database["public"]["Enums"]["mi_situation_tag"];
 
@@ -160,6 +161,9 @@ const CheckInFormPage = () => {
           link: "/plan",
         });
       }
+
+      // 4. Update CRPS competencies
+      updateCrpsCompetencies({ action: "checkin", peer_id: user.id });
 
       return { isCrisis: situation === "crisis" };
     },

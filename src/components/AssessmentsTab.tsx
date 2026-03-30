@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ArrowLeft, Check, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { updateCrpsCompetencies } from "@/lib/crps-updater";
 
 interface Props {
   participantId: string;
@@ -117,6 +118,8 @@ const AssessmentsTab = ({ participantId, participantName }: Props) => {
           link: "/card",
         });
       }
+      // Update CRPS competencies
+      updateCrpsCompetencies({ action: "assessment_confirmed", peer_id: user!.id });
     },
     onSuccess: () => {
       toast.success("Assessment confirmed!");
