@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
-import { Lock, Check, ChevronRight } from "lucide-react";
+import { Lock, Check, ChevronRight, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { differenceInDays } from "date-fns";
 
 const PHASE_ORDER = ["thirty_day", "sixty_day", "ninety_day", "six_month"] as const;
 const PHASE_LABELS: Record<string, string> = {
@@ -28,7 +29,7 @@ const PlanPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("participant_profiles")
-        .select("id, user_id")
+        .select("id, user_id, created_at")
         .eq("user_id", user!.id)
         .single();
       if (error) throw error;
@@ -283,6 +284,31 @@ const PlanPage = () => {
           </div>
         </div>
       )}
+
+      {/* Ready for Next Step */}
+      {(() => {
+        const isPhase3OrLater = sortedPhases.some(
+          (p) => p.is_active && (p.phase === "ninety_day" || p.phase === "six_month")
+        );
+        const daysInProgram = profile?.created_at
+          ? differenceInDays(new Date(), new Date(profile.created_at))
+          : 0;
+        if (!isPhase3OrLater && daysInProgram < 30) return null;
+
+        return (
+          <div className="bg-accent/10 border border-accent/30 rounded-xl p-4 space-y-2">
+            <h3 className="font-semibold text-foreground">Ready for Your Next Step?</h3>
+            <p className="text-sm text-muted-foreground">
+              Explore placement options and connect with your peer specialist about transitioning.
+            </p>
+            <Link to="/resources">
+              <Button variant="outline" size="sm" className="border-accent text-accent">
+                Browse placements <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            </Link>
+          </div>
+        );
+      })()}
     </div>
   );
 };
