@@ -15,6 +15,7 @@ import PeerPlanTab from "@/components/PeerPlanTab";
 import CheckInsTab from "@/components/CheckInsTab";
 import PaymentLedger from "@/components/PaymentLedger";
 import NotesTab from "@/components/NotesTab";
+import TransitionsTab from "@/components/TransitionsTab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
