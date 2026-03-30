@@ -70,6 +70,7 @@ const App = () => (
             {/* Peer Specialist */}
             <Route element={<ProtectedRoute allowedRoles={["peer_specialist"]}><PeerLayout /></ProtectedRoute>}>
               <Route path="/caseload" element={<CaseloadPage />} />
+              <Route path="/caseload/:participantId" element={<ParticipantDetailPage />} />
               <Route path="/checkins" element={<CheckInsPage />} />
               <Route path="/crps" element={<CrpsPage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
