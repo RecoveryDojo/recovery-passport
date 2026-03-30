@@ -42,7 +42,7 @@ const LandingPage = () => {
               asChild
               variant="outline"
               size="lg"
-              className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10 text-lg px-8 py-6 font-semibold"
+              className="border-primary text-primary hover:bg-primary/10 text-lg px-8 py-6 font-semibold"
             >
               <Link to="/signup?role=peer_specialist">I'm a Peer Specialist</Link>
             </Button>
