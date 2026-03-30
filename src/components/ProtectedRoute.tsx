@@ -15,24 +15,44 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
   const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">(
     skipProfileCheck ? "complete" : "loading"
   );
+  const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">(
+    skipProfileCheck ? "complete" : "loading"
+  );
 
   useEffect(() => {
-    if (skipProfileCheck || !user || !role || role !== "participant") {
+    if (skipProfileCheck || !user || !role) {
       setProfileCheck("complete");
+      setPeerProfileCheck("complete");
       return;
     }
 
-    supabase
-      .from("participant_profiles")
-      .select("first_name")
-      .eq("user_id", user.id)
-      .single()
-      .then(({ data }) => {
-        setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
-      });
+    if (role === "participant") {
+      supabase
+        .from("participant_profiles")
+        .select("first_name")
+        .eq("user_id", user.id)
+        .single()
+        .then(({ data }) => {
+          setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
+        });
+      setPeerProfileCheck("complete");
+    } else if (role === "peer_specialist") {
+      supabase
+        .from("peer_specialist_profiles")
+        .select("first_name, bio")
+        .eq("user_id", user.id)
+        .single()
+        .then(({ data }) => {
+          setPeerProfileCheck(!data || !data.first_name || !data.bio ? "incomplete" : "complete");
+        });
+      setProfileCheck("complete");
+    } else {
+      setProfileCheck("complete");
+      setPeerProfileCheck("complete");
+    }
   }, [user, role, skipProfileCheck]);
 
-  if (loading || profileCheck === "loading") {
+  if (loading || profileCheck === "loading" || peerProfileCheck === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -50,6 +70,11 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
   if (!allowedRoles.includes(role)) {
     const home = role === "participant" ? "/card" : role === "peer_specialist" ? "/caseload" : "/admin";
     return <Navigate to={home} replace />;
+  }
+
+  // Peer specialist: profile incomplete → setup page
+  if (!skipProfileCheck && role === "peer_specialist" && peerProfileCheck === "incomplete") {
+    return <Navigate to="/peers/setup" replace />;
   }
 
   if (role === "peer_specialist" && approvalStatus !== "approved") {

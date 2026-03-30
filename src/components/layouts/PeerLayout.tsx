@@ -1,11 +1,12 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
-import { Users, CheckCircle, BarChart3 } from "lucide-react";
+import { Users, CheckCircle, BarChart3, UserCircle } from "lucide-react";
 
 const navItems = [
   { to: "/caseload", label: "Caseload", icon: Users },
   { to: "/checkins", label: "Check-Ins", icon: CheckCircle },
   { to: "/crps", label: "My Progress", icon: BarChart3 },
+  { to: "/peers/profile", label: "Profile", icon: UserCircle },
 ];
 
 const PeerLayout = () => {

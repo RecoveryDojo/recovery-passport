@@ -14,6 +14,8 @@ import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
 import UpdatePassword from "@/pages/UpdatePassword";
 import ProfileSetup from "@/pages/ProfileSetup";
+import PeerProfileSetup from "@/pages/PeerProfileSetup";
+import PeerProfile from "@/pages/PeerProfile";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import {
@@ -42,6 +44,7 @@ const App = () => (
 
             {/* Profile setup (participant only, before layout) */}
             <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]} skipProfileCheck><ProfileSetup /></ProtectedRoute>} />
+            <Route path="/peers/setup" element={<ProtectedRoute allowedRoles={["peer_specialist"]} skipProfileCheck><PeerProfileSetup /></ProtectedRoute>} />
 
             {/* Role redirect */}
             <Route path="/" element={<RoleRedirect />} />
@@ -60,6 +63,7 @@ const App = () => (
               <Route path="/caseload" element={<CaseloadPage />} />
               <Route path="/checkins" element={<CheckInsPage />} />
               <Route path="/crps" element={<CrpsPage />} />
+              <Route path="/peers/profile" element={<PeerProfile />} />
             </Route>
 
             {/* Admin */}
