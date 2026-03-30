@@ -24,11 +24,12 @@ import AssessmentTakePage from "@/pages/AssessmentTakePage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
-  ResourcesPage, PassportPage,
+  ResourcesPage,
   CrpsPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import PassportConfigPage from "@/pages/PassportConfigPage";
 import ParticipantCheckInsPage from "@/pages/ParticipantCheckInsPage";
 import AdminParticipantCheckInsPage from "@/pages/AdminParticipantCheckInsPage";
 import AdminPeersPage from "@/pages/AdminPeersPage";
@@ -76,7 +77,7 @@ const App = () => (
               <Route path="/assessment/take" element={<AssessmentTakePage />} />
               <Route path="/plan" element={<PlanPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
-              <Route path="/passport" element={<PassportPage />} />
+              <Route path="/passport" element={<PassportConfigPage />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/peers/browse" element={<PeerBrowsePage />} />
               <Route path="/checkins" element={<ParticipantCheckInsPage />} />
