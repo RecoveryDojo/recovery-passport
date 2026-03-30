@@ -41,10 +41,21 @@ const ParticipantMilestonesPage = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("participant_milestones")
-        .select("*, milestone_definitions:milestone_id(name), peer_specialist_profiles:unlocked_by(first_name, last_name)")
+        .select("*, milestone_definitions:milestone_id(name)")
         .eq("participant_id", profile!.id);
       if (error) throw error;
-      return data;
+
+      // Fetch verifier names separately since unlocked_by FK points to users, not peer_specialist_profiles
+      const peerIds = [...new Set(data.map((d) => d.unlocked_by))];
+      const { data: peers } = await supabase
+        .from("peer_specialist_profiles")
+        .select("user_id, first_name, last_name")
+        .in("user_id", peerIds);
+      const peerMap = new Map(
+        (peers ?? []).map((p) => [p.user_id, p])
+      );
+
+      return data.map((d) => ({ ...d, _peer: peerMap.get(d.unlocked_by) ?? null }));
     },
   });
 
