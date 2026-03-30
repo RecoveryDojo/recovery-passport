@@ -1,28 +1,42 @@
 
 
-## Fix: Peer specialists cannot delete plan action steps
+## Prompt 20: Weekly Check-In Form + MI Prompt
 
-### Problem
-The `plan_action_steps` table has **no DELETE RLS policy**. When the peer specialist clicks "Remove" on a step, the Supabase `.delete()` call silently fails due to RLS, but the toast still shows "Step removed" because the audit log insert succeeds first (and the delete error isn't properly surfaced since Supabase returns no error for 0-row deletes).
+### What gets built
+A new check-in form page at `/caseload/:participantId/checkin` where peer specialists record weekly check-ins with contextual MI prompts, plus a "New Check-In" button on the participant detail page.
 
-### Solution
-Add a DELETE RLS policy on `plan_action_steps` allowing peer specialists and admins to delete steps.
+### Changes
 
-### Steps
+**1. Add "New Check-In" button to ParticipantDetailPage** (`src/pages/ParticipantDetailPage.tsx`)
+- Add an amber "New Check-In" button between the baseball card and the tabs section
+- Links to `/caseload/${participantId}/checkin`
 
-1. **Database migration** — Add DELETE policy:
-```sql
-CREATE POLICY "Steps: peer delete"
-ON public.plan_action_steps
-FOR DELETE
-TO public
-USING (
-  get_user_role() = ANY(ARRAY['peer_specialist'::user_role, 'admin'::user_role])
-);
-```
+**2. Create CheckInFormPage** (`src/pages/CheckInFormPage.tsx`)
+- New full page with back link to participant detail
+- Title: "Weekly Check-In — [first name]"
+- Fetches participant profile to get the first name
+- Seven fields:
+  - **Date**: Shadcn date picker, defaults to today
+  - **Mood**: 5 tappable buttons (Crisis/Struggling/Getting By/Good/Thriving) with red/coral/amber/teal/green colors
+  - **Situation**: Dropdown with 7 options mapped to `mi_situation_tag` enum values. On select, fetches a random active `mi_prompt` matching the tag. Displays in a yellow box with thumbs up / not relevant buttons that increment `usage_count` + `helpful_count` or `not_relevant_count`
+  - **Summary**: textarea
+  - **Plan Progress**: textarea
+  - **Barriers**: textarea
+  - **Next Steps**: textarea
+- **Submit**: inserts into `weekly_checkins`, calls `supabase.rpc('log_checkin_crps_hours')`, creates notification for participant (type `general` since no specific checkin type exists), redirects to participant detail with `?tab=checkins`
+- **Crisis overlay**: if situation was "crisis", after submit show full-screen overlay with `crisis_protocol` content (fetched where `is_current = true`), dismissible with "Got it, continue" button
 
-2. **Fix delete mutation order in `PeerPlanTab.tsx`** — Move the audit log insert AFTER the delete, and check for errors properly. Currently audit is inserted first (line 204) before the delete (line 211). If delete fails, we still get an audit entry. Reorder to: delete first, then audit on success.
+**3. Add route** (`src/App.tsx`)
+- Add `/caseload/:participantId/checkin` route under peer specialist routes, pointing to `CheckInFormPage`
 
-### Regarding completed steps
-Per the prompt spec, peer specialists should be able to delete any step regardless of completion status. The delete wasn't working for *any* step — completed or not — due to the missing RLS policy.
+**4. Update ParticipantDetailPage tabs** (`src/pages/ParticipantDetailPage.tsx`)
+- Read `?tab=` query param to set default tab (so redirect from check-in lands on Check-Ins tab)
+
+### Technical notes
+- `weekly_checkins.participant_id` references `participant_profiles.id` (not user_id)
+- `weekly_checkins.peer_specialist_id` references `users.id` (the peer's auth user id)
+- `mi_situation_tag` enum: `first_checkin`, `ambivalence`, `barriers`, `crisis`, `motivation`, `planning`, `general`
+- MI prompt feedback updates use `.update()` with manual increment (select current value, +1, update)
+- No notification enum for "checkin_logged" — will use `general` type
+- No database migrations needed — all tables and columns already exist
 
