@@ -162,6 +162,9 @@ const CheckInFormPage = () => {
         });
       }
 
+      // 4. Update CRPS competencies
+      updateCrpsCompetencies({ action: "checkin", peer_id: user.id });
+
       return { isCrisis: situation === "crisis" };
     },
     onSuccess: ({ isCrisis }) => {

@@ -188,6 +188,8 @@ const PeerPlanTab = ({ participantId, participantUserId }: PeerPlanTabProps) => 
         target_id: data.id,
         metadata: { action: "added", description },
       });
+      // Update CRPS competencies for plan edit
+      updateCrpsCompetencies({ action: "plan_edit", peer_id: user!.id, participant_id: participantId });
     },
     onSuccess: () => {
       setAddingToPhase(null);

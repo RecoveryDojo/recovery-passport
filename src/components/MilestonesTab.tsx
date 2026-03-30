@@ -130,6 +130,9 @@ const MilestonesTab = ({ participantId, participantName, assignedPeerId }: Miles
         });
       }
 
+      // Update CRPS competencies
+      updateCrpsCompetencies({ action: "milestone_unlocked", peer_id: user!.id });
+
       return milestoneName;
     },
     onSuccess: (milestoneName) => {

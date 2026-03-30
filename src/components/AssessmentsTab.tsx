@@ -118,6 +118,8 @@ const AssessmentsTab = ({ participantId, participantName }: Props) => {
           link: "/card",
         });
       }
+      // Update CRPS competencies
+      updateCrpsCompetencies({ action: "assessment_confirmed", peer_id: user!.id });
     },
     onSuccess: () => {
       toast.success("Assessment confirmed!");
