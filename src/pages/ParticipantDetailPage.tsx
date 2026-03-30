@@ -194,6 +194,9 @@ const ParticipantDetailPage = () => {
         <TabsContent value="checkins" className="mt-4">
           <CheckInsTab participantId={participantId!} viewerRole="peer" />
         </TabsContent>
+        <TabsContent value="payments" className="mt-4">
+          <PaymentLedger participantId={participantId!} />
+        </TabsContent>
         <TabsContent value="notes" className="mt-4">
           <PlaceholderTab label="Notes" />
         </TabsContent>
