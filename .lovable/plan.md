@@ -1,45 +1,35 @@
 
 
-# Fix: Signup Failing — `user_role` Type Not Found
+## Bug Fix: Peer Approval Gate Blocking `/peers/setup`
 
-## Root Cause
-The `handle_new_user()` trigger function fires on `auth.users` (in the `auth` schema). It references the `user_role` enum, which lives in the `public` schema. However, the function has no explicit `search_path` set, so when it executes in the auth context, Postgres cannot find `user_role` — causing `ERROR: type "user_role" does not exist`.
+**Problem**: Line 86-88 checks `approvalStatus !== "approved"` unconditionally for all peer specialists, including those on `/peers/setup` with `skipProfileCheck=true`. Since `skipProfileCheck` marks `peerProfileCheck` as `"complete"` (line 18-19, 28-29), the incomplete profile redirect on line 82 is skipped, and the approval gate on line 86 fires immediately.
 
-## Fix
-Run a single migration to recreate the function with `SET search_path = public` added:
+**Fix**: Two changes.
 
-```sql
-CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public
-AS $function$
-declare
-  user_role_value user_role;
-begin
-  user_role_value := coalesce(
-    (new.raw_user_meta_data->>'role')::user_role,
-    'participant'
-  );
+### 1. `src/components/ProtectedRoute.tsx`
 
-  insert into public.users (id, email, phone, role)
-  values (new.id, coalesce(new.email, ''), new.phone, user_role_value);
+- **Always run the peer profile query** for `peer_specialist` role, regardless of `skipProfileCheck`. Remove the early return on line 23-31 for peer specialists so `peerProfileCheck` reflects the real DB state.
+- **Gate the approval check** behind profile completeness: change line 86 from:
+  ```
+  if (role === "peer_specialist" && approvalStatus !== "approved")
+  ```
+  to:
+  ```
+  if (role === "peer_specialist" && peerProfileCheck === "complete" && approvalStatus !== "approved")
+  ```
+- Keep the profile-incomplete redirect on line 82 but **remove the `!skipProfileCheck` guard** so it always fires when the profile is actually incomplete:
+  ```
+  if (role === "peer_specialist" && peerProfileCheck === "incomplete")
+  ```
 
-  if user_role_value = 'participant' then
-    insert into public.participant_profiles (user_id, first_name, last_name)
-    values (new.id, '', '');
-  end if;
+### 2. `src/App.tsx`
 
-  if user_role_value = 'peer_specialist' then
-    insert into public.peer_specialist_profiles (user_id, first_name, last_name, approval_status)
-    values (new.id, '', '', 'pending');
-  end if;
+- Remove `skipProfileCheck` from the `/peers/setup` route since it's no longer needed — the profile completeness check itself gates access.
 
-  return new;
-end;
-$function$;
-```
+### Result
+- New peer with empty profile → query returns incomplete → redirect to `/peers/setup` (approval gate never reached)
+- Peer completes profile → query returns complete → approval gate fires → pending screen
+- Approved peer → passes through to `/caseload`
 
-No code changes needed — this is a database-only fix. After applying, signup will work.
+No database changes.
 
