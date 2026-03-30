@@ -58,14 +58,18 @@ import AdminPeerDetailPage from "@/pages/AdminPeerDetailPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
 import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
+import OfflineBanner from "@/components/OfflineBanner";
+import InstallPrompt from "@/components/InstallPrompt";
 
-const queryClient = new QueryClient(); // v2
+const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <OfflineBanner />
+      <InstallPrompt />
       <BrowserRouter>
         <AuthProvider>
           <DevRoleSwitcher />
