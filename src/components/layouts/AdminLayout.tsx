@@ -72,9 +72,12 @@ const AdminLayout = () => {
       <div className="min-h-screen flex w-full bg-background">
         {!isMobile && <AdminSidebar />}
         <div className="flex-1 flex flex-col">
-          <header className="h-12 flex items-center border-b border-border px-4 bg-card">
-            {!isMobile && <SidebarTrigger className="mr-3" />}
-            <span className="text-sm font-medium text-primary">Admin</span>
+          <header className="h-12 flex items-center justify-between border-b border-border px-4 bg-card">
+            <div className="flex items-center">
+              {!isMobile && <SidebarTrigger className="mr-3" />}
+              <span className="text-sm font-medium text-primary">Admin</span>
+            </div>
+            <NotificationBell />
           </header>
           <main className={`flex-1 ${isMobile ? "pb-20" : ""}`}>
             <Outlet />
