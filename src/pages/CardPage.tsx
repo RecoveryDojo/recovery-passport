@@ -1,24 +1,40 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { Check, ChevronRight } from "lucide-react";
+import { Check, ChevronRight, Star } from "lucide-react";
 import { differenceInDays } from "date-fns";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import type { Database } from "@/integrations/supabase/types";
 
-const LEVEL_LABELS: Record<string, string> = {
+type CardLevel = Database["public"]["Enums"]["card_level"];
+
+const LEVEL_LABELS: Record<CardLevel, string> = {
   rookie: "ROOKIE",
   starter: "STARTER",
   veteran: "VETERAN",
   all_star: "ALL-STAR",
 };
 
+const LEVEL_STYLES: Record<CardLevel, string> = {
+  rookie: "bg-[#A0A0A0] text-white",
+  starter: "bg-[#2563EB] text-white",
+  veteran: "bg-[#1A4A4A] text-white",
+  all_star: "bg-[#C5792A] text-white",
+};
+
+const LEVEL_ORDER: CardLevel[] = ["rookie", "starter", "veteran", "all_star"];
+
 const CardPage = () => {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [celebrating, setCelebrating] = useState(false);
+  const prevLevelRef = useRef<CardLevel | null>(null);
 
-  // Participant profile with program + peer info
+  // Participant profile with program
   const { data: profile } = useQuery({
     queryKey: ["participant-card", user?.id],
     enabled: !!user,
@@ -32,6 +48,71 @@ const CardPage = () => {
       return data;
     },
   });
+
+  // Realtime subscription on participant_profiles for card_level changes
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    const channel = supabase
+      .channel(`card-level-${profile.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "participant_profiles",
+          filter: `id=eq.${profile.id}`,
+        },
+        (payload) => {
+          const newLevel = (payload.new as any).card_level as CardLevel;
+          const oldLevel = prevLevelRef.current;
+
+          // Invalidate profile query to refresh all data
+          queryClient.invalidateQueries({ queryKey: ["participant-card", user?.id] });
+          queryClient.invalidateQueries({ queryKey: ["milestone-stats", profile.id] });
+          queryClient.invalidateQueries({ queryKey: ["recent-milestones", profile.id] });
+
+          // Check for level-up
+          if (oldLevel && newLevel !== oldLevel) {
+            const oldIdx = LEVEL_ORDER.indexOf(oldLevel);
+            const newIdx = LEVEL_ORDER.indexOf(newLevel);
+            if (newIdx > oldIdx) {
+              // Level up!
+              setCelebrating(true);
+              toast.success(`🎉 You've reached ${LEVEL_LABELS[newLevel]} level!`, {
+                duration: 5000,
+              });
+
+              // Save notification
+              supabase
+                .from("notifications")
+                .insert({
+                  user_id: user!.id,
+                  type: "level_up" as const,
+                  title: `Level Up: ${LEVEL_LABELS[newLevel]}!`,
+                  body: `Congratulations! You've reached ${LEVEL_LABELS[newLevel]} level.`,
+                  link: "/card",
+                })
+                .then(() => {});
+
+              setTimeout(() => setCelebrating(false), 4500);
+            }
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id, user?.id, queryClient]);
+
+  // Track previous level
+  useEffect(() => {
+    if (profile?.card_level) {
+      prevLevelRef.current = profile.card_level as CardLevel;
+    }
+  }, [profile?.card_level]);
 
   // Assigned peer name
   const { data: peer } = useQuery({
@@ -118,12 +199,12 @@ const CardPage = () => {
   const daysInRecovery = profile.recovery_start_date
     ? differenceInDays(new Date(), new Date(profile.recovery_start_date))
     : 0;
-  const level = profile.card_level ?? "rookie";
+  const level = (profile.card_level ?? "rookie") as CardLevel;
 
   return (
     <div className="px-4 pt-6 pb-4 max-w-lg mx-auto space-y-6">
       {/* === BASEBALL CARD === */}
-      <div className="rounded-2xl overflow-hidden shadow-xl">
+      <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>
         {/* Card body */}
         <div className="bg-primary p-5 space-y-5">
           {/* ROW 1 — Identity */}
@@ -170,10 +251,12 @@ const CardPage = () => {
         </div>
 
         {/* ROW 3 — Level badge */}
-        <div className="bg-accent flex items-center justify-center py-3">
-          <span className="text-accent-foreground font-extrabold text-lg tracking-widest">
-            ⚾ {LEVEL_LABELS[level] ?? "ROOKIE"}
+        <div className={`flex items-center justify-center py-3 gap-2 transition-colors duration-500 ${LEVEL_STYLES[level]}`}>
+          {level === "all_star" && <Star className="h-5 w-5 fill-current" />}
+          <span className="font-extrabold text-lg tracking-widest">
+            ⚾ {LEVEL_LABELS[level]}
           </span>
+          {level === "all_star" && <Star className="h-5 w-5 fill-current" />}
         </div>
       </div>
 
