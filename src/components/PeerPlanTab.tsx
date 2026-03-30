@@ -200,7 +200,8 @@ const PeerPlanTab = ({ participantId, participantUserId }: PeerPlanTabProps) => 
   // Delete step
   const deleteStepMutation = useMutation({
     mutationFn: async (stepId: string) => {
-      // Audit first (step still exists)
+      const { error } = await supabase.from("plan_action_steps").delete().eq("id", stepId);
+      if (error) throw error;
       await supabase.from("audit_log").insert({
         user_id: user!.id,
         action: "edit_plan_step",
@@ -208,8 +209,6 @@ const PeerPlanTab = ({ participantId, participantUserId }: PeerPlanTabProps) => 
         target_id: stepId,
         metadata: { action: "removed" },
       });
-      const { error } = await supabase.from("plan_action_steps").delete().eq("id", stepId);
-      if (error) throw error;
     },
     onSuccess: () => {
       setDeleteTarget(null);
