@@ -48,6 +48,7 @@ import AdminPeerReviewPage from "@/pages/AdminPeerReviewPage";
 import AdminPeerDetailPage from "@/pages/AdminPeerDetailPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
+import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
 
 const queryClient = new QueryClient();
 
@@ -114,6 +115,7 @@ const App = () => (
               <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
               <Route path="/admin/participants/:participantId/checkins" element={<AdminParticipantCheckInsPage />} />
               <Route path="/admin/participants/:participantId/payments" element={<AdminPaymentsPage />} />
+              <Route path="/admin/participants/:participantId/notes" element={<AdminParticipantNotesPage />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/audit" element={<AdminAudit />} />
             </Route>

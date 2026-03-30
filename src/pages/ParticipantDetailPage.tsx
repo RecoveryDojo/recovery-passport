@@ -14,6 +14,7 @@ import AssessmentsTab from "@/components/AssessmentsTab";
 import PeerPlanTab from "@/components/PeerPlanTab";
 import CheckInsTab from "@/components/CheckInsTab";
 import PaymentLedger from "@/components/PaymentLedger";
+import NotesTab from "@/components/NotesTab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -198,7 +199,7 @@ const ParticipantDetailPage = () => {
           <PaymentLedger participantId={participantId!} />
         </TabsContent>
         <TabsContent value="notes" className="mt-4">
-          <PlaceholderTab label="Notes" />
+          <NotesTab participantId={participantId!} participantName={fullName} viewerRole="peer" />
         </TabsContent>
       </Tabs>
     </div>
