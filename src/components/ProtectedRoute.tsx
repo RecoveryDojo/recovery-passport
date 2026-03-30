@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PeerPendingApproval from "./PeerPendingApproval";
@@ -12,6 +12,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedRouteProps) => {
   const { user, role, approvalStatus, loading } = useAuth();
+  const location = useLocation();
   const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">(
     skipProfileCheck ? "complete" : "loading"
   );
@@ -76,9 +77,12 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     return <Navigate to={home} replace />;
   }
 
-  // Peer specialist: profile incomplete → setup page (always, regardless of skipProfileCheck)
+  // Peer specialist: profile incomplete → setup page (unless already there)
   if (role === "peer_specialist" && peerProfileCheck === "incomplete") {
-    return <Navigate to="/peers/setup" replace />;
+    if (location.pathname !== "/peers/setup") {
+      return <Navigate to="/peers/setup" replace />;
+    }
+    // Already on setup page — allow through
   }
 
   // Peer specialist: profile complete but not approved → pending/rejected/suspended screen
