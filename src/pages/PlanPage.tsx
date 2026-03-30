@@ -284,6 +284,31 @@ const PlanPage = () => {
           </div>
         </div>
       )}
+
+      {/* Ready for Next Step */}
+      {(() => {
+        const isPhase3OrLater = sortedPhases.some(
+          (p) => p.is_active && (p.phase === "ninety_day" || p.phase === "six_month")
+        );
+        const daysInProgram = profile?.created_at
+          ? differenceInDays(new Date(), new Date(profile.created_at))
+          : 0;
+        if (!isPhase3OrLater && daysInProgram < 30) return null;
+
+        return (
+          <div className="bg-accent/10 border border-accent/30 rounded-xl p-4 space-y-2">
+            <h3 className="font-semibold text-foreground">Ready for Your Next Step?</h3>
+            <p className="text-sm text-muted-foreground">
+              Explore placement options and connect with your peer specialist about transitioning.
+            </p>
+            <Link to="/resources">
+              <Button variant="outline" size="sm" className="border-accent text-accent">
+                Browse placements <ArrowRight className="h-3 w-3 ml-1" />
+              </Button>
+            </Link>
+          </div>
+        );
+      })()}
     </div>
   );
 };
