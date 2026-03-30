@@ -176,22 +176,32 @@ const CardPage = () => {
     },
   });
 
-  // Latest RC score
-  const { data: rcScore } = useQuery({
-    queryKey: ["rc-score", profile?.id],
+  // Latest 2 RC scores (for trend) — include unconfirmed
+  const { data: assessmentData } = useQuery({
+    queryKey: ["rc-scores", profile?.id],
     enabled: !!profile?.id,
     queryFn: async () => {
       const { data } = await supabase
         .from("assessment_sessions")
-        .select("overall_score")
+        .select("overall_score, confirmed_by")
         .eq("participant_id", profile!.id)
-        .not("confirmed_by", "is", null)
         .order("completed_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data?.overall_score ?? null;
+        .limit(2);
+      return data ?? [];
     },
   });
+
+  const latestAssessment = assessmentData?.[0] ?? null;
+  const prevAssessment = assessmentData?.[1] ?? null;
+  const rcScore = latestAssessment?.overall_score ?? null;
+  const isUnconfirmed = latestAssessment ? !latestAssessment.confirmed_by : false;
+  const trendIndicator = (() => {
+    if (!latestAssessment || !prevAssessment) return null;
+    const diff = (latestAssessment.overall_score ?? 0) - (prevAssessment.overall_score ?? 0);
+    if (diff > 0) return "↑";
+    if (diff < 0) return "↓";
+    return "→";
+  })();
 
   // Recent earned milestones (last 3)
   const { data: recentMilestones } = useQuery({
@@ -307,10 +317,12 @@ const CardPage = () => {
                 label="Milestones"
               />
             </Link>
-            <StatBox
-              value={rcScore != null ? String(rcScore) : "—"}
-              label="RC Score"
-            />
+            <Link to="/assessment/take" className="cursor-pointer">
+              <StatBox
+                value={rcScore != null ? `${rcScore}${trendIndicator ? ` ${trendIndicator}` : ""}` : "—"}
+                label={isUnconfirmed ? "RC (pending)" : "RC Score"}
+              />
+            </Link>
           </div>
         </div>
 
@@ -341,6 +353,44 @@ const CardPage = () => {
       <Button asChild variant="outline" className="w-full">
         <Link to="/profile">My Profile</Link>
       </Button>
+
+      {/* Assessment section */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-3">
+          Recovery Capital Assessment
+        </h2>
+        {assessmentData && assessmentData.length > 0 ? (
+          <div className="bg-card rounded-lg px-4 py-3 border border-border space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Your Score</span>
+              <div className="flex items-center gap-1">
+                <span className="text-lg font-bold text-foreground">{rcScore}</span>
+                {trendIndicator && (
+                  <span className={`text-sm font-bold ${trendIndicator === "↑" ? "text-green-600" : trendIndicator === "↓" ? "text-red-500" : "text-muted-foreground"}`}>
+                    {trendIndicator}
+                  </span>
+                )}
+                {isUnconfirmed && (
+                  <span className="text-xs text-muted-foreground ml-1">(unconfirmed)</span>
+                )}
+              </div>
+            </div>
+            <Link
+              to="/assessment/take"
+              className="inline-flex items-center gap-1 text-sm text-accent font-medium hover:underline"
+            >
+              Retake Assessment <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+        ) : (
+          <div className="bg-accent/10 border border-accent/30 rounded-xl px-4 py-4 space-y-2">
+            <p className="text-sm text-foreground font-medium">No assessment yet.</p>
+            <Button asChild size="sm" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Link to="/assessment/take">Start Your Recovery Capital Assessment →</Link>
+            </Button>
+          </div>
+        )}
+      </div>
 
       {/* Milestones preview */}
       <div>
