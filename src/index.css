@@ -85,3 +85,10 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
+
+@media print {
+  .print\:hidden { display: none !important; }
+  .print\:block { display: block !important; }
+  body { background: white !important; }
+  nav, header, aside { display: none !important; }
+}
