@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { differenceInDays } from "date-fns";
 import { ArrowLeft, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Database } from "@/integrations/supabase/types";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssessmentsTab from "@/components/AssessmentsTab";
@@ -30,6 +31,8 @@ const LEVEL_STYLES: Record<CardLevel, string> = {
 
 const ParticipantDetailPage = () => {
   const { participantId } = useParams<{ participantId: string }>();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get("tab") || "milestones";
   const { user } = useAuth();
 
   const { data: profile, isLoading } = useQuery({
@@ -149,8 +152,15 @@ const ParticipantDetailPage = () => {
         </div>
       </div>
 
+      {/* New Check-In Button */}
+      <Link to={`/caseload/${participantId}/checkin`} className="block">
+        <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-base py-5">
+          + New Check-In
+        </Button>
+      </Link>
+
       {/* Tabs */}
-      <Tabs defaultValue="milestones" className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className="w-full grid grid-cols-5 h-auto">
           <TabsTrigger value="milestones" className="text-xs py-2">Milestones</TabsTrigger>
           <TabsTrigger value="assessments" className="text-xs py-2">Assessments</TabsTrigger>
