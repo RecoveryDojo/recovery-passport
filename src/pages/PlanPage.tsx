@@ -103,7 +103,7 @@ const PlanPage = () => {
   const progressPct = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   const toggleStepMutation = useMutation({
-    mutationFn: async ({ stepId, completed }: { stepId: string; completed: boolean }) => {
+    mutationFn: async ({ stepId, completed, phaseId }: { stepId: string; completed: boolean; phaseId: string }) => {
       const { error } = await supabase
         .from("plan_action_steps")
         .update({
@@ -113,35 +113,43 @@ const PlanPage = () => {
         .eq("id", stepId);
       if (error) throw error;
 
-      // After toggling, check phase unlock
-      if (completed && currentPhase) {
-        const phaseSteps = allSteps?.filter((s) => s.phase_id === currentPhase.id) ?? [];
-        const newCompletedCount = phaseSteps.filter((s) =>
-          s.id === stepId ? completed : s.is_completed
-        ).length;
-        const pct = phaseSteps.length > 0 ? newCompletedCount / phaseSteps.length : 0;
+      // After toggling ON, re-fetch fresh step counts from DB to check phase unlock
+      if (completed) {
+        const { data: freshSteps } = await supabase
+          .from("plan_action_steps")
+          .select("id, is_completed")
+          .eq("phase_id", phaseId);
 
-        if (pct >= 0.8) {
-          const currentIdx = PHASE_ORDER.indexOf(currentPhase.phase as any);
-          const nextPhase = sortedPhases[currentIdx + 1];
-          if (nextPhase && !nextPhase.is_active) {
-            await supabase
-              .from("plan_phases")
-              .update({ is_active: true })
-              .eq("id", nextPhase.id);
+        if (freshSteps) {
+          const total = freshSteps.length;
+          const done = freshSteps.filter((s) => s.is_completed).length;
+          const pct = total > 0 ? done / total : 0;
 
-            // Notification
-            if (profile?.user_id) {
-              await supabase.from("notifications").insert({
-                user_id: profile.user_id,
-                type: "plan_updated" as const,
-                title: "New Phase Unlocked!",
-                body: `${PHASE_LABELS[nextPhase.phase]} phase is now available in your recovery plan!`,
-                link: "/plan",
-              });
+          if (pct >= 0.8) {
+            // Find the phase we're in and the next one
+            const phase = sortedPhases.find((p) => p.id === phaseId);
+            if (phase) {
+              const currentIdx = PHASE_ORDER.indexOf(phase.phase as any);
+              const nextPhase = sortedPhases[currentIdx + 1];
+              if (nextPhase && !nextPhase.is_active) {
+                await supabase
+                  .from("plan_phases")
+                  .update({ is_active: true })
+                  .eq("id", nextPhase.id);
+
+                if (profile?.user_id) {
+                  await supabase.from("notifications").insert({
+                    user_id: profile.user_id,
+                    type: "plan_updated" as const,
+                    title: "New Phase Unlocked!",
+                    body: `${PHASE_LABELS[nextPhase.phase]} phase is now available in your recovery plan!`,
+                    link: "/plan",
+                  });
+                }
+
+                toast.success(`${PHASE_LABELS[nextPhase.phase]} phase is now unlocked! 🎉`);
+              }
             }
-
-            toast.success(`${PHASE_LABELS[nextPhase.phase]} phase is now unlocked! 🎉`);
           }
         }
       }
