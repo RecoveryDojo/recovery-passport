@@ -354,6 +354,44 @@ const CardPage = () => {
         <Link to="/profile">My Profile</Link>
       </Button>
 
+      {/* Assessment section */}
+      <div>
+        <h2 className="text-lg font-semibold text-foreground mb-3">
+          Recovery Capital Assessment
+        </h2>
+        {assessmentData && assessmentData.length > 0 ? (
+          <div className="bg-card rounded-lg px-4 py-3 border border-border space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Your Score</span>
+              <div className="flex items-center gap-1">
+                <span className="text-lg font-bold text-foreground">{rcScore}</span>
+                {trendIndicator && (
+                  <span className={`text-sm font-bold ${trendIndicator === "↑" ? "text-green-600" : trendIndicator === "↓" ? "text-red-500" : "text-muted-foreground"}`}>
+                    {trendIndicator}
+                  </span>
+                )}
+                {isUnconfirmed && (
+                  <span className="text-xs text-muted-foreground ml-1">(unconfirmed)</span>
+                )}
+              </div>
+            </div>
+            <Link
+              to="/assessment/take"
+              className="inline-flex items-center gap-1 text-sm text-accent font-medium hover:underline"
+            >
+              Retake Assessment <ChevronRight className="h-4 w-4" />
+            </Link>
+          </div>
+        ) : (
+          <div className="bg-accent/10 border border-accent/30 rounded-xl px-4 py-4 space-y-2">
+            <p className="text-sm text-foreground font-medium">No assessment yet.</p>
+            <Button asChild size="sm" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Link to="/assessment/take">Start Your Recovery Capital Assessment →</Link>
+            </Button>
+          </div>
+        )}
+      </div>
+
       {/* Milestones preview */}
       <div>
         <h2 className="text-lg font-semibold text-foreground mb-3">
