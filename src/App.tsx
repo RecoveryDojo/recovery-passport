@@ -44,6 +44,7 @@ import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import ParticipantPaymentsPage from "@/pages/ParticipantPaymentsPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
+import PublicPassportPage from "@/pages/PublicPassportPage";
 
 const queryClient = new QueryClient();
 
