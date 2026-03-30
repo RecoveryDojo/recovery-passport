@@ -38,6 +38,8 @@ import CaseloadPage from "@/pages/CaseloadPage";
 import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
 import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
+import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
+import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 
 const queryClient = new QueryClient();
@@ -76,6 +78,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/peers/browse" element={<PeerBrowsePage />} />
               <Route path="/checkins" element={<ParticipantCheckInsPage />} />
+              <Route path="/agreements" element={<ParticipantAgreementsPage />} />
             </Route>
 
             {/* Peer Specialist */}
@@ -96,6 +99,7 @@ const App = () => (
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
+              <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
               <Route path="/admin/participants/:participantId/checkins" element={<AdminParticipantCheckInsPage />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/audit" element={<AdminAudit />} />
