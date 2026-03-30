@@ -108,6 +108,33 @@ const CardPage = () => {
     };
   }, [profile?.id, user?.id, queryClient]);
 
+  // Realtime subscription on participant_milestones for new unlocks
+  useEffect(() => {
+    if (!profile?.id) return;
+
+    const channel = supabase
+      .channel(`milestones-${profile.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "participant_milestones",
+          filter: `participant_id=eq.${profile.id}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["milestone-stats", profile.id] });
+          queryClient.invalidateQueries({ queryKey: ["recent-milestones", profile.id] });
+          queryClient.invalidateQueries({ queryKey: ["unread-milestone-notifications", user?.id] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile?.id, user?.id, queryClient]);
+
   // Track previous level
   useEffect(() => {
     if (profile?.card_level) {
