@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
-import { Check, X, Clock, AlertCircle, ChevronRight } from "lucide-react";
+import { Check, X, Clock, AlertCircle, ChevronRight, Heart } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
