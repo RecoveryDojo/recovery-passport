@@ -24,10 +24,12 @@ import AssessmentTakePage from "@/pages/AssessmentTakePage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
-  ResourcesPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import ResourceDirectoryPage from "@/pages/ResourceDirectoryPage";
+import ResourceDetailPage from "@/pages/ResourceDetailPage";
+import AdminResourcesPage from "@/pages/AdminResourcesPage";
 import CrpsPage from "@/pages/CrpsPage";
 import SelfCarePage from "@/pages/SelfCarePage";
 import PassportConfigPage from "@/pages/PassportConfigPage";
@@ -82,7 +84,8 @@ const App = () => (
               <Route path="/milestones" element={<ParticipantMilestonesPage />} />
               <Route path="/assessment/take" element={<AssessmentTakePage />} />
               <Route path="/plan" element={<PlanPage />} />
-              <Route path="/resources" element={<ResourcesPage />} />
+              <Route path="/resources" element={<ResourceDirectoryPage />} />
+              <Route path="/resources/:resourceId" element={<ResourceDetailPage />} />
               <Route path="/passport" element={<PassportConfigPage />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/peers/browse" element={<PeerBrowsePage />} />
@@ -113,6 +116,7 @@ const App = () => (
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
               <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
+              <Route path="/admin/content/resources" element={<AdminResourcesPage />} />
               <Route path="/admin/participants/:participantId/checkins" element={<AdminParticipantCheckInsPage />} />
               <Route path="/admin/participants/:participantId/payments" element={<AdminPaymentsPage />} />
               <Route path="/admin/participants/:participantId/notes" element={<AdminParticipantNotesPage />} />
