@@ -14,6 +14,8 @@ import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
 import UpdatePassword from "@/pages/UpdatePassword";
 import ProfileSetup from "@/pages/ProfileSetup";
+import PeerProfileSetup from "@/pages/PeerProfileSetup";
+import PeerProfile from "@/pages/PeerProfile";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import {
