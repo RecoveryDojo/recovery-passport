@@ -66,11 +66,10 @@ const PlanPage = () => {
   });
 
   const { data: allSteps } = useQuery({
-    queryKey: ["plan-steps", plan?.id],
-    enabled: !!plan?.id,
+    queryKey: ["plan-steps", plan?.id, phases?.map((p) => p.id)],
+    enabled: !!plan?.id && !!phases && phases.length > 0,
     queryFn: async () => {
-      const phaseIds = phases?.map((p) => p.id) ?? [];
-      if (phaseIds.length === 0) return [];
+      const phaseIds = phases!.map((p) => p.id);
       const { data, error } = await supabase
         .from("plan_action_steps")
         .select("id, phase_id, description, is_completed, completed_at, sort_order")
