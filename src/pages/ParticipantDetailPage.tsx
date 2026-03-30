@@ -199,7 +199,7 @@ const ParticipantDetailPage = () => {
           <PaymentLedger participantId={participantId!} />
         </TabsContent>
         <TabsContent value="notes" className="mt-4">
-          <PlaceholderTab label="Notes" />
+          <NotesTab participantId={participantId!} participantName={fullName} viewerRole="peer" />
         </TabsContent>
       </Tabs>
     </div>
