@@ -24,9 +24,10 @@ import AssessmentTakePage from "@/pages/AssessmentTakePage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
-  AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
+  AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import ResourceDirectoryPage from "@/pages/ResourceDirectoryPage";
 import ResourceDetailPage from "@/pages/ResourceDetailPage";
 import AdminResourcesPage from "@/pages/AdminResourcesPage";
@@ -106,7 +107,7 @@ const App = () => (
 
             {/* Admin */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout /></ProtectedRoute>}>
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin" element={<AdminDashboardPage />} />
               <Route path="/admin/participants" element={<AdminParticipants />} />
               <Route path="/admin/peers" element={<AdminPeersPage />} />
               <Route path="/admin/peers/review" element={<AdminPeerReviewPage />} />
