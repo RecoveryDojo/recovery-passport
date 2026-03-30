@@ -296,6 +296,11 @@ const AdminPeersPage = () => {
                     )}
                     {peer.approval_status === "approved" && (
                       <>
+                        <Link to={`/admin/peers/${peer.user_id}`}>
+                          <Button size="sm" variant="outline">
+                            <GraduationCap className="h-4 w-4 mr-1" /> CRPS
+                          </Button>
+                        </Link>
                         <Button
                           size="sm"
                           variant="outline"
