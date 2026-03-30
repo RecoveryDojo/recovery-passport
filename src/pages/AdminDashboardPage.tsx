@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Users, Target, BarChart2, ArrowRightLeft, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import DemoControls from "@/components/DemoControls";
 
 interface MetricCard {
   label: string;
