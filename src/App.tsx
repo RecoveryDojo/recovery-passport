@@ -25,8 +25,8 @@ import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   AdminParticipants, AdminContent,
-  IntakePage,
 } from "@/pages/placeholder-pages";
+import IntakePage from "@/pages/IntakePage";
 import AdminAuditPage from "@/pages/AdminAuditPage";
 import AdminReportsPage from "@/pages/AdminReportsPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
