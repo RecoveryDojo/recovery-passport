@@ -63,6 +63,7 @@ const App = () => (
               <Route path="/caseload" element={<CaseloadPage />} />
               <Route path="/checkins" element={<CheckInsPage />} />
               <Route path="/crps" element={<CrpsPage />} />
+              <Route path="/peers/profile" element={<PeerProfile />} />
             </Route>
 
             {/* Admin */}
