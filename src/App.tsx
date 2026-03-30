@@ -38,6 +38,8 @@ import CaseloadPage from "@/pages/CaseloadPage";
 import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
 import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
+import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
+import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 
 const queryClient = new QueryClient();
