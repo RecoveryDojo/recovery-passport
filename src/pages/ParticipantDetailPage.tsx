@@ -203,6 +203,14 @@ const ParticipantDetailPage = () => {
         <TabsContent value="notes" className="mt-4">
           <NotesTab participantId={participantId!} participantName={fullName} viewerRole="peer" />
         </TabsContent>
+        <TabsContent value="transitions" className="mt-4">
+          <TransitionsTab
+            participantId={participantId!}
+            participantName={fullName}
+            participantUserId={profile.user_id}
+            viewerRole="peer"
+          />
+        </TabsContent>
       </Tabs>
     </div>
   );
