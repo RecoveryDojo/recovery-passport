@@ -190,7 +190,7 @@ const ParticipantDetailPage = () => {
           />
         </TabsContent>
         <TabsContent value="checkins" className="mt-4">
-          <PlaceholderTab label="Check-Ins" />
+          <CheckInsTab participantId={participantId!} viewerRole="peer" />
         </TabsContent>
         <TabsContent value="notes" className="mt-4">
           <PlaceholderTab label="Notes" />
