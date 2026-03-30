@@ -317,10 +317,12 @@ const CardPage = () => {
                 label="Milestones"
               />
             </Link>
-            <StatBox
-              value={rcScore != null ? String(rcScore) : "—"}
-              label="RC Score"
-            />
+            <Link to="/assessment/take" className="cursor-pointer">
+              <StatBox
+                value={rcScore != null ? `${rcScore}${trendIndicator ? ` ${trendIndicator}` : ""}` : "—"}
+                label={isUnconfirmed ? "RC (pending)" : "RC Score"}
+              />
+            </Link>
           </div>
         </div>
 
