@@ -181,6 +181,9 @@ const AdminPeersPage = () => {
       <div>
         <h1 className="text-xl font-bold text-foreground">Peer Specialists</h1>
         <p className="text-sm text-muted-foreground">Manage peer specialist applications and profiles</p>
+        <Link to="/admin/peers/review">
+          <Button variant="outline" size="sm" className="mt-2">Supervisor Review Feed</Button>
+        </Link>
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
