@@ -282,8 +282,13 @@ const Profile = () => {
         {saving ? "Saving..." : "Save Changes"}
       </Button>
 
-      <div className="text-center pt-4">
-        <button className="text-sm text-destructive hover:underline" onClick={() => toast.info("Account deletion coming soon")}>
+      <Button variant="outline" onClick={signOut} className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10">
+        <LogOut className="h-4 w-4" />
+        Sign Out
+      </Button>
+
+      <div className="text-center pt-2">
+        <button className="text-sm text-destructive/60 hover:underline" onClick={() => toast.info("Account deletion coming soon")}>
           Delete My Account
         </button>
       </div>
