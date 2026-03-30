@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, Ban, RotateCcw, Eye, AlertTriangle, Users } from "lucide-react";
+import { CheckCircle, XCircle, Ban, RotateCcw, Eye, AlertTriangle, Users, GraduationCap } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type PeerProfile = Tables<"peer_specialist_profiles">;
@@ -180,6 +181,9 @@ const AdminPeersPage = () => {
       <div>
         <h1 className="text-xl font-bold text-foreground">Peer Specialists</h1>
         <p className="text-sm text-muted-foreground">Manage peer specialist applications and profiles</p>
+        <Link to="/admin/peers/review">
+          <Button variant="outline" size="sm" className="mt-2">Supervisor Review Feed</Button>
+        </Link>
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -292,6 +296,11 @@ const AdminPeersPage = () => {
                     )}
                     {peer.approval_status === "approved" && (
                       <>
+                        <Link to={`/admin/peers/${peer.user_id}`}>
+                          <Button size="sm" variant="outline">
+                            <GraduationCap className="h-4 w-4 mr-1" /> CRPS
+                          </Button>
+                        </Link>
                         <Button
                           size="sm"
                           variant="outline"
