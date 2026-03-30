@@ -27,6 +27,7 @@ import {
   IntakePage,
 } from "@/pages/placeholder-pages";
 import AdminPeersPage from "@/pages/AdminPeersPage";
+import AdminMilestonesPage from "@/pages/AdminMilestonesPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
 import CaseloadPage from "@/pages/CaseloadPage";
 import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
