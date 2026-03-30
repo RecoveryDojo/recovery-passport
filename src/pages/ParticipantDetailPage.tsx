@@ -10,6 +10,7 @@ import { ArrowLeft, Star } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssessmentsTab from "@/components/AssessmentsTab";
+import PeerPlanTab from "@/components/PeerPlanTab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -172,7 +173,10 @@ const ParticipantDetailPage = () => {
           />
         </TabsContent>
         <TabsContent value="plan" className="mt-4">
-          <PlaceholderTab label="Plan" />
+          <PeerPlanTab
+            participantId={participantId!}
+            participantUserId={profile.user_id}
+          />
         </TabsContent>
         <TabsContent value="checkins" className="mt-4">
           <PlaceholderTab label="Check-Ins" />
