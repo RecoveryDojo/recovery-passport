@@ -62,6 +62,7 @@ const App = () => (
             {/* Participant */}
             <Route element={<ProtectedRoute allowedRoles={["participant"]}><ParticipantLayout /></ProtectedRoute>}>
               <Route path="/card" element={<CardPage />} />
+              <Route path="/milestones" element={<ParticipantMilestonesPage />} />
               <Route path="/plan" element={<PlanPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/passport" element={<PassportPage />} />
