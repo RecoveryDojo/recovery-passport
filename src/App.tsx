@@ -24,9 +24,10 @@ import AssessmentTakePage from "@/pages/AssessmentTakePage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
-  AdminParticipants, AdminContent, AdminReports, AdminAudit,
+  AdminParticipants, AdminContent, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import AdminReportsPage from "@/pages/AdminReportsPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 
 import ResourceDirectoryPage from "@/pages/ResourceDirectoryPage";
