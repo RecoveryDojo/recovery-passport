@@ -7,14 +7,17 @@ import PeerPendingApproval from "./PeerPendingApproval";
 interface ProtectedRouteProps {
   children: React.ReactNode;
   allowedRoles: ("participant" | "peer_specialist" | "admin")[];
+  skipProfileCheck?: boolean;
 }
 
-const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedRouteProps) => {
   const { user, role, approvalStatus, loading } = useAuth();
-  const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
+  const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">(
+    skipProfileCheck ? "complete" : "loading"
+  );
 
   useEffect(() => {
-    if (!user || !role || role !== "participant") {
+    if (skipProfileCheck || !user || !role || role !== "participant") {
       setProfileCheck("complete");
       return;
     }
@@ -27,7 +30,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
       .then(({ data }) => {
         setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
       });
-  }, [user, role]);
+  }, [user, role, skipProfileCheck]);
 
   if (loading || profileCheck === "loading") {
     return (
@@ -53,7 +56,7 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
     return <PeerPendingApproval />;
   }
 
-  if (role === "participant" && profileCheck === "incomplete") {
+  if (!skipProfileCheck && role === "participant" && profileCheck === "incomplete") {
     return <Navigate to="/profile/setup" replace />;
   }
 

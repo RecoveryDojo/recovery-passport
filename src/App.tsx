@@ -41,7 +41,7 @@ const App = () => (
             <Route path="/intake" element={<IntakePage />} />
 
             {/* Profile setup (participant only, before layout) */}
-            <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]}><ProfileSetup /></ProtectedRoute>} />
+            <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]} skipProfileCheck><ProfileSetup /></ProtectedRoute>} />
 
             {/* Role redirect */}
             <Route path="/" element={<RoleRedirect />} />
