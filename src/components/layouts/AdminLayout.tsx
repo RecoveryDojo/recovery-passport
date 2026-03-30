@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
-import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock, Menu } from "lucide-react";
+import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
 import {
   Sidebar,
   SidebarContent,
