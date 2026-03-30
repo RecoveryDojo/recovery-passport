@@ -13,6 +13,7 @@ import MilestonesTab from "@/components/MilestonesTab";
 import AssessmentsTab from "@/components/AssessmentsTab";
 import PeerPlanTab from "@/components/PeerPlanTab";
 import CheckInsTab from "@/components/CheckInsTab";
+import PaymentLedger from "@/components/PaymentLedger";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
