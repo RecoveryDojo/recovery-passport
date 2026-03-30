@@ -16,7 +16,7 @@ export const CheckInsPage = () => <PlaceholderPage title="Check-Ins" />;
 export const CrpsPage = () => <PlaceholderPage title="My Progress" />;
 export const AdminDashboard = () => <PlaceholderPage title="Dashboard" />;
 export const AdminParticipants = () => <PlaceholderPage title="Participants" />;
-export const AdminPeers = () => <PlaceholderPage title="Peer Specialists" />;
+
 export const AdminContent = () => <PlaceholderPage title="Content" />;
 export const AdminReports = () => <PlaceholderPage title="Reports" />;
 export const AdminAudit = () => <PlaceholderPage title="Audit Log" />;

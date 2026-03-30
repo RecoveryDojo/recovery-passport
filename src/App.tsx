@@ -21,9 +21,11 @@ import NotFound from "@/pages/NotFound";
 import {
   CardPage, PlanPage, ResourcesPage, PassportPage,
   CaseloadPage, CheckInsPage, CrpsPage,
-  AdminDashboard, AdminParticipants, AdminPeers, AdminContent, AdminReports, AdminAudit,
+  AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import AdminPeersPage from "@/pages/AdminPeersPage";
+import AdminProgramsPage from "@/pages/AdminProgramsPage";
 
 const queryClient = new QueryClient();
 
@@ -70,8 +72,9 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout /></ProtectedRoute>}>
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/participants" element={<AdminParticipants />} />
-              <Route path="/admin/peers" element={<AdminPeers />} />
+              <Route path="/admin/peers" element={<AdminPeersPage />} />
               <Route path="/admin/content" element={<AdminContent />} />
+              <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/audit" element={<AdminAudit />} />
             </Route>
