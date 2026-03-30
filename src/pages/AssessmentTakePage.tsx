@@ -270,3 +270,4 @@ const AssessmentTakePage = () => {
 };
 
 export default AssessmentTakePage;
+
