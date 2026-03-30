@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Link } from "react-router-dom";
-import { Lock, Check, ChevronRight } from "lucide-react";
+import { Lock, Check, ChevronRight, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { differenceInDays } from "date-fns";
 
 const PHASE_ORDER = ["thirty_day", "sixty_day", "ninety_day", "six_month"] as const;
 const PHASE_LABELS: Record<string, string> = {
