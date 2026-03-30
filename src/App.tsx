@@ -22,12 +22,14 @@ import CardPage from "@/pages/CardPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   PlanPage, ResourcesPage, PassportPage,
-  CaseloadPage, CheckInsPage, CrpsPage,
+  CheckInsPage, CrpsPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
 import AdminPeersPage from "@/pages/AdminPeersPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
+import CaseloadPage from "@/pages/CaseloadPage";
+import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 
 const queryClient = new QueryClient();
@@ -68,6 +70,7 @@ const App = () => (
             {/* Peer Specialist */}
             <Route element={<ProtectedRoute allowedRoles={["peer_specialist"]}><PeerLayout /></ProtectedRoute>}>
               <Route path="/caseload" element={<CaseloadPage />} />
+              <Route path="/caseload/:participantId" element={<ParticipantDetailPage />} />
               <Route path="/checkins" element={<CheckInsPage />} />
               <Route path="/crps" element={<CrpsPage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />

@@ -11,7 +11,7 @@ export const CardPage = () => <PlaceholderPage title="My Card" />;
 export const PlanPage = () => <PlaceholderPage title="My Plan" />;
 export const ResourcesPage = () => <PlaceholderPage title="Resources" />;
 export const PassportPage = () => <PlaceholderPage title="Passport" />;
-export const CaseloadPage = () => <PlaceholderPage title="Caseload" />;
+export const CaseloadPage = () => <PlaceholderPage title="Caseload" />; // kept for reference but unused
 export const CheckInsPage = () => <PlaceholderPage title="Check-Ins" />;
 export const CrpsPage = () => <PlaceholderPage title="My Progress" />;
 export const AdminDashboard = () => <PlaceholderPage title="Dashboard" />;
