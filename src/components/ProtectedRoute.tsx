@@ -52,7 +52,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     }
   }, [user, role, skipProfileCheck]);
 
-  if (loading || profileCheck === "loading") {
+  if (loading || profileCheck === "loading" || peerProfileCheck === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
