@@ -367,6 +367,15 @@ const CaseloadPage = () => {
                       : "No check-ins yet"}
                   </span>
                 </div>
+
+                {/* Overdue check-in banner */}
+                {(daysSinceCheckin === null || daysSinceCheckin > 7) && (
+                  <div className="mt-2 bg-red-100 text-red-700 text-xs font-medium rounded-md px-3 py-1.5">
+                    {daysSinceCheckin === null
+                      ? "Check-in overdue — no check-ins recorded"
+                      : `Check-in overdue — ${daysSinceCheckin} days since last check-in`}
+                  </div>
+                )}
               </Link>
             );
           })

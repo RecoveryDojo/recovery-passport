@@ -25,10 +25,12 @@ import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   ResourcesPage, PassportPage,
-  CheckInsPage, CrpsPage,
+  CrpsPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import ParticipantCheckInsPage from "@/pages/ParticipantCheckInsPage";
+import AdminParticipantCheckInsPage from "@/pages/AdminParticipantCheckInsPage";
 import AdminPeersPage from "@/pages/AdminPeersPage";
 import AdminMilestonesPage from "@/pages/AdminMilestonesPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
@@ -73,6 +75,7 @@ const App = () => (
               <Route path="/passport" element={<PassportPage />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/peers/browse" element={<PeerBrowsePage />} />
+              <Route path="/checkins" element={<ParticipantCheckInsPage />} />
             </Route>
 
             {/* Peer Specialist */}
@@ -80,7 +83,6 @@ const App = () => (
               <Route path="/caseload" element={<CaseloadPage />} />
               <Route path="/caseload/:participantId" element={<ParticipantDetailPage />} />
               <Route path="/caseload/:participantId/checkin" element={<CheckInFormPage />} />
-              <Route path="/checkins" element={<CheckInsPage />} />
               <Route path="/crps" element={<CrpsPage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
             </Route>
@@ -94,6 +96,7 @@ const App = () => (
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
+              <Route path="/admin/participants/:participantId/checkins" element={<AdminParticipantCheckInsPage />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/audit" element={<AdminAudit />} />
             </Route>

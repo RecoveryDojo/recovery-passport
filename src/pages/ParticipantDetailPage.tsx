@@ -12,6 +12,7 @@ import type { Database } from "@/integrations/supabase/types";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssessmentsTab from "@/components/AssessmentsTab";
 import PeerPlanTab from "@/components/PeerPlanTab";
+import CheckInsTab from "@/components/CheckInsTab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -189,7 +190,7 @@ const ParticipantDetailPage = () => {
           />
         </TabsContent>
         <TabsContent value="checkins" className="mt-4">
-          <PlaceholderTab label="Check-Ins" />
+          <CheckInsTab participantId={participantId!} viewerRole="peer" />
         </TabsContent>
         <TabsContent value="notes" className="mt-4">
           <PlaceholderTab label="Notes" />
