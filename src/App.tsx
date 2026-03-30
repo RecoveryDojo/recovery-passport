@@ -26,6 +26,7 @@ import {
 } from "@/pages/placeholder-pages";
 import AdminPeersPage from "@/pages/AdminPeersPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
+import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+          <DevRoleSwitcher />
           <Routes>
             {/* Public */}
             <Route path="/login" element={<Login />} />
