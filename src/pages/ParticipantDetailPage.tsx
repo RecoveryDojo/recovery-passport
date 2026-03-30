@@ -30,6 +30,8 @@ const LEVEL_STYLES: Record<CardLevel, string> = {
 
 const ParticipantDetailPage = () => {
   const { participantId } = useParams<{ participantId: string }>();
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get("tab") || "milestones";
   const { user } = useAuth();
 
   const { data: profile, isLoading } = useQuery({
