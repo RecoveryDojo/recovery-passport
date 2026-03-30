@@ -32,6 +32,7 @@ import AdminMilestonesPage from "@/pages/AdminMilestonesPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
 import CaseloadPage from "@/pages/CaseloadPage";
 import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
+import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 
 const queryClient = new QueryClient();
@@ -87,6 +88,7 @@ const App = () => (
               <Route path="/admin/content" element={<AdminContent />} />
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
+              <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
               <Route path="/admin/reports" element={<AdminReports />} />
               <Route path="/admin/audit" element={<AdminAudit />} />
             </Route>
