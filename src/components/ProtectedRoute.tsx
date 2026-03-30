@@ -72,6 +72,11 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     return <Navigate to={home} replace />;
   }
 
+  // Peer specialist: profile incomplete → setup page
+  if (!skipProfileCheck && role === "peer_specialist" && peerProfileCheck === "incomplete") {
+    return <Navigate to="/peers/setup" replace />;
+  }
+
   if (role === "peer_specialist" && approvalStatus !== "approved") {
     return <PeerPendingApproval />;
   }
