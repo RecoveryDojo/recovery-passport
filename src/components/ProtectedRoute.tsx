@@ -21,12 +21,18 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
 
   useEffect(() => {
     if (skipProfileCheck || !user || !role) {
+      if (!user || !role) {
+        // Keep loading until auth resolves — don't prematurely mark complete
+        return;
+      }
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
       return;
     }
 
     if (role === "participant") {
+      setProfileCheck("loading");
+      setPeerProfileCheck("complete");
       supabase
         .from("participant_profiles")
         .select("first_name")
@@ -35,8 +41,9 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
         .then(({ data }) => {
           setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
         });
-      setPeerProfileCheck("complete");
     } else if (role === "peer_specialist") {
+      setPeerProfileCheck("loading");
+      setProfileCheck("complete");
       supabase
         .from("peer_specialist_profiles")
         .select("first_name, bio")
@@ -45,7 +52,6 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
         .then(({ data }) => {
           setPeerProfileCheck(!data || !data.first_name || !data.bio ? "incomplete" : "complete");
         });
-      setProfileCheck("complete");
     } else {
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
