@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { Users, CheckCircle, BarChart3, UserCircle, Bell } from "lucide-react";
@@ -17,7 +18,7 @@ const PeerLayout = () => {
   const location = useLocation();
   const { user } = useAuth();
 
-  const { data: unreadCount = 0 } = useQuery({
+  const { data: unreadCount = 0, refetch } = useQuery({
     queryKey: ["unread-notifications", user?.id],
     queryFn: async () => {
       const { count } = await supabase
@@ -28,8 +29,21 @@ const PeerLayout = () => {
       return count ?? 0;
     },
     enabled: !!user,
-    refetchInterval: 30000,
   });
+
+  useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel("peer-notifications")
+      .on("postgres_changes", {
+        event: "INSERT",
+        schema: "public",
+        table: "notifications",
+        filter: `user_id=eq.${user.id}`,
+      }, () => refetch())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, refetch]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
