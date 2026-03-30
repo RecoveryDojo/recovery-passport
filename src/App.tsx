@@ -47,6 +47,7 @@ import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
 import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
 import AdminMiPromptsPage from "@/pages/AdminMiPromptsPage";
+import AdminProtocolsPage from "@/pages/AdminProtocolsPage";
 import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import ParticipantPaymentsPage from "@/pages/ParticipantPaymentsPage";
