@@ -200,6 +200,24 @@ const CaseloadPage = () => {
     onError: () => toast.error("Failed to decline request"),
   });
 
+  // Self-care check banner
+  const { data: lastSelfCare } = useQuery({
+    queryKey: ["last-self-care", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("self_care_checks")
+        .select("created_at")
+        .eq("peer_specialist_id", user!.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
+
+  const selfCareOverdue = !lastSelfCare || differenceInDays(new Date(), new Date(lastSelfCare.created_at)) > 14;
+
   const isLoading = loadingRequests || loadingCaseload;
 
   if (isLoading) {
