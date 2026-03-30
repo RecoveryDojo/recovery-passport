@@ -105,6 +105,14 @@ const AssessmentsTab = ({ participantId, participantName }: Props) => {
         .eq("id", sessionId);
       if (error) throw error;
 
+      // Audit: confirm_assessment
+      await supabase.from("audit_log").insert({
+        user_id: user!.id,
+        action: "confirm_assessment",
+        target_type: "assessment_sessions",
+        target_id: sessionId,
+      });
+
       // Notify participant
       if (participantUserId) {
         const peerName = peerProfile

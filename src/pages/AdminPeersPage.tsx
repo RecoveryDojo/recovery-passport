@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +35,7 @@ const AdminPeersPage = () => {
   const [rejectionReason, setRejectionReason] = useState("");
   const [reviewPeer, setReviewPeer] = useState<PeerProfile | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch all peer specialist profiles
@@ -94,6 +96,21 @@ const AdminPeersPage = () => {
         .update(updates)
         .eq("user_id", userId);
       if (error) throw error;
+
+      // Audit: peer approval action
+      const actionMap: Record<string, string> = {
+        approved: "approve_peer",
+        rejected: "reject_peer",
+        suspended: "suspend_peer",
+        pending: "reinstate_peer",
+      };
+      await supabase.from("audit_log").insert({
+        user_id: user?.id,
+        action: actionMap[status] || `peer_status_${status}`,
+        target_type: "peer_specialist_profiles",
+        target_id: userId,
+        metadata: { new_status: status, ...(reason ? { reason } : {}) },
+      });
 
       // Create notification for the peer
       if (status === "approved") {

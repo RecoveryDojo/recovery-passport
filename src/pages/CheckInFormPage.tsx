@@ -151,6 +151,15 @@ const CheckInFormPage = () => {
         p_peer_id: user.id,
       });
 
+      // Audit: submit_checkin
+      await supabase.from("audit_log").insert({
+        user_id: user.id,
+        action: "submit_checkin",
+        target_type: "weekly_checkins",
+        target_id: checkin.id,
+        metadata: { participant_id: participantId, mood_status: mood },
+      });
+
       // 3. Notification for participant
       if (profile?.user_id) {
         await supabase.from("notifications").insert({

@@ -136,7 +136,16 @@ const AssessmentTakePage = () => {
         });
       }
 
-      // 5. Notify assigned peer
+      // 5. Audit: submit_assessment
+      await supabase.from("audit_log").insert({
+        user_id: user!.id,
+        action: "submit_assessment",
+        target_type: "assessment_sessions",
+        target_id: session.id,
+        metadata: { overall_score: parseFloat(overallScore), participant_id: profile.id },
+      });
+
+      // 6. Notify assigned peer
       if (profile.assigned_peer_id) {
         const name = [profile.first_name, profile.last_name].filter(Boolean).join(" ") || "A participant";
         await supabase.from("notifications").insert({

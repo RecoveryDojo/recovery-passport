@@ -49,6 +49,15 @@ const ParticipantDetailPage = () => {
         .eq("id", participantId!)
         .single();
       if (error) throw error;
+
+      // Audit: view_profile
+      supabase.from("audit_log").insert({
+        user_id: user!.id,
+        action: "view_profile",
+        target_type: "participant_profiles",
+        target_id: participantId!,
+      }).then(() => {});
+
       return data;
     },
   });
