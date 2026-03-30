@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import RoleRedirect from "@/components/RoleRedirect";
+import LandingPage from "@/pages/LandingPage";
 import ParticipantLayout from "@/components/layouts/ParticipantLayout";
 import PeerLayout from "@/components/layouts/PeerLayout";
 import AdminLayout from "@/components/layouts/AdminLayout";
