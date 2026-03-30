@@ -22,12 +22,14 @@ import CardPage from "@/pages/CardPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   PlanPage, ResourcesPage, PassportPage,
-  CaseloadPage, CheckInsPage, CrpsPage,
+  CheckInsPage, CrpsPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
 import AdminPeersPage from "@/pages/AdminPeersPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
+import CaseloadPage from "@/pages/CaseloadPage";
+import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 
 const queryClient = new QueryClient();
