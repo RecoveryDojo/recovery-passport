@@ -35,6 +35,7 @@ const AdminPeersPage = () => {
   const [rejectionReason, setRejectionReason] = useState("");
   const [reviewPeer, setReviewPeer] = useState<PeerProfile | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch all peer specialist profiles
