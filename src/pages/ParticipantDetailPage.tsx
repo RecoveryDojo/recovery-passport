@@ -13,6 +13,7 @@ import MilestonesTab from "@/components/MilestonesTab";
 import AssessmentsTab from "@/components/AssessmentsTab";
 import PeerPlanTab from "@/components/PeerPlanTab";
 import CheckInsTab from "@/components/CheckInsTab";
+import PaymentLedger from "@/components/PaymentLedger";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -162,11 +163,12 @@ const ParticipantDetailPage = () => {
 
       {/* Tabs */}
       <Tabs defaultValue={defaultTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-5 h-auto">
+        <TabsList className="w-full grid grid-cols-6 h-auto">
           <TabsTrigger value="milestones" className="text-xs py-2">Milestones</TabsTrigger>
           <TabsTrigger value="assessments" className="text-xs py-2">Assessments</TabsTrigger>
           <TabsTrigger value="plan" className="text-xs py-2">Plan</TabsTrigger>
           <TabsTrigger value="checkins" className="text-xs py-2">Check-Ins</TabsTrigger>
+          <TabsTrigger value="payments" className="text-xs py-2">Payments</TabsTrigger>
           <TabsTrigger value="notes" className="text-xs py-2">Notes</TabsTrigger>
         </TabsList>
 
@@ -191,6 +193,9 @@ const ParticipantDetailPage = () => {
         </TabsContent>
         <TabsContent value="checkins" className="mt-4">
           <CheckInsTab participantId={participantId!} viewerRole="peer" />
+        </TabsContent>
+        <TabsContent value="payments" className="mt-4">
+          <PaymentLedger participantId={participantId!} />
         </TabsContent>
         <TabsContent value="notes" className="mt-4">
           <PlaceholderTab label="Notes" />
