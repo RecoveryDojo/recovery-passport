@@ -248,6 +248,23 @@ const CardPage = () => {
 
   return (
     <div className="px-4 pt-6 pb-4 max-w-lg mx-auto space-y-6">
+      {/* Unread milestone banner */}
+      {!bannerDismissed && (unreadMilestoneCount ?? 0) > 0 && (
+        <Link
+          to="/milestones"
+          className="flex items-center justify-between bg-accent/10 border border-accent/30 rounded-xl px-4 py-3"
+        >
+          <span className="text-sm font-medium text-foreground">
+            🎉 You have {unreadMilestoneCount} new milestone{unreadMilestoneCount !== 1 ? "s" : ""}!
+          </span>
+          <button
+            onClick={(e) => { e.preventDefault(); setBannerDismissed(true); }}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </Link>
+      )}
       {/* === BASEBALL CARD === */}
       <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>
         {/* Card body */}
