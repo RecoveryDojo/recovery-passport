@@ -24,9 +24,10 @@ import AssessmentTakePage from "@/pages/AssessmentTakePage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
-  AdminParticipants, AdminContent, AdminReports, AdminAudit,
+  AdminParticipants, AdminContent, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import AdminReportsPage from "@/pages/AdminReportsPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 
 import ResourceDirectoryPage from "@/pages/ResourceDirectoryPage";
@@ -122,7 +123,7 @@ const App = () => (
               <Route path="/admin/participants/:participantId/checkins" element={<AdminParticipantCheckInsPage />} />
               <Route path="/admin/participants/:participantId/payments" element={<AdminPaymentsPage />} />
               <Route path="/admin/participants/:participantId/notes" element={<AdminParticipantNotesPage />} />
-              <Route path="/admin/reports" element={<AdminReports />} />
+              <Route path="/admin/reports" element={<AdminReportsPage />} />
               <Route path="/admin/audit" element={<AdminAudit />} />
             </Route>
 
