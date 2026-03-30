@@ -48,6 +48,7 @@ import AdminPeerReviewPage from "@/pages/AdminPeerReviewPage";
 import AdminPeerDetailPage from "@/pages/AdminPeerDetailPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
+import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
 
 const queryClient = new QueryClient();
 
