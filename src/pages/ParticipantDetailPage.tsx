@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { differenceInDays } from "date-fns";
 import { ArrowLeft, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Database } from "@/integrations/supabase/types";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssessmentsTab from "@/components/AssessmentsTab";
