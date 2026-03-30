@@ -518,6 +518,8 @@ const AdminDashboardPage = () => {
           )}
         </CardContent>
       </Card>
+
+      <DemoControls />
     </div>
   );
 };
