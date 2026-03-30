@@ -81,6 +81,7 @@ const App = () => (
               <Route path="/peers/browse" element={<PeerBrowsePage />} />
               <Route path="/checkins" element={<ParticipantCheckInsPage />} />
               <Route path="/agreements" element={<ParticipantAgreementsPage />} />
+              <Route path="/payments" element={<ParticipantPaymentsPage />} />
             </Route>
 
             {/* Peer Specialist */}
