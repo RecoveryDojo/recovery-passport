@@ -81,7 +81,7 @@ const ParticipantMilestonesPage = () => {
         {definitions?.map((def) => {
           const unlock = earnedMap.get(def.id);
           if (unlock) {
-            const peerProfile = unlock.peer_specialist_profiles as any;
+            const peerProfile = unlock._peer;
             const verifierName = peerProfile
               ? `${peerProfile.first_name} ${peerProfile.last_name}`.trim()
               : "Staff";
