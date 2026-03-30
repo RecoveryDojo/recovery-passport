@@ -131,7 +131,24 @@ const AdminPeerDetailPage = () => {
     onError: () => toast.error("Failed to verify"),
   });
 
+  // Last self-care date (admin only sees date, not details)
+  const { data: lastSelfCareDate } = useQuery({
+    queryKey: ["admin-peer-selfcare", peerId],
+    enabled: !!peerId,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("self_care_checks")
+        .select("created_at")
+        .eq("peer_specialist_id", peerId!)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data?.created_at ?? null;
+    },
+  });
+
   const peerName = peerProfile ? `${peerProfile.first_name} ${peerProfile.last_name}` : "Peer Specialist";
+  const selfCareOverdue = !lastSelfCareDate || differenceInDays(new Date(), new Date(lastSelfCareDate)) > 14;
   const tools = competencies.filter((c) => c.type === "tool");
   const skills = competencies.filter((c) => c.type === "skill");
   const demonstratedItems = competencies.filter((c) => c.status === "demonstrated");
