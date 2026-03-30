@@ -56,7 +56,7 @@ const CaseloadPage = () => {
           participant_id,
           requested_at,
           participant_profiles!peer_requests_participant_id_fkey (
-            id, first_name, last_name, photo_url, recovery_start_date, pathway,
+            id, user_id, first_name, last_name, photo_url, recovery_start_date, pathway,
             programs:current_program_id ( name )
           )
         `)
