@@ -151,8 +151,15 @@ const ParticipantDetailPage = () => {
         </div>
       </div>
 
+      {/* New Check-In Button */}
+      <Link to={`/caseload/${participantId}/checkin`} className="block">
+        <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-base py-5">
+          + New Check-In
+        </Button>
+      </Link>
+
       {/* Tabs */}
-      <Tabs defaultValue="milestones" className="w-full">
+      <Tabs defaultValue={defaultTab} className="w-full">
         <TabsList className="w-full grid grid-cols-5 h-auto">
           <TabsTrigger value="milestones" className="text-xs py-2">Milestones</TabsTrigger>
           <TabsTrigger value="assessments" className="text-xs py-2">Assessments</TabsTrigger>
