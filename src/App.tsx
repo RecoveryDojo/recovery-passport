@@ -78,6 +78,7 @@ const App = () => (
               <Route path="/profile" element={<Profile />} />
               <Route path="/peers/browse" element={<PeerBrowsePage />} />
               <Route path="/checkins" element={<ParticipantCheckInsPage />} />
+              <Route path="/agreements" element={<ParticipantAgreementsPage />} />
             </Route>
 
             {/* Peer Specialist */}
