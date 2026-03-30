@@ -158,7 +158,7 @@ const CaseloadPage = () => {
         ? `${peerProfile.first_name} ${peerProfile.last_name}`.trim()
         : "Your peer specialist";
       await supabase.from("notifications").insert({
-        user_id: pp.user_id ?? (await supabase.from("participant_profiles").select("user_id").eq("id", pp.id).single()).data?.user_id ?? "",
+        user_id: pp.user_id,
         type: "peer_request_approved" as any,
         title: "Peer request approved",
         body: `Your peer specialist request was approved. ${peerName} is now your peer specialist.`,
