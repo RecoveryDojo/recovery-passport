@@ -1,5 +1,7 @@
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import PeerPendingApproval from "./PeerPendingApproval";
 
 interface ProtectedRouteProps {
@@ -9,8 +11,25 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
   const { user, role, approvalStatus, loading } = useAuth();
+  const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
 
-  if (loading) {
+  useEffect(() => {
+    if (!user || !role || role !== "participant") {
+      setProfileCheck("complete");
+      return;
+    }
+
+    supabase
+      .from("participant_profiles")
+      .select("first_name")
+      .eq("user_id", user.id)
+      .single()
+      .then(({ data }) => {
+        setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
+      });
+  }, [user, role]);
+
+  if (loading || profileCheck === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -32,6 +51,10 @@ const ProtectedRoute = ({ children, allowedRoles }: ProtectedRouteProps) => {
 
   if (role === "peer_specialist" && approvalStatus !== "approved") {
     return <PeerPendingApproval />;
+  }
+
+  if (role === "participant" && profileCheck === "incomplete") {
+    return <Navigate to="/profile/setup" replace />;
   }
 
   return <>{children}</>;
