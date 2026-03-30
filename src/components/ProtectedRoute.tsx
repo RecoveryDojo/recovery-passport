@@ -21,7 +21,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
       return;
     }
 
-    if (skipProfileCheck && role !== "peer_specialist") {
+    if (skipProfileCheck && role === "peer_specialist") {
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
       return;
@@ -34,8 +34,12 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
         .from("participant_profiles")
         .select("first_name")
         .eq("user_id", user.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) {
+            setProfileCheck("incomplete");
+            return;
+          }
           setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
         });
     } else if (role === "peer_specialist") {
@@ -45,8 +49,12 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
         .from("peer_specialist_profiles")
         .select("first_name, bio")
         .eq("user_id", user.id)
-        .single()
-        .then(({ data }) => {
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (error) {
+            setPeerProfileCheck("incomplete");
+            return;
+          }
           setPeerProfileCheck(!data || !data.first_name || !data.bio ? "incomplete" : "complete");
         });
     } else {
