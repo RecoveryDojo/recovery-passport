@@ -15,9 +15,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
   const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">(
     skipProfileCheck ? "complete" : "loading"
   );
-  const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">(
-    skipProfileCheck ? "complete" : "loading"
-  );
+  const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
 
   useEffect(() => {
     if (skipProfileCheck || !user || !role) {
