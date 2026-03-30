@@ -96,6 +96,7 @@ const App = () => (
               <Route path="/caseload/:participantId" element={<ParticipantDetailPage />} />
               <Route path="/caseload/:participantId/checkin" element={<CheckInFormPage />} />
               <Route path="/crps" element={<CrpsPage />} />
+              <Route path="/crps/selfcare" element={<SelfCarePage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
             </Route>
 

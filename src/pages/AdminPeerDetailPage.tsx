@@ -163,6 +163,11 @@ const AdminPeerDetailPage = () => {
         <div>
           <h1 className="text-xl font-bold text-foreground">{peerName}</h1>
           <p className="text-sm text-muted-foreground">CRPS Certification Progress</p>
+          <p className={`text-xs mt-0.5 ${selfCareOverdue ? "text-amber-600 font-medium" : "text-muted-foreground"}`}>
+            {selfCareOverdue
+              ? "⚠️ Self-care check overdue (14+ days)"
+              : `Self-care check: last completed ${format(new Date(lastSelfCareDate!), "MMM d, yyyy")}`}
+          </p>
         </div>
       </div>
 
