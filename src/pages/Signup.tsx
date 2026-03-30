@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,9 @@ const Signup = () => {
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [selectedRole, setSelectedRole] = useState<"participant" | "peer_specialist">("participant");
+  const [searchParams] = useSearchParams();
+  const initialRole = searchParams.get("role") === "peer_specialist" ? "peer_specialist" : "participant";
+  const [selectedRole, setSelectedRole] = useState<"participant" | "peer_specialist">(initialRole);
   const [submitting, setSubmitting] = useState(false);
 
   if (!loading && user && role) {
