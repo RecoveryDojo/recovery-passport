@@ -44,6 +44,7 @@ import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import ParticipantPaymentsPage from "@/pages/ParticipantPaymentsPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
+import PublicPassportPage from "@/pages/PublicPassportPage";
 
 const queryClient = new QueryClient();
 
@@ -62,6 +63,7 @@ const App = () => (
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<UpdatePassword />} />
             <Route path="/intake" element={<IntakePage />} />
+            <Route path="/passport/:token" element={<PublicPassportPage />} />
 
             {/* Profile setup (participant only, before layout) */}
             <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]}><ProfileSetup /></ProtectedRoute>} />
