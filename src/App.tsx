@@ -29,6 +29,7 @@ import {
   IntakePage,
 } from "@/pages/placeholder-pages";
 import CrpsPage from "@/pages/CrpsPage";
+import SelfCarePage from "@/pages/SelfCarePage";
 import PassportConfigPage from "@/pages/PassportConfigPage";
 import ParticipantCheckInsPage from "@/pages/ParticipantCheckInsPage";
 import AdminParticipantCheckInsPage from "@/pages/AdminParticipantCheckInsPage";
