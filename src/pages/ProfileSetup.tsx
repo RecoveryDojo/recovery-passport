@@ -94,7 +94,7 @@ const ProfileSetup = () => {
           emergency_contact_phone: emergencyPhone.trim() || null,
           recovery_start_date: format(recoveryStartDate!, "yyyy-MM-dd"),
           substances: substances.length > 0 ? substances : null,
-          pathway: pathway || null,
+          pathway: (pathway as Database["public"]["Enums"]["recovery_pathway"]) || null,
           current_program_id: programId || null,
         })
         .eq("user_id", user.id);
