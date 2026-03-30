@@ -20,10 +20,10 @@ import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import CardPage from "@/pages/CardPage";
 import ParticipantMilestonesPage from "@/pages/ParticipantMilestonesPage";
-import AssessmentTakePage from "@/pages/AssessmentTakePage";
+import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
-  PlanPage, ResourcesPage, PassportPage,
+  ResourcesPage, PassportPage,
   CheckInsPage, CrpsPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
