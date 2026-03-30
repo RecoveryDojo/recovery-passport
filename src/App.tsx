@@ -83,7 +83,7 @@ const App = () => (
             <Route path="/peers/setup" element={<ProtectedRoute allowedRoles={["peer_specialist"]}><PeerProfileSetup /></ProtectedRoute>} />
 
             {/* Role redirect */}
-            <Route path="/" element={<RoleRedirect />} />
+            <Route path="/" element={<LandingPage />} />
 
             {/* Participant */}
             <Route element={<ProtectedRoute allowedRoles={["participant"]}><ParticipantLayout /></ProtectedRoute>}>
