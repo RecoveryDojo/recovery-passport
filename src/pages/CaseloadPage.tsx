@@ -183,11 +183,9 @@ const CaseloadPage = () => {
         .eq("id", request.id);
       if (error) throw error;
 
-      // We need the user_id to notify; get it from the participant profile
-      const userId = pp.user_id ?? (await supabase.from("participant_profiles").select("user_id").eq("id", pp.id).single()).data?.user_id;
-      if (userId) {
+      if (pp.user_id) {
         await supabase.from("notifications").insert({
-          user_id: userId,
+          user_id: pp.user_id,
           type: "peer_request_declined" as any,
           title: "Peer request declined",
           body: "Your peer specialist request was declined. You can request a different peer specialist.",
