@@ -18,8 +18,9 @@ import PeerProfileSetup from "@/pages/PeerProfileSetup";
 import PeerProfile from "@/pages/PeerProfile";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
+import CardPage from "@/pages/CardPage";
 import {
-  CardPage, PlanPage, ResourcesPage, PassportPage,
+  PlanPage, ResourcesPage, PassportPage,
   CaseloadPage, CheckInsPage, CrpsPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
