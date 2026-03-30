@@ -77,9 +77,12 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     return <Navigate to={home} replace />;
   }
 
-  // Peer specialist: profile incomplete → setup page (always, regardless of skipProfileCheck)
+  // Peer specialist: profile incomplete → setup page (unless already there)
   if (role === "peer_specialist" && peerProfileCheck === "incomplete") {
-    return <Navigate to="/peers/setup" replace />;
+    if (location.pathname !== "/peers/setup") {
+      return <Navigate to="/peers/setup" replace />;
+    }
+    // Already on setup page — allow through
   }
 
   // Peer specialist: profile complete but not approved → pending/rejected/suspended screen
