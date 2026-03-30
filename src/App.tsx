@@ -40,6 +40,8 @@ import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
 import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
 import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
+import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
+import ParticipantPaymentsPage from "@/pages/ParticipantPaymentsPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 
 const queryClient = new QueryClient();
