@@ -12,6 +12,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedRouteProps) => {
   const { user, role, approvalStatus, loading } = useAuth();
+  const location = useLocation();
   const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">(
     skipProfileCheck ? "complete" : "loading"
   );
