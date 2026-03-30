@@ -8,6 +8,7 @@ import { Check, ChevronRight, Star } from "lucide-react";
 import { differenceInDays } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { X } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
