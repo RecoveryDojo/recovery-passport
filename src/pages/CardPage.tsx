@@ -260,6 +260,19 @@ const CardPage = () => {
         </div>
       </div>
 
+      {/* No peer assigned banner */}
+      {!profile.assigned_peer_id && (
+        <div className="bg-accent/10 border border-accent/30 rounded-xl px-4 py-4 space-y-2">
+          <p className="text-sm text-foreground font-medium">
+            You don't have a peer specialist yet.
+          </p>
+          <p className="text-xs text-muted-foreground">Choose someone to walk with you.</p>
+          <Button asChild size="sm" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+            <Link to="/peers/browse">Browse Peer Specialists →</Link>
+          </Button>
+        </div>
+      )}
+
       {/* Below card */}
       <Button asChild variant="outline" className="w-full">
         <Link to="/profile">My Profile</Link>

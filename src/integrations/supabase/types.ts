@@ -1593,7 +1593,7 @@ export type Database = {
         | "general"
       payment_type: "payment" | "charge" | "adjustment"
       peer_approval_status: "pending" | "approved" | "rejected" | "suspended"
-      peer_request_status: "pending" | "approved" | "declined"
+      peer_request_status: "pending" | "approved" | "declined" | "cancelled"
       plan_phase: "thirty_day" | "sixty_day" | "ninety_day" | "six_month"
       program_type:
         | "respite_house"
@@ -1801,7 +1801,7 @@ export const Constants = {
       ],
       payment_type: ["payment", "charge", "adjustment"],
       peer_approval_status: ["pending", "approved", "rejected", "suspended"],
-      peer_request_status: ["pending", "approved", "declined"],
+      peer_request_status: ["pending", "approved", "declined", "cancelled"],
       plan_phase: ["thirty_day", "sixty_day", "ninety_day", "six_month"],
       program_type: [
         "respite_house",

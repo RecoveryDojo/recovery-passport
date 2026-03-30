@@ -19,6 +19,7 @@ import PeerProfile from "@/pages/PeerProfile";
 import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import CardPage from "@/pages/CardPage";
+import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   PlanPage, ResourcesPage, PassportPage,
   CaseloadPage, CheckInsPage, CrpsPage,
@@ -61,6 +62,7 @@ const App = () => (
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/passport" element={<PassportPage />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/peers/browse" element={<PeerBrowsePage />} />
             </Route>
 
             {/* Peer Specialist */}
