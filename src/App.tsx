@@ -25,10 +25,12 @@ import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
   ResourcesPage, PassportPage,
-  CheckInsPage, CrpsPage,
+  CrpsPage,
   AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import ParticipantCheckInsPage from "@/pages/ParticipantCheckInsPage";
+import AdminParticipantCheckInsPage from "@/pages/AdminParticipantCheckInsPage";
 import AdminPeersPage from "@/pages/AdminPeersPage";
 import AdminMilestonesPage from "@/pages/AdminMilestonesPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
