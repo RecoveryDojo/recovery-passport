@@ -13,6 +13,8 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import ForgotPassword from "@/pages/ForgotPassword";
 import UpdatePassword from "@/pages/UpdatePassword";
+import ProfileSetup from "@/pages/ProfileSetup";
+import Profile from "@/pages/Profile";
 import NotFound from "@/pages/NotFound";
 import {
   CardPage, PlanPage, ResourcesPage, PassportPage,
@@ -38,6 +40,9 @@ const App = () => (
             <Route path="/reset-password" element={<UpdatePassword />} />
             <Route path="/intake" element={<IntakePage />} />
 
+            {/* Profile setup (participant only, before layout) */}
+            <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]} skipProfileCheck><ProfileSetup /></ProtectedRoute>} />
+
             {/* Role redirect */}
             <Route path="/" element={<RoleRedirect />} />
 
@@ -47,6 +52,7 @@ const App = () => (
               <Route path="/plan" element={<PlanPage />} />
               <Route path="/resources" element={<ResourcesPage />} />
               <Route path="/passport" element={<PassportPage />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
 
             {/* Peer Specialist */}
