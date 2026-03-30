@@ -21,9 +21,11 @@ import NotFound from "@/pages/NotFound";
 import {
   CardPage, PlanPage, ResourcesPage, PassportPage,
   CaseloadPage, CheckInsPage, CrpsPage,
-  AdminDashboard, AdminParticipants, AdminPeers, AdminContent, AdminReports, AdminAudit,
+  AdminDashboard, AdminParticipants, AdminContent, AdminReports, AdminAudit,
   IntakePage,
 } from "@/pages/placeholder-pages";
+import AdminPeersPage from "@/pages/AdminPeersPage";
+import AdminProgramsPage from "@/pages/AdminProgramsPage";
 
 const queryClient = new QueryClient();
 
