@@ -91,6 +91,7 @@ const App = () => (
 
             {/* Role redirect */}
             <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<LandingPage />} />
 
             {/* Participant */}
             <Route element={<ProtectedRoute allowedRoles={["participant"]}><ParticipantLayout /></ProtectedRoute>}>
