@@ -58,6 +58,7 @@ import AdminPeerDetailPage from "@/pages/AdminPeerDetailPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
 import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
+import AssessmentHistoryPage from "@/pages/AssessmentHistoryPage";
 import OfflineBanner from "@/components/OfflineBanner";
 import InstallPrompt from "@/components/InstallPrompt";
 
@@ -94,6 +95,7 @@ const App = () => (
               <Route path="/card" element={<CardPage />} />
               <Route path="/milestones" element={<ParticipantMilestonesPage />} />
               <Route path="/assessment/take" element={<AssessmentTakePage />} />
+              <Route path="/assessment/history" element={<AssessmentHistoryPage />} />
               <Route path="/plan" element={<PlanPage />} />
               <Route path="/resources" element={<ResourceDirectoryPage />} />
               <Route path="/resources/:resourceId" element={<ResourceDetailPage />} />
