@@ -59,6 +59,7 @@ import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
 import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
 import AssessmentHistoryPage from "@/pages/AssessmentHistoryPage";
+import NotificationsPage from "@/pages/NotificationsPage";
 import OfflineBanner from "@/components/OfflineBanner";
 import InstallPrompt from "@/components/InstallPrompt";
 
