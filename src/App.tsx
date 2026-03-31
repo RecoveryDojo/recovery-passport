@@ -83,6 +83,7 @@ const App = () => (
             <Route path="/reset-password" element={<UpdatePassword />} />
             <Route path="/intake" element={<IntakePage />} />
             <Route path="/passport/:token" element={<PublicPassportPage />} />
+            <Route path="/notifications" element={<ProtectedRoute allowedRoles={["participant","peer_specialist","admin"]}><NotificationsPage /></ProtectedRoute>} />
 
             {/* Profile setup (participant only, before layout) */}
             <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]}><ProfileSetup /></ProtectedRoute>} />
