@@ -111,14 +111,12 @@ const CheckInFormPage = () => {
 
     if (!current) return;
 
-    const updates: Record<string, number> = {
+    const updates = {
       usage_count: (current.usage_count ?? 0) + 1,
+      ...(type === "helpful"
+        ? { helpful_count: (current.helpful_count ?? 0) + 1 }
+        : { not_relevant_count: (current.not_relevant_count ?? 0) + 1 }),
     };
-    if (type === "helpful") {
-      updates.helpful_count = (current.helpful_count ?? 0) + 1;
-    } else {
-      updates.not_relevant_count = (current.not_relevant_count ?? 0) + 1;
-    }
 
     await supabase.from("mi_prompts").update(updates).eq("id", miPrompt.id);
   };

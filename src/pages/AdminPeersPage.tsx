@@ -81,15 +81,11 @@ const AdminPeersPage = () => {
       status: ApprovalStatus;
       reason?: string;
     }) => {
-      const updates: Record<string, unknown> = {
+      const updates = {
         approval_status: status,
+        ...(status === "rejected" && reason ? { rejection_reason: reason } : {}),
+        ...(status === "approved" ? { approved_at: new Date().toISOString() } : {}),
       };
-      if (status === "rejected" && reason) {
-        updates.rejection_reason = reason;
-      }
-      if (status === "approved") {
-        updates.approved_at = new Date().toISOString();
-      }
 
       const { error } = await supabase
         .from("peer_specialist_profiles")

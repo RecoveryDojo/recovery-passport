@@ -134,28 +134,23 @@ const PeerProfile = () => {
           JSON.stringify([...specialties].sort()) !==
           JSON.stringify([...originalSpecialties].sort());
 
-        const updateData: Record<string, unknown> = {
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          is_available: isAvailable,
-        };
-
-        if (newPhotoUrl !== photoUrl) {
-          updateData.photo_url = newPhotoUrl;
-        }
-
-        // If bio or specialties changed, store as pending_edits
-        if (bioChanged || specialtiesChanged) {
-          const pendingEdits: Record<string, unknown> = {};
-          if (bioChanged) pendingEdits.bio = bio.trim();
-          if (specialtiesChanged)
-            pendingEdits.specialties = specialties.length > 0 ? specialties : null;
-          updateData.pending_edits = pendingEdits;
-        }
+        // Build pending_edits if bio or specialties changed
+        const pendingEdits = (bioChanged || specialtiesChanged)
+          ? {
+              ...(bioChanged ? { bio: bio.trim() } : {}),
+              ...(specialtiesChanged ? { specialties: specialties.length > 0 ? specialties : null } : {}),
+            }
+          : undefined;
 
         const { error } = await supabase
           .from("peer_specialist_profiles")
-          .update(updateData)
+          .update({
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+            is_available: isAvailable,
+            ...(newPhotoUrl !== photoUrl ? { photo_url: newPhotoUrl } : {}),
+            ...(pendingEdits ? { pending_edits: pendingEdits } : {}),
+          })
           .eq("user_id", user.id);
 
         if (error) throw error;
