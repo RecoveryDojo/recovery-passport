@@ -439,6 +439,167 @@ const AdminPeersPage = () => {
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Detail Review Sheet */}
+      <Sheet open={!!detailPeer} onOpenChange={() => setDetailPeer(null)}>
+        <SheetContent className="overflow-y-auto sm:max-w-md">
+          <SheetHeader>
+            <SheetTitle>Profile Review</SheetTitle>
+          </SheetHeader>
+          {detailPeer && (
+            <div className="mt-6 space-y-6">
+              {/* Avatar & Name */}
+              <div className="flex flex-col items-center text-center">
+                <Avatar className="h-24 w-24 mb-3">
+                  <AvatarImage src={detailPeer.photo_url || undefined} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-2xl font-bold">
+                    {getInitials(detailPeer)}
+                  </AvatarFallback>
+                </Avatar>
+                <h2 className="text-lg font-bold text-foreground">
+                  {detailPeer.first_name} {detailPeer.last_name}
+                </h2>
+                <Badge className={`mt-1 text-xs ${statusBadgeVariant(detailPeer.approval_status as ApprovalStatus)}`}>
+                  {detailPeer.approval_status}
+                </Badge>
+              </div>
+
+              {/* Bio */}
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Bio</p>
+                <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">
+                  {detailPeer.bio || <span className="italic text-muted-foreground">No bio provided</span>}
+                </p>
+              </div>
+
+              {/* Specialties */}
+              <div>
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Specialties</p>
+                {detailPeer.specialties && detailPeer.specialties.length > 0 ? (
+                  <div className="flex gap-1 flex-wrap">
+                    {detailPeer.specialties.map((s) => (
+                      <Badge key={s} variant="secondary" className="text-xs">{s}</Badge>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm italic text-muted-foreground">None listed</p>
+                )}
+              </div>
+
+              {/* Details grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+                    <UserCheck className="h-3 w-3" /> Availability
+                  </p>
+                  <p className="text-sm text-foreground">
+                    {detailPeer.is_available ? "Available" : "Not Available"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+                    <Shield className="h-3 w-3" /> CRPS Status
+                  </p>
+                  <p className="text-sm text-foreground capitalize">
+                    {detailPeer.crps_status?.replace("_", " ")}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+                    <Users className="h-3 w-3" /> Caseload
+                  </p>
+                  <p className="text-sm text-foreground">
+                    {caseloadCounts?.[detailPeer.user_id] || 0} participants
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1 flex items-center gap-1">
+                    <Calendar className="h-3 w-3" /> Applied
+                  </p>
+                  <p className="text-sm text-foreground">
+                    {new Date(detailPeer.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Rejection reason if rejected */}
+              {detailPeer.approval_status === "rejected" && detailPeer.rejection_reason && (
+                <div>
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">Rejection Reason</p>
+                  <p className="text-sm text-destructive bg-destructive/10 rounded-lg p-3">
+                    {detailPeer.rejection_reason}
+                  </p>
+                </div>
+              )}
+
+              {/* Actions for pending peers */}
+              {detailPeer.approval_status === "pending" && (
+                <div className="flex gap-2 pt-2 border-t border-border">
+                  <Button
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => {
+                      updateStatus.mutate({ userId: detailPeer.user_id, status: "approved" });
+                      setDetailPeer(null);
+                    }}
+                    disabled={updateStatus.isPending}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-1" /> Approve
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => {
+                      setRejectPeerId(detailPeer.user_id);
+                      setDetailPeer(null);
+                    }}
+                    disabled={updateStatus.isPending}
+                  >
+                    <XCircle className="h-4 w-4 mr-1" /> Reject
+                  </Button>
+                </div>
+              )}
+
+              {/* Actions for approved peers */}
+              {detailPeer.approval_status === "approved" && (
+                <div className="flex gap-2 pt-2 border-t border-border">
+                  <Link to={`/admin/peers/${detailPeer.user_id}`} className="flex-1">
+                    <Button variant="outline" className="w-full">
+                      <GraduationCap className="h-4 w-4 mr-1" /> View CRPS
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    className="flex-1 text-destructive border-destructive/30 hover:bg-destructive/10"
+                    onClick={() => {
+                      updateStatus.mutate({ userId: detailPeer.user_id, status: "suspended" });
+                      setDetailPeer(null);
+                    }}
+                    disabled={updateStatus.isPending}
+                  >
+                    <Ban className="h-4 w-4 mr-1" /> Suspend
+                  </Button>
+                </div>
+              )}
+
+              {/* Actions for suspended peers */}
+              {detailPeer.approval_status === "suspended" && (
+                <div className="pt-2 border-t border-border">
+                  <Button
+                    className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    onClick={() => {
+                      updateStatus.mutate({ userId: detailPeer.user_id, status: "approved" });
+                      setDetailPeer(null);
+                    }}
+                    disabled={updateStatus.isPending}
+                  >
+                    <RotateCcw className="h-4 w-4 mr-1" /> Reinstate
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
