@@ -248,20 +248,28 @@ const AdminPeersPage = () => {
               )}
               <CardContent className="p-4">
                 <div className="flex items-start gap-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={peer.photo_url || undefined} />
-                    <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
-                      {getInitials(peer)}
-                    </AvatarFallback>
-                  </Avatar>
+                  <button onClick={() => setDetailPeer(peer)} className="shrink-0">
+                    <Avatar className="h-12 w-12 cursor-pointer hover:ring-2 hover:ring-primary transition-all">
+                      <AvatarImage src={peer.photo_url || undefined} />
+                      <AvatarFallback className="bg-primary text-primary-foreground text-sm font-medium">
+                        {getInitials(peer)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-foreground">
+                      <button
+                        onClick={() => setDetailPeer(peer)}
+                        className="font-semibold text-foreground hover:text-primary hover:underline transition-colors text-left"
+                      >
                         {peer.first_name && peer.last_name
                           ? `${peer.first_name} ${peer.last_name}`
                           : "Incomplete Profile"}
-                      </span>
+                      </button>
+                      <Badge className={`text-xs ${statusBadgeVariant(peer.approval_status as ApprovalStatus)}`}>
+                        {peer.approval_status}
+                      </Badge>
                       <Badge className={`text-xs ${statusBadgeVariant(peer.approval_status as ApprovalStatus)}`}>
                         {peer.approval_status}
                       </Badge>
