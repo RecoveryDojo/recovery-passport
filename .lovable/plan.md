@@ -1,18 +1,41 @@
 
 
-# Plan: Elevate scott@iopinabox.com to Admin + Fix Build Errors
+# Plan: Add Peer Profile Detail Review for Admin Approval
 
-## 1. Elevate user to admin
-Run an UPDATE on the `users` table to set `role = 'admin'` for `scott@iopinabox.com`. The user will need to log out and back in for the role change to take effect.
+## Problem
+Currently, admins can only see a peer's name, status badge, specialties, and caseload count on the list. The Approve/Reject buttons are right on the list card with no way to drill into the full profile details (bio, photo, specialties, availability) before making an approval decision.
 
-## 2. Fix 3 TypeScript build errors
-All three errors are the same pattern: using `Record<string, unknown>` or `Record<string, number>` for Supabase `.update()` calls, which the strict Supabase types reject. The fix is to replace the generic `Record` types with properly typed objects.
+## What gets built
 
-**Files to fix:**
+A clickable peer name/card on the `AdminPeersPage` that opens a **detail review sheet** (slide-over panel) showing the peer's complete submitted profile before the admin approves or rejects.
 
-- **AdminPeersPage.tsx (line 84)**: Change `Record<string, unknown>` to an inline typed object built conditionally with spread syntax
-- **PeerProfile.tsx (line 137)**: Same pattern — replace `Record<string, unknown>` with a properly typed object
-- **CheckInFormPage.tsx (line 114)**: Change `Record<string, number>` to a typed object matching the `mi_prompts` update shape
+### Detail review panel contents
+- **Photo** (full size avatar)
+- **Full name**
+- **Bio** (full text)
+- **Specialties** (all tags)
+- **Availability** status
+- **CRPS status**
+- **Account created date**
+- **Caseload count**
+- **Approval status** badge
+- **Approve / Reject buttons** at the bottom (for pending peers)
 
-Each fix replaces the loosely-typed object with explicit property assignments so TypeScript can verify the shape matches the Supabase table schema.
+### How it works
+1. Admin clicks the peer's name or an "eye" icon on any peer card
+2. A `Sheet` (side panel) opens showing full profile details — all fields the peer submitted
+3. For pending peers, Approve and Reject buttons appear at the bottom of the sheet
+4. Reject opens the existing rejection reason dialog
+5. Approving from the sheet uses the existing `updateStatus` mutation
+
+### Files modified
+
+**`src/pages/AdminPeersPage.tsx`** — Single file change:
+- Add a `detailPeer` state (reuse the existing `PeerProfile` type)
+- Make the peer name/avatar clickable → sets `detailPeer`
+- Add a new `Sheet` component showing full profile fields
+- Include Approve/Reject buttons inside the sheet for pending peers
+- Reuse existing mutations (no new queries needed — all data is already fetched)
+
+No new files, no new routes, no database changes.
 
