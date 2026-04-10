@@ -34,6 +34,7 @@ const AdminPeersPage = () => {
   const [rejectPeerId, setRejectPeerId] = useState<string | null>(null);
   const [rejectionReason, setRejectionReason] = useState("");
   const [reviewPeer, setReviewPeer] = useState<PeerProfile | null>(null);
+  const [detailPeer, setDetailPeer] = useState<PeerProfile | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
