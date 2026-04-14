@@ -16,8 +16,9 @@ const DevRoleSwitcher = () => {
   const [switching, setSwitching] = useState(false);
   const [open, setOpen] = useState(false);
 
-  // Only show in dev and for the test account
-  const isDev = import.meta.env.DEV;
+  // Show in dev or on preview/lovable domains for the test account
+  const isPreview = typeof window !== "undefined" && (window.location.hostname.includes("lovable.app") || window.location.hostname.includes("localhost"));
+  const isDev = import.meta.env.DEV || isPreview;
   if (!isDev || !user || user.email?.toLowerCase() !== DEV_EMAIL) return null;
 
   const ensureProfile = async (newRole: "participant" | "peer_specialist" | "admin") => {
