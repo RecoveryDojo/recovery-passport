@@ -1,30 +1,35 @@
 
 
-# Plan: Fix /admin Page Not Resolving (Infinite Loading Spinner)
+# Fix: Admin Profile Icon Not Working
 
 ## Problem
+The profile icon in the admin header links to `/profile`, but that route is nested inside the participant-only `ProtectedRoute`. When an admin clicks it, they're redirected to `/login` because they don't have the `participant` role.
 
-When visiting `/admin`, the page shows an infinite loading spinner. The `AuthContext.fetchUserRole` function silently swallows database query errors — if the query to the `users` table fails, `role` stays `null` and `loading` is never set to `false` (in the `onAuthStateChange` path), leaving the UI stuck forever.
+## Solution
+Add `/admin/profile` as a route inside the admin layout that renders the same `Profile` component, and update the admin header link to point to `/admin/profile`.
 
-## Root cause
+### File changes
 
-In `src/contexts/AuthContext.tsx`, line 74:
-```ts
-setTimeout(() => fetchUserRole(newSession.user.id), 0);
-```
-This deferred call has no `.finally(() => setLoading(false))` — only the initial `getSession` path (line 87) calls `setLoading(false)`. If `onAuthStateChange` fires first (common), loading never resolves when the query fails.
+**`src/App.tsx`**
+- Add route: `<Route path="/admin/profile" element={<Profile />} />` inside the admin route group
 
-Additionally, `fetchUserRole` (line 35-55) doesn't handle errors — if the `users` query fails, `role` stays `null`, and the `ProtectedRoute` shows a permanent spinner (line 75-79).
+**`src/components/layouts/AdminLayout.tsx`**
+- Change the profile icon `Link` from `/profile` to `/admin/profile`
 
-## Fix (single file)
+### Same fix for peer specialists
+The peer layout links to `/peers/profile` which renders `PeerProfile` — that already works. But we should also add a general profile route for peers if it doesn't exist. Let me check — `/peers/profile` is already in the peer route group, so peers are fine.
 
-**`src/contexts/AuthContext.tsx`**:
-1. Add error handling to `fetchUserRole` — if the query fails, still set `loading = false` and show a toast or log
-2. Ensure `setLoading(false)` is called in the `onAuthStateChange` path after `fetchUserRole` completes (success or failure)
-3. In `ProtectedRoute.tsx` — if `role` is `null` after loading completes, redirect to `/login` instead of showing a permanent spinner (line 75-79)
+### Notes
+- The existing `Profile.tsx` page works for any authenticated user (it reads from `participant_profiles` which may not exist for admins). We may need to make it role-aware or create a simpler admin profile page that just shows email, role, and a logout button.
+- Simplest approach: create a lightweight **AdminProfilePage** that shows the admin's email, role, and a logout button — since admins don't have participant profiles.
 
-**`src/components/ProtectedRoute.tsx`**:
-- Change the `!role` block (lines 75-79) from a spinner to a redirect to `/login`, since if loading is done and role is still null, something went wrong
+### New file: `src/pages/AdminProfilePage.tsx`
+- Shows current user email, role badge
+- Logout button
+- Simple card layout, consistent with admin design
 
-## No database changes needed
+### Summary of changes
+1. **Create** `src/pages/AdminProfilePage.tsx` — lightweight admin profile
+2. **Edit** `src/App.tsx` — add `/admin/profile` route
+3. **Edit** `src/components/layouts/AdminLayout.tsx` — change profile link to `/admin/profile`
 
