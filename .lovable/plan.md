@@ -1,45 +1,30 @@
 
 
-# Plan: Admin User Management Page with Role Editing
+# Plan: Fix /admin Page Not Resolving (Infinite Loading Spinner)
 
-## What gets built
+## Problem
 
-A new **Admin Users** page accessible from the admin sidebar, showing all users in a searchable/filterable table with their email, role, and join date. Admins can change any user's role via a dropdown.
+When visiting `/admin`, the page shows an infinite loading spinner. The `AuthContext.fetchUserRole` function silently swallows database query errors — if the query to the `users` table fails, `role` stays `null` and `loading` is never set to `false` (in the `onAuthStateChange` path), leaving the UI stuck forever.
 
-## Database change (migration required)
+## Root cause
 
-The current `users` table RLS only allows users to update **their own** row. We need a new UPDATE policy so admins can change other users' roles:
-
-```sql
-CREATE POLICY "Admin can update any user"
-ON public.users
-FOR UPDATE
-TO authenticated
-USING (get_user_role() = 'admin'::user_role)
-WITH CHECK (get_user_role() = 'admin'::user_role);
+In `src/contexts/AuthContext.tsx`, line 74:
+```ts
+setTimeout(() => fetchUserRole(newSession.user.id), 0);
 ```
+This deferred call has no `.finally(() => setLoading(false))` — only the initial `getSession` path (line 87) calls `setLoading(false)`. If `onAuthStateChange` fires first (common), loading never resolves when the query fails.
 
-## New file: `src/pages/AdminUsersPage.tsx`
+Additionally, `fetchUserRole` (line 35-55) doesn't handle errors — if the `users` query fails, `role` stays `null`, and the `ProtectedRoute` shows a permanent spinner (line 75-79).
 
-- Fetches all rows from `users` table (admin RLS already allows SELECT on all)
-- Displays a table: Email, Role (badge), Joined date
-- Search/filter by email or role
-- Each row has a role dropdown (participant / peer_specialist / admin) that updates via `supabase.from("users").update({ role }).eq("id", userId)`
-- Confirmation dialog before changing roles to prevent accidents
-- Toast on success/failure
+## Fix (single file)
 
-## Modified file: `src/App.tsx`
+**`src/contexts/AuthContext.tsx`**:
+1. Add error handling to `fetchUserRole` — if the query fails, still set `loading = false` and show a toast or log
+2. Ensure `setLoading(false)` is called in the `onAuthStateChange` path after `fetchUserRole` completes (success or failure)
+3. In `ProtectedRoute.tsx` — if `role` is `null` after loading completes, redirect to `/login` instead of showing a permanent spinner (line 75-79)
 
-- Add route: `/admin/users` → `AdminUsersPage`
+**`src/components/ProtectedRoute.tsx`**:
+- Change the `!role` block (lines 75-79) from a spinner to a redirect to `/login`, since if loading is done and role is still null, something went wrong
 
-## Modified file: `src/components/layouts/AdminLayout.tsx`
-
-- Add "Users" nav item with a `Shield` icon between Dashboard and Participants
-
-## Technical notes
-
-- No new tables or columns needed
-- The `users` table already stores role as `user_role` enum (participant, peer_specialist, admin)
-- Changing role here updates the `users` table only — profile tables (participant_profiles, peer_specialist_profiles) are created at signup and remain as-is
-- Admin should not be able to remove their own admin role (safety guard)
+## No database changes needed
 
