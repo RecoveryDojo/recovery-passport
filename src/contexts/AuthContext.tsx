@@ -33,24 +33,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchUserRole = async (userId: string) => {
-    const { data } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", userId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("users")
+        .select("role")
+        .eq("id", userId)
+        .single();
 
-    if (data) {
-      const userRole = data.role as UserRole;
-      setRole(userRole);
-
-      if (userRole === "peer_specialist") {
-        const { data: peerData } = await supabase
-          .from("peer_specialist_profiles")
-          .select("approval_status")
-          .eq("user_id", userId)
-          .single();
-        setApprovalStatus((peerData?.approval_status as ApprovalStatus) ?? "pending");
+      if (error) {
+        console.error("Error fetching user role:", error.message);
+        setRole(null);
+        return;
       }
+
+      if (data) {
+        const userRole = data.role as UserRole;
+        setRole(userRole);
+
+        if (userRole === "peer_specialist") {
+          const { data: peerData } = await supabase
+            .from("peer_specialist_profiles")
+            .select("approval_status")
+            .eq("user_id", userId)
+            .single();
+          setApprovalStatus((peerData?.approval_status as ApprovalStatus) ?? "pending");
+        }
+      }
+    } catch (err) {
+      console.error("Unexpected error fetching user role:", err);
+      setRole(null);
     }
   };
 
@@ -71,7 +82,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             }, 0);
           }
           // Defer to avoid Supabase client deadlock
-          setTimeout(() => fetchUserRole(newSession.user.id), 0);
+          setTimeout(() => {
+            fetchUserRole(newSession.user.id).finally(() => setLoading(false));
+          }, 0);
         } else {
           setRole(null);
           setApprovalStatus(null);
