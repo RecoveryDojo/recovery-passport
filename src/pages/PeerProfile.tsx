@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, ArrowLeft, Save, AlertCircle } from "lucide-react";
+import { Camera, ArrowLeft, Save, AlertCircle, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -328,6 +329,15 @@ const PeerProfile = () => {
       >
         <Save className="mr-2 h-4 w-4" />
         {saving ? "Saving..." : "Save Changes"}
+      </Button>
+
+      <Button
+        variant="outline"
+        onClick={async () => { await supabase.auth.signOut(); navigate("/login"); }}
+        className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+      >
+        <LogOut className="h-4 w-4" />
+        Sign Out
       </Button>
     </div>
   );
