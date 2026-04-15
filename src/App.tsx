@@ -55,6 +55,7 @@ import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
 import ParticipantPaymentsPage from "@/pages/ParticipantPaymentsPage";
 import AdminPeerReviewPage from "@/pages/AdminPeerReviewPage";
 import AdminPeerDetailPage from "@/pages/AdminPeerDetailPage";
+import AdminUsersPage from "@/pages/AdminUsersPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
 import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
@@ -123,6 +124,7 @@ const App = () => (
             {/* Admin */}
             <Route element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout /></ProtectedRoute>}>
               <Route path="/admin" element={<AdminDashboardPage />} />
+              <Route path="/admin/users" element={<AdminUsersPage />} />
               <Route path="/admin/participants" element={<AdminParticipants />} />
               <Route path="/admin/peers" element={<AdminPeersPage />} />
               <Route path="/admin/peers/review" element={<AdminPeerReviewPage />} />

@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
-import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock } from "lucide-react";
+import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock, Shield } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import {
   Sidebar,
@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const navItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutGrid },
+  { to: "/admin/users", label: "Users", icon: Shield },
   { to: "/admin/participants", label: "Participants", icon: Users },
   { to: "/admin/peers", label: "Peer Specialists", icon: UserCheck },
   { to: "/admin/content", label: "Content", icon: BookOpen },
