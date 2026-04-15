@@ -59,6 +59,7 @@ import AdminUsersPage from "@/pages/AdminUsersPage";
 import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
 import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
+import AdminProfilePage from "@/pages/AdminProfilePage";
 import AssessmentHistoryPage from "@/pages/AssessmentHistoryPage";
 import NotificationsPage from "@/pages/NotificationsPage";
 import OfflineBanner from "@/components/OfflineBanner";
@@ -143,6 +144,7 @@ const App = () => (
               <Route path="/admin/participants/:participantId/notes" element={<AdminParticipantNotesPage />} />
               <Route path="/admin/reports" element={<AdminReportsPage />} />
               <Route path="/admin/audit" element={<AdminAuditPage />} />
+              <Route path="/admin/profile" element={<AdminProfilePage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
