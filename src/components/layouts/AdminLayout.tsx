@@ -81,7 +81,7 @@ const AdminLayout = () => {
             </div>
             <div className="flex items-center gap-2">
               <NotificationBell />
-              <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link to="/admin/profile" className="text-muted-foreground hover:text-foreground transition-colors">
                 <UserCircle className="h-5 w-5" />
               </Link>
             </div>
