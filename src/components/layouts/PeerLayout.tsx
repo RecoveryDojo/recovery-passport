@@ -17,7 +17,9 @@ const PeerLayout = () => {
     <div className="min-h-screen flex flex-col bg-background">
       <header className="sticky top-0 z-40 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-lg font-semibold text-foreground">Recovery Passport</h1>
-        <NotificationBell />
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+        </div>
       </header>
 
       <main className="flex-1 pb-20">

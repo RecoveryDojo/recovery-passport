@@ -1,7 +1,8 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
-import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock, Shield } from "lucide-react";
+import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock, Shield, UserCircle } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
+import { Link } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -78,7 +79,12 @@ const AdminLayout = () => {
               {!isMobile && <SidebarTrigger className="mr-3" />}
               <span className="text-sm font-medium text-primary">Admin</span>
             </div>
-            <NotificationBell />
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              <Link to="/profile" className="text-muted-foreground hover:text-foreground transition-colors">
+                <UserCircle className="h-5 w-5" />
+              </Link>
+            </div>
           </header>
           <main className={`flex-1 ${isMobile ? "pb-20" : ""}`}>
             <Outlet />
