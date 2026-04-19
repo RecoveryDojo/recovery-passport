@@ -167,18 +167,42 @@ const CardPage = () => {
     }
   }, [profile?.card_level]);
 
-  // Assigned peer name
+  // Assigned peer (name + photo for Stage 3)
   const { data: peer } = useQuery({
     queryKey: ["assigned-peer", profile?.assigned_peer_id],
     enabled: !!profile?.assigned_peer_id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("peer_specialist_profiles")
-        .select("first_name, last_name")
+        .select("first_name, last_name, photo_url")
         .eq("user_id", profile!.assigned_peer_id!)
         .single();
       if (error) throw error;
       return data;
+    },
+  });
+
+  // Pending peer request (for Stage 2)
+  const { data: pendingRequest } = useQuery({
+    queryKey: ["my-pending-peer-request", profile?.id],
+    enabled: !!profile?.id && !profile?.assigned_peer_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("peer_requests")
+        .select("id, peer_specialist_id, requested_at")
+        .eq("participant_id", profile!.id)
+        .eq("status", "pending")
+        .order("requested_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      const { data: peerData } = await supabase
+        .from("peer_specialist_profiles")
+        .select("first_name, last_name")
+        .eq("user_id", data.peer_specialist_id)
+        .maybeSingle();
+      return { ...data, peer: peerData };
     },
   });
 
