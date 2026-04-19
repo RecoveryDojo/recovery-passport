@@ -167,18 +167,42 @@ const CardPage = () => {
     }
   }, [profile?.card_level]);
 
-  // Assigned peer name
+  // Assigned peer (name + photo for Stage 3)
   const { data: peer } = useQuery({
     queryKey: ["assigned-peer", profile?.assigned_peer_id],
     enabled: !!profile?.assigned_peer_id,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("peer_specialist_profiles")
-        .select("first_name, last_name")
+        .select("first_name, last_name, photo_url")
         .eq("user_id", profile!.assigned_peer_id!)
         .single();
       if (error) throw error;
       return data;
+    },
+  });
+
+  // Pending peer request (for Stage 2)
+  const { data: pendingRequest } = useQuery({
+    queryKey: ["my-pending-peer-request", profile?.id],
+    enabled: !!profile?.id && !profile?.assigned_peer_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("peer_requests")
+        .select("id, peer_specialist_id, requested_at")
+        .eq("participant_id", profile!.id)
+        .eq("status", "pending")
+        .order("requested_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data) return null;
+      const { data: peerData } = await supabase
+        .from("peer_specialist_profiles")
+        .select("first_name, last_name")
+        .eq("user_id", data.peer_specialist_id)
+        .maybeSingle();
+      return { ...data, peer: peerData };
     },
   });
 
@@ -361,14 +385,81 @@ const CardPage = () => {
         </div>
       </div>
 
-      {/* No peer assigned banner */}
-      {!profile.assigned_peer_id && (
-        <div className="bg-accent/10 border border-accent/30 rounded-xl px-4 py-4 space-y-2">
-          <p className="text-sm text-foreground font-medium">
-            You don't have a peer specialist yet.
+      {/* === JOURNEY STAGE BANNER === */}
+      {profile.assigned_peer_id && peer ? (
+        // STAGE 3 — Connected
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3 dark:bg-emerald-950/30 dark:border-emerald-900">
+          <div>
+            <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
+              Step 3 of 3
+            </p>
+            <p className="text-base font-bold text-foreground mt-0.5">
+              You're Connected! 🎉
+            </p>
+          </div>
+          <div className="flex items-center gap-3 bg-card rounded-lg p-3 border border-emerald-100 dark:border-emerald-900">
+            <Avatar className="h-12 w-12 border-2 border-emerald-200 dark:border-emerald-800">
+              {peer.photo_url ? <AvatarImage src={peer.photo_url} alt="" /> : null}
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                {(peer.first_name?.[0] ?? "") + (peer.last_name?.[0] ?? "")}
+              </AvatarFallback>
+            </Avatar>
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-foreground truncate">
+                {peer.first_name} {peer.last_name}
+              </p>
+              <p className="text-xs text-muted-foreground">Your peer specialist</p>
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Reach out anytime through the app.
           </p>
-          <p className="text-xs text-muted-foreground">Choose someone to walk with you.</p>
-          <Button asChild size="sm" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button
+            disabled
+            className="w-full bg-primary text-primary-foreground opacity-70 cursor-not-allowed"
+          >
+            Send Message (coming soon)
+          </Button>
+        </div>
+      ) : pendingRequest ? (
+        // STAGE 2 — Request pending
+        <div className="bg-accent/10 border border-accent/40 rounded-xl p-4 space-y-2">
+          <p className="text-xs font-semibold text-accent uppercase tracking-wide">
+            Step 2 of 3
+          </p>
+          <p className="text-base font-bold text-foreground">Request Pending</p>
+          <p className="text-sm text-muted-foreground">
+            Your peer specialist request has been submitted and is being reviewed by our team.
+            You'll receive a notification when it's approved — usually within 1–2 business days.
+          </p>
+          {pendingRequest.peer && (
+            <p className="text-sm text-foreground pt-1">
+              Requested:{" "}
+              <span className="font-semibold">
+                {pendingRequest.peer.first_name} {pendingRequest.peer.last_name}
+              </span>
+            </p>
+          )}
+        </div>
+      ) : (
+        // STAGE 1 — No peer, no request
+        <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 space-y-3">
+          <div>
+            <p className="text-xs font-semibold text-primary uppercase tracking-wide">
+              Step 1 of 3
+            </p>
+            <p className="text-base font-bold text-foreground mt-0.5">
+              Find Your Peer Specialist
+            </p>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Browse our peer specialists and send a connection request. Your peer will be
+            your guide through your recovery journey.
+          </p>
+          <Button
+            asChild
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
             <Link to="/peers/browse">Browse Peer Specialists →</Link>
           </Button>
         </div>
