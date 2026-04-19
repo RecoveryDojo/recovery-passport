@@ -54,7 +54,7 @@ const LogCheckInSheet = ({
   participantName,
   peerSpecialistId,
 }: LogCheckInSheetProps) => {
-  const queryClient = useQueryClient();
+  
   const [moodScore, setMoodScore] = useState<number | null>(null);
   const [contactMode, setContactMode] = useState<ContactMode | "">("");
   const [notes, setNotes] = useState("");
@@ -193,7 +193,7 @@ const LogCheckInSheet = ({
           </div>
 
           <Button
-            onClick={() => mutation.mutate()}
+            onClick={handleSubmit}
             disabled={
               mutation.isPending || !moodScore || !contactMode || discussedPlan === null
             }
