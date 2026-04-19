@@ -388,17 +388,17 @@ const CardPage = () => {
       {/* === JOURNEY STAGE BANNER === */}
       {profile.assigned_peer_id && peer ? (
         // STAGE 3 — Connected
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-3">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3 dark:bg-emerald-950/30 dark:border-emerald-900">
           <div>
-            <p className="text-xs font-semibold text-green-700 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
               Step 3 of 3
             </p>
             <p className="text-base font-bold text-foreground mt-0.5">
               You're Connected! 🎉
             </p>
           </div>
-          <div className="flex items-center gap-3 bg-card rounded-lg p-3 border border-green-100">
-            <Avatar className="h-12 w-12 border-2 border-green-200">
+          <div className="flex items-center gap-3 bg-card rounded-lg p-3 border border-emerald-100 dark:border-emerald-900">
+            <Avatar className="h-12 w-12 border-2 border-emerald-200 dark:border-emerald-800">
               {peer.photo_url ? <AvatarImage src={peer.photo_url} alt="" /> : null}
               <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
                 {(peer.first_name?.[0] ?? "") + (peer.last_name?.[0] ?? "")}
@@ -416,7 +416,7 @@ const CardPage = () => {
           </p>
           <Button
             disabled
-            className="w-full bg-primary hover:bg-primary text-primary-foreground opacity-70 cursor-not-allowed"
+            className="w-full bg-primary text-primary-foreground opacity-70 cursor-not-allowed"
           >
             Send Message (coming soon)
           </Button>
