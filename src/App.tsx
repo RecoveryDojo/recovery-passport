@@ -122,6 +122,7 @@ const App = () => (
               <Route path="/crps" element={<CrpsPage />} />
               <Route path="/crps/selfcare" element={<SelfCarePage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
+              <Route path="/checkins" element={<PeerCheckInsPage />} />
             </Route>
 
             {/* Admin */}
