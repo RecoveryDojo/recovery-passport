@@ -130,7 +130,7 @@ const App = () => (
             <Route element={<ProtectedRoute allowedRoles={["admin"]}><AdminLayout /></ProtectedRoute>}>
               <Route path="/admin" element={<AdminDashboardPage />} />
               <Route path="/admin/users" element={<AdminUsersPage />} />
-              <Route path="/admin/participants" element={<AdminParticipants />} />
+              <Route path="/admin/participants" element={<AdminParticipantsPage />} />
               <Route path="/admin/peers" element={<AdminPeersPage />} />
               <Route path="/admin/peers/review" element={<AdminPeerReviewPage />} />
               <Route path="/admin/peers/:peerId" element={<AdminPeerDetailPage />} />
