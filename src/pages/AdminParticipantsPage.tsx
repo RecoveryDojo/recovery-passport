@@ -8,48 +8,84 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, XCircle, UserCheck, UserX } from "lucide-react";
+import { CheckCircle, UserCheck, UserX, Clock } from "lucide-react";
+
+type Peer = { user_id: string; first_name: string; last_name: string };
 
 const AdminParticipantsPage = () => {
-  const [tab, setTab] = useState("pending");
+  const [tab, setTab] = useState("needs");
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Pending peer requests
-  const { data: pendingRequests, isLoading: loadingRequests } = useQuery({
-    queryKey: ["admin-pending-peer-requests"],
+  // All approved peer specialists (for assignment dropdowns)
+  const { data: approvedPeers } = useQuery({
+    queryKey: ["admin-approved-peers-list"],
     queryFn: async () => {
-      const { data: requests, error } = await supabase
-        .from("peer_requests")
-        .select("id, participant_id, peer_specialist_id, requested_at, status")
-        .eq("status", "pending")
-        .order("requested_at", { ascending: false });
+      const { data, error } = await supabase
+        .from("peer_specialist_profiles")
+        .select("user_id, first_name, last_name")
+        .eq("approval_status", "approved")
+        .order("first_name", { ascending: true });
       if (error) throw error;
-      if (!requests || requests.length === 0) return [];
+      return (data ?? []) as Peer[];
+    },
+  });
 
-      const participantIds = [...new Set(requests.map((r) => r.participant_id))];
-      const peerUserIds = [...new Set(requests.map((r) => r.peer_specialist_id))];
+  // Unassigned participants + any pending peer_requests for context
+  const { data: needsAssignment, isLoading: loadingNeeds } = useQuery({
+    queryKey: ["admin-needs-assignment"],
+    queryFn: async () => {
+      const { data: profiles, error } = await supabase
+        .from("participant_profiles")
+        .select("id, user_id, first_name, last_name, recovery_start_date")
+        .is("assigned_peer_id", null)
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      if (!profiles || profiles.length === 0) return [];
 
-      const [{ data: participants }, { data: peers }] = await Promise.all([
+      const userIds = profiles.map((p) => p.user_id);
+      const profileIds = profiles.map((p) => p.id);
+
+      const [{ data: users }, { data: requests }] = await Promise.all([
+        supabase.from("users").select("id, email").in("id", userIds),
         supabase
-          .from("participant_profiles")
-          .select("id, first_name, last_name")
-          .in("id", participantIds),
-        supabase
-          .from("peer_specialist_profiles")
-          .select("user_id, first_name, last_name")
-          .in("user_id", peerUserIds),
+          .from("peer_requests")
+          .select("id, participant_id, peer_specialist_id, requested_at")
+          .eq("status", "pending")
+          .in("participant_id", profileIds),
       ]);
 
-      const pMap = Object.fromEntries((participants ?? []).map((p) => [p.id, p]));
-      const peerMap = Object.fromEntries((peers ?? []).map((p) => [p.user_id, p]));
+      const peerUserIds = [...new Set((requests ?? []).map((r) => r.peer_specialist_id))];
+      const { data: peers } = peerUserIds.length
+        ? await supabase
+            .from("peer_specialist_profiles")
+            .select("user_id, first_name, last_name")
+            .in("user_id", peerUserIds)
+        : { data: [] as Peer[] };
 
-      return requests.map((r) => ({
-        ...r,
-        participant: pMap[r.participant_id],
-        peer: peerMap[r.peer_specialist_id],
+      const uMap = Object.fromEntries((users ?? []).map((u) => [u.id, u]));
+      const peerMap = Object.fromEntries((peers ?? []).map((p) => [p.user_id, p]));
+      const reqMap = Object.fromEntries(
+        (requests ?? []).map((r) => [
+          r.participant_id,
+          { ...r, peer: peerMap[r.peer_specialist_id] as Peer | undefined },
+        ])
+      );
+
+      return profiles.map((p) => ({
+        ...p,
+        email: uMap[p.user_id]?.email ?? "—",
+        pendingRequest: reqMap[p.id] ?? null,
       }));
     },
   });
@@ -67,7 +103,9 @@ const AdminParticipantsPage = () => {
       if (!profiles || profiles.length === 0) return [];
 
       const userIds = profiles.map((p) => p.user_id);
-      const peerIds = [...new Set(profiles.map((p) => p.assigned_peer_id).filter(Boolean) as string[])];
+      const peerIds = [
+        ...new Set(profiles.map((p) => p.assigned_peer_id).filter(Boolean) as string[]),
+      ];
 
       const [{ data: users }, { data: peers }] = await Promise.all([
         supabase.from("users").select("id, email").in("id", userIds),
@@ -76,7 +114,7 @@ const AdminParticipantsPage = () => {
               .from("peer_specialist_profiles")
               .select("user_id, first_name, last_name")
               .in("user_id", peerIds)
-          : Promise.resolve({ data: [] as { user_id: string; first_name: string; last_name: string }[] }),
+          : Promise.resolve({ data: [] as Peer[] }),
       ]);
 
       const uMap = Object.fromEntries((users ?? []).map((u) => [u.id, u]));
@@ -85,100 +123,69 @@ const AdminParticipantsPage = () => {
       return profiles.map((p) => ({
         ...p,
         email: uMap[p.user_id]?.email ?? "—",
-        peer: p.assigned_peer_id ? peerMap[p.assigned_peer_id] : null,
+        peer: p.assigned_peer_id ? (peerMap[p.assigned_peer_id] as Peer | undefined) : null,
       }));
     },
   });
 
-  const approveMutation = useMutation({
-    mutationFn: async (request: {
-      id: string;
-      participant_id: string;
-      peer_specialist_id: string;
+  const assignMutation = useMutation({
+    mutationFn: async (args: {
+      participantProfileId: string;
+      participantUserId: string;
+      peerUserId: string;
+      pendingRequestId?: string | null;
     }) => {
+      const { participantProfileId, participantUserId, peerUserId, pendingRequestId } = args;
       const now = new Date().toISOString();
-
-      const { error: reqErr } = await supabase
-        .from("peer_requests")
-        .update({ status: "approved", responded_at: now })
-        .eq("id", request.id);
-      if (reqErr) throw reqErr;
 
       const { error: profErr } = await supabase
         .from("participant_profiles")
-        .update({ assigned_peer_id: request.peer_specialist_id })
-        .eq("id", request.participant_id);
+        .update({ assigned_peer_id: peerUserId })
+        .eq("id", participantProfileId);
       if (profErr) throw profErr;
 
-      // Audit log
+      if (pendingRequestId) {
+        const { error: reqErr } = await supabase
+          .from("peer_requests")
+          .update({ status: "approved", responded_at: now })
+          .eq("id", pendingRequestId);
+        if (reqErr) throw reqErr;
+      }
+
       await supabase.from("audit_log").insert({
         user_id: user?.id,
-        action: "approve_peer_request",
-        target_type: "peer_requests",
-        target_id: request.id,
+        action: "assign_peer",
+        target_type: "participant_profiles",
+        target_id: participantProfileId,
         metadata: {
-          participant_id: request.participant_id,
-          peer_specialist_id: request.peer_specialist_id,
+          peer_specialist_id: peerUserId,
+          via_request: !!pendingRequestId,
         },
       });
 
-      // Notify participant
-      const participant = pendingRequests?.find((r) => r.id === request.id)?.participant;
-      const peer = pendingRequests?.find((r) => r.id === request.id)?.peer;
-      const participantUserRes = await supabase
-        .from("participant_profiles")
-        .select("user_id")
-        .eq("id", request.participant_id)
-        .maybeSingle();
-
-      if (participantUserRes.data?.user_id) {
-        await supabase.from("notifications").insert({
-          user_id: participantUserRes.data.user_id,
-          type: "peer_request_approved" as const,
-          title: "Peer Request Approved",
-          body: peer
-            ? `Your request to work with ${peer.first_name} ${peer.last_name} has been approved.`
-            : "Your peer specialist request has been approved.",
-          link: "/card",
-        });
-      }
-
-      return { participant, peer };
-    },
-    onSuccess: ({ participant, peer }) => {
-      const pName = participant ? `${participant.first_name} ${participant.last_name}` : "Participant";
-      const peerName = peer ? `${peer.first_name} ${peer.last_name}` : "the peer specialist";
-      toast({
-        title: "Approved",
-        description: `${pName} is now assigned to ${peerName}.`,
+      const peer = approvedPeers?.find((p) => p.user_id === peerUserId);
+      await supabase.from("notifications").insert({
+        user_id: participantUserId,
+        type: "peer_request_approved" as const,
+        title: "Peer Specialist Assigned",
+        body: peer
+          ? `${peer.first_name} ${peer.last_name} has been assigned as your peer specialist.`
+          : "A peer specialist has been assigned to you.",
+        link: "/card",
       });
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-peer-requests"] });
+
+      return { peer };
+    },
+    onSuccess: ({ peer }) => {
+      toast({
+        title: "Peer assigned",
+        description: peer
+          ? `${peer.first_name} ${peer.last_name} is now assigned.`
+          : "Assignment saved.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin-needs-assignment"] });
       queryClient.invalidateQueries({ queryKey: ["admin-all-participants"] });
       queryClient.invalidateQueries({ queryKey: ["admin-peer-caseloads"] });
-    },
-    onError: (e: Error) => {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
-    },
-  });
-
-  const declineMutation = useMutation({
-    mutationFn: async (requestId: string) => {
-      const { error } = await supabase
-        .from("peer_requests")
-        .update({ status: "declined", responded_at: new Date().toISOString() })
-        .eq("id", requestId);
-      if (error) throw error;
-
-      await supabase.from("audit_log").insert({
-        user_id: user?.id,
-        action: "decline_peer_request",
-        target_type: "peer_requests",
-        target_id: requestId,
-      });
-    },
-    onSuccess: () => {
-      toast({ title: "Request declined" });
-      queryClient.invalidateQueries({ queryKey: ["admin-pending-peer-requests"] });
     },
     onError: (e: Error) => {
       toast({ title: "Error", description: e.message, variant: "destructive" });
@@ -193,15 +200,15 @@ const AdminParticipantsPage = () => {
       <div>
         <h1 className="text-xl font-bold text-foreground">Participants</h1>
         <p className="text-sm text-muted-foreground">
-          Approve peer specialist assignments and manage participants.
+          Assign peer specialists and manage all participants.
         </p>
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList>
-          <TabsTrigger value="pending">
-            Pending Requests
-            {pendingRequests && pendingRequests.length > 0 && ` (${pendingRequests.length})`}
+          <TabsTrigger value="needs">
+            Needs Assignment
+            {needsAssignment && needsAssignment.length > 0 && ` (${needsAssignment.length})`}
           </TabsTrigger>
           <TabsTrigger value="all">
             All Participants
@@ -209,64 +216,118 @@ const AdminParticipantsPage = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* PENDING REQUESTS */}
-        <TabsContent value="pending" className="mt-4 space-y-3">
-          {loadingRequests ? (
-            [1, 2].map((i) => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
-          ) : !pendingRequests || pendingRequests.length === 0 ? (
+        {/* NEEDS ASSIGNMENT */}
+        <TabsContent value="needs" className="mt-4 space-y-3">
+          {loadingNeeds ? (
+            [1, 2].map((i) => <Skeleton key={i} className="h-28 w-full rounded-lg" />)
+          ) : !needsAssignment || needsAssignment.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-muted-foreground">
-                No pending peer requests.
+                All participants have a peer specialist assigned. 🎉
               </CardContent>
             </Card>
           ) : (
-            pendingRequests.map((req) => (
-              <Card key={req.id}>
-                <CardContent className="p-4 flex items-start justify-between gap-4 flex-wrap">
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-foreground">{fullName(req.participant)}</p>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      Requested <span className="font-medium text-foreground">{fullName(req.peer)}</span>
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {format(new Date(req.requested_at), "MMM d, yyyy 'at' h:mm a")}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() =>
-                        approveMutation.mutate({
-                          id: req.id,
-                          participant_id: req.participant_id,
-                          peer_specialist_id: req.peer_specialist_id,
-                        })
-                      }
-                      disabled={approveMutation.isPending || declineMutation.isPending}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                    >
-                      <CheckCircle className="h-4 w-4 mr-1" /> Approve
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => declineMutation.mutate(req.id)}
-                      disabled={approveMutation.isPending || declineMutation.isPending}
-                      className="text-destructive border-destructive/30 hover:bg-destructive/10"
-                    >
-                      <XCircle className="h-4 w-4 mr-1" /> Decline
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))
+            needsAssignment.map((p) => {
+              const days =
+                p.recovery_start_date != null
+                  ? differenceInDays(new Date(), new Date(p.recovery_start_date))
+                  : null;
+              const req = p.pendingRequest;
+              const isPending =
+                assignMutation.isPending &&
+                assignMutation.variables?.participantProfileId === p.id;
+              return (
+                <Card key={p.id}>
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground">{fullName(p)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">{p.email}</p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {days !== null
+                            ? `${days} day${days === 1 ? "" : "s"} in recovery`
+                            : "Recovery start date not set"}
+                        </p>
+                      </div>
+                      <Badge className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
+                        <UserX className="h-3 w-3 mr-1" />
+                        Unassigned
+                      </Badge>
+                    </div>
+
+                    {req && (
+                      <div className="flex items-start justify-between gap-3 p-3 rounded-md bg-muted/50 border border-border flex-wrap">
+                        <div className="flex items-center gap-2 text-sm">
+                          <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+                          <span className="text-foreground">
+                            Requested{" "}
+                            <span className="font-medium">{fullName(req.peer)}</span>
+                            <span className="text-muted-foreground">
+                              {" · "}
+                              {format(new Date(req.requested_at), "MMM d")}
+                            </span>
+                          </span>
+                        </div>
+                        <Button
+                          size="sm"
+                          onClick={() =>
+                            assignMutation.mutate({
+                              participantProfileId: p.id,
+                              participantUserId: p.user_id,
+                              peerUserId: req.peer_specialist_id,
+                              pendingRequestId: req.id,
+                            })
+                          }
+                          disabled={assignMutation.isPending}
+                          className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                        >
+                          <CheckCircle className="h-4 w-4 mr-1" /> Approve Request
+                        </Button>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-muted-foreground">Assign peer:</span>
+                      <Select
+                        disabled={isPending || !approvedPeers?.length}
+                        onValueChange={(peerUserId) =>
+                          assignMutation.mutate({
+                            participantProfileId: p.id,
+                            participantUserId: p.user_id,
+                            peerUserId,
+                            pendingRequestId: req?.id ?? null,
+                          })
+                        }
+                      >
+                        <SelectTrigger className="h-9 w-full sm:w-64">
+                          <SelectValue
+                            placeholder={
+                              approvedPeers?.length
+                                ? "Choose a peer specialist..."
+                                : "No approved peers available"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {approvedPeers?.map((peer) => (
+                            <SelectItem key={peer.user_id} value={peer.user_id}>
+                              {peer.first_name} {peer.last_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
           )}
         </TabsContent>
 
         {/* ALL PARTICIPANTS */}
         <TabsContent value="all" className="mt-4 space-y-3">
           {loadingAll ? (
-            [1, 2, 3].map((i) => <Skeleton key={i} className="h-20 w-full rounded-lg" />)
+            [1, 2, 3].map((i) => <Skeleton key={i} className="h-24 w-full rounded-lg" />)
           ) : !allParticipants || allParticipants.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-muted-foreground">
@@ -279,28 +340,73 @@ const AdminParticipantsPage = () => {
                 p.recovery_start_date != null
                   ? differenceInDays(new Date(), new Date(p.recovery_start_date))
                   : null;
+              const isPending =
+                assignMutation.isPending &&
+                assignMutation.variables?.participantProfileId === p.id;
               return (
                 <Card key={p.id}>
-                  <CardContent className="p-4 flex items-start justify-between gap-4 flex-wrap">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-foreground">{fullName(p)}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">{p.email}</p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {days !== null ? `${days} day${days === 1 ? "" : "s"} in recovery` : "Recovery start date not set"}
-                      </p>
+                  <CardContent className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-foreground">{fullName(p)}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                          {p.email}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {days !== null
+                            ? `${days} day${days === 1 ? "" : "s"} in recovery`
+                            : "Recovery start date not set"}
+                        </p>
+                      </div>
+                      <div>
+                        {p.assigned_peer_id && p.peer ? (
+                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
+                            <UserCheck className="h-3 w-3 mr-1" />
+                            {fullName(p.peer)}
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
+                            <UserX className="h-3 w-3 mr-1" />
+                            Unassigned
+                          </Badge>
+                        )}
+                      </div>
                     </div>
-                    <div>
-                      {p.assigned_peer_id && p.peer ? (
-                        <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
-                          <UserCheck className="h-3 w-3 mr-1" />
-                          {fullName(p.peer)}
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
-                          <UserX className="h-3 w-3 mr-1" />
-                          Unassigned
-                        </Badge>
-                      )}
+
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs text-muted-foreground">
+                        {p.assigned_peer_id ? "Reassign:" : "Assign peer:"}
+                      </span>
+                      <Select
+                        value={p.assigned_peer_id ?? undefined}
+                        disabled={isPending || !approvedPeers?.length}
+                        onValueChange={(peerUserId) => {
+                          if (peerUserId === p.assigned_peer_id) return;
+                          assignMutation.mutate({
+                            participantProfileId: p.id,
+                            participantUserId: p.user_id,
+                            peerUserId,
+                            pendingRequestId: null,
+                          });
+                        }}
+                      >
+                        <SelectTrigger className="h-9 w-full sm:w-64">
+                          <SelectValue
+                            placeholder={
+                              approvedPeers?.length
+                                ? "Choose a peer specialist..."
+                                : "No approved peers available"
+                            }
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {approvedPeers?.map((peer) => (
+                            <SelectItem key={peer.user_id} value={peer.user_id}>
+                              {peer.first_name} {peer.last_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </CardContent>
                 </Card>
