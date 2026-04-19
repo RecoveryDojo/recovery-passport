@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   Sheet,
@@ -20,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { useLogCheckIn } from "@/hooks/use-log-checkin";
 import type { Database } from "@/integrations/supabase/types";
 
 type ContactMode = Database["public"]["Enums"]["checkin_contact_mode"];
@@ -55,7 +54,7 @@ const LogCheckInSheet = ({
   participantName,
   peerSpecialistId,
 }: LogCheckInSheetProps) => {
-  const queryClient = useQueryClient();
+  
   const [moodScore, setMoodScore] = useState<number | null>(null);
   const [contactMode, setContactMode] = useState<ContactMode | "">("");
   const [notes, setNotes] = useState("");
@@ -68,68 +67,30 @@ const LogCheckInSheet = ({
     setDiscussedPlan(null);
   };
 
-  const mutation = useMutation({
-    mutationFn: async () => {
-      if (!moodScore || !contactMode || discussedPlan === null) {
-        throw new Error("Please complete all required fields");
-      }
-
-      // Insert check-in
-      const { data: checkin, error: insertErr } = await supabase
-        .from("weekly_checkins")
-        .insert({
-          participant_id: participantId,
-          peer_specialist_id: peerSpecialistId,
-          mood_status: moodScore,
-          contact_mode: contactMode as ContactMode,
-          discussed_plan: discussedPlan,
-          summary: notes.trim() || null,
-        })
-        .select("id")
-        .single();
-      if (insertErr) throw insertErr;
-
-      // Log CRPS hours via existing RPC
-      if (checkin?.id) {
-        await supabase.rpc("log_checkin_crps_hours", {
-          p_checkin_id: checkin.id,
-          p_peer_id: peerSpecialistId,
-        });
-      }
-
-      // Low-mood alert: notify all admins
-      if (moodScore <= 2) {
-        const { data: admins } = await supabase
-          .from("users")
-          .select("id")
-          .eq("role", "admin");
-
-        if (admins && admins.length > 0) {
-          const rows = admins.map((a) => ({
-            user_id: a.id,
-            type: "general" as const,
-            title: "Low mood check-in",
-            body: `${participantName} reported a low mood score during check-in. Please review.`,
-            link: `/caseload/${participantId}`,
-            related_id: checkin?.id ?? null,
-            related_type: "weekly_checkin",
-          }));
-          await supabase.from("notifications").insert(rows);
-        }
-      }
-    },
+  const mutation = useLogCheckIn({
     onSuccess: () => {
       toast.success(`Check-in logged for ${participantName}`);
-      queryClient.invalidateQueries({ queryKey: ["caseload-checkins"] });
-      queryClient.invalidateQueries({ queryKey: ["caseload"] });
-      queryClient.invalidateQueries({ queryKey: ["participant-checkins", participantId] });
       reset();
       onOpenChange(false);
     },
-    onError: (err: Error) => {
-      toast.error(err.message || "Failed to log check-in");
-    },
+    onError: (err) => toast.error(err.message || "Failed to log check-in"),
   });
+
+  const handleSubmit = () => {
+    if (!moodScore || !contactMode || discussedPlan === null) {
+      toast.error("Please complete all required fields");
+      return;
+    }
+    mutation.mutate({
+      participantId,
+      participantName,
+      peerSpecialistId,
+      moodScore,
+      contactMode: contactMode as ContactMode,
+      notes,
+      discussedPlan,
+    });
+  };
 
   return (
     <Sheet
@@ -232,7 +193,7 @@ const LogCheckInSheet = ({
           </div>
 
           <Button
-            onClick={() => mutation.mutate()}
+            onClick={handleSubmit}
             disabled={
               mutation.isPending || !moodScore || !contactMode || discussedPlan === null
             }
