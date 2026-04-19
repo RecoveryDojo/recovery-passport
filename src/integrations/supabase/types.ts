@@ -1446,7 +1446,11 @@ export type Database = {
         Row: {
           barriers: string | null
           checkin_date: string
+          contact_mode:
+            | Database["public"]["Enums"]["checkin_contact_mode"]
+            | null
           created_at: string
+          discussed_plan: boolean | null
           id: string
           mi_techniques_used: string[] | null
           mood_status: number
@@ -1459,7 +1463,11 @@ export type Database = {
         Insert: {
           barriers?: string | null
           checkin_date?: string
+          contact_mode?:
+            | Database["public"]["Enums"]["checkin_contact_mode"]
+            | null
           created_at?: string
+          discussed_plan?: boolean | null
           id?: string
           mi_techniques_used?: string[] | null
           mood_status: number
@@ -1472,7 +1480,11 @@ export type Database = {
         Update: {
           barriers?: string | null
           checkin_date?: string
+          contact_mode?:
+            | Database["public"]["Enums"]["checkin_contact_mode"]
+            | null
           created_at?: string
+          discussed_plan?: boolean | null
           id?: string
           mi_techniques_used?: string[] | null
           mood_status?: number
@@ -1538,6 +1550,12 @@ export type Database = {
     }
     Enums: {
       card_level: "rookie" | "starter" | "veteran" | "all_star"
+      checkin_contact_mode:
+        | "in_person"
+        | "phone"
+        | "text"
+        | "app_message"
+        | "no_contact"
       crps_certification_status: "in_training" | "eligible" | "certified"
       crps_competency_status:
         | "not_started"
@@ -1741,6 +1759,13 @@ export const Constants = {
   public: {
     Enums: {
       card_level: ["rookie", "starter", "veteran", "all_star"],
+      checkin_contact_mode: [
+        "in_person",
+        "phone",
+        "text",
+        "app_message",
+        "no_contact",
+      ],
       crps_certification_status: ["in_training", "eligible", "certified"],
       crps_competency_status: [
         "not_started",
