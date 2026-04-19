@@ -17,9 +17,10 @@ interface MetricCard {
 
 interface AlertItem {
   id: string;
-  type: "overdue_checkin" | "crisis_note" | "pending_assessment" | "pending_peer";
+  type: "overdue_checkin" | "crisis_note" | "pending_assessment" | "pending_peer" | "unassigned_participants";
   severity: "red" | "amber" | "blue" | "purple";
   text: string;
+  badge?: { label: string; tone: "red" | "amber" };
   link?: string;
 }
 
