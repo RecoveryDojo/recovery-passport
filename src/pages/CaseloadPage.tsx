@@ -326,7 +326,7 @@ const CaseloadPage = () => {
         {caseload.length === 0 ? (
           <div className="bg-card border border-border rounded-xl p-6 text-center">
             <p className="text-muted-foreground text-sm">
-              No participants assigned yet. Approve pending requests to start building your caseload.
+              No participants assigned yet. When your supervisor assigns a participant to you, they will appear here.
             </p>
           </div>
         ) : (
