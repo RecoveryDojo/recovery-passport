@@ -5,7 +5,7 @@ import NotificationBell from "@/components/NotificationBell";
 
 const navItems = [
   { to: "/caseload", label: "Caseload", icon: Users },
-  { to: "/checkins", label: "Check-Ins", icon: CheckCircle },
+  { to: "/peer/checkins", label: "Check-Ins", icon: CheckCircle },
   { to: "/crps", label: "My Progress", icon: BarChart3 },
   { to: "/peers/profile", label: "Profile", icon: UserCircle },
 ];

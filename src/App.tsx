@@ -43,6 +43,7 @@ import AdminPeersPage from "@/pages/AdminPeersPage";
 import AdminMilestonesPage from "@/pages/AdminMilestonesPage";
 import AdminProgramsPage from "@/pages/AdminProgramsPage";
 import CaseloadPage from "@/pages/CaseloadPage";
+import PeerCheckInsPage from "@/pages/PeerCheckInsPage";
 import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
 import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
@@ -121,6 +122,7 @@ const App = () => (
               <Route path="/crps" element={<CrpsPage />} />
               <Route path="/crps/selfcare" element={<SelfCarePage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
+              <Route path="/peer/checkins" element={<PeerCheckInsPage />} />
             </Route>
 
             {/* Admin */}
