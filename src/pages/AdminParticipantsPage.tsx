@@ -16,12 +16,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, UserCheck, UserX, Clock } from "lucide-react";
+import { CheckCircle, UserCheck, UserX, Clock, ChevronRight } from "lucide-react";
+import AdminParticipantDetailSheet from "@/components/AdminParticipantDetailSheet";
 
 type Peer = { user_id: string; first_name: string; last_name: string };
 
+type AllParticipantRow = {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  recovery_start_date: string | null;
+  assigned_peer_id: string | null;
+  email: string;
+  peer: Peer | null | undefined;
+};
+
 const AdminParticipantsPage = () => {
   const [tab, setTab] = useState("needs");
+  const [detailParticipant, setDetailParticipant] = useState<AllParticipantRow | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const openDetail = (p: AllParticipantRow) => {
+    setDetailParticipant(p);
+    setDetailOpen(true);
+  };
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
