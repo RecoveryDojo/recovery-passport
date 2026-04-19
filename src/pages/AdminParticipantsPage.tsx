@@ -164,24 +164,43 @@ const AdminParticipantsPage = () => {
       });
 
       const peer = approvedPeers?.find((p) => p.user_id === peerUserId);
-      await supabase.from("notifications").insert({
-        user_id: participantUserId,
-        type: "peer_request_approved" as const,
-        title: "Peer Specialist Assigned",
-        body: peer
-          ? `${peer.first_name} ${peer.last_name} has been assigned as your peer specialist.`
-          : "A peer specialist has been assigned to you.",
-        link: "/card",
-      });
 
-      return { peer };
+      // Fire both notifications in parallel
+      await Promise.all([
+        // Notify the peer specialist
+        supabase.from("notifications").insert({
+          user_id: peerUserId,
+          type: "new_participant" as const,
+          title: "New Participant Assigned",
+          body: "A new participant has been added to your caseload. Check your Caseload tab.",
+          link: "/caseload",
+          is_read: false,
+          related_id: pendingRequestId ?? null,
+          related_type: "peer_request",
+        }),
+        // Notify the participant
+        supabase.from("notifications").insert({
+          user_id: participantUserId,
+          type: "general" as const,
+          title: "Your Peer Specialist is Ready",
+          body: "Your peer specialist has been assigned. Visit My Card to meet them.",
+          link: "/card",
+          is_read: false,
+          related_id: pendingRequestId ?? null,
+          related_type: "peer_request",
+        }),
+      ]);
+
+      return { peer, viaRequest: !!pendingRequestId };
     },
-    onSuccess: ({ peer }) => {
+    onSuccess: ({ peer, viaRequest }) => {
       toast({
-        title: "Peer assigned",
-        description: peer
-          ? `${peer.first_name} ${peer.last_name} is now assigned.`
-          : "Assignment saved.",
+        title: viaRequest ? "Approved" : "Peer assigned",
+        description: viaRequest
+          ? "Both parties have been notified."
+          : peer
+          ? `${peer.first_name} ${peer.last_name} is now assigned. Both parties notified.`
+          : "Assignment saved. Both parties notified.",
       });
       queryClient.invalidateQueries({ queryKey: ["admin-needs-assignment"] });
       queryClient.invalidateQueries({ queryKey: ["admin-all-participants"] });
