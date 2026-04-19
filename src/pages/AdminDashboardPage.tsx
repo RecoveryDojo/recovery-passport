@@ -114,6 +114,26 @@ const AdminDashboardPage = () => {
   const loadAlerts = async () => {
     const items: AlertItem[] = [];
 
+    // Unassigned participants summary alert
+    const { data: unassigned } = await supabase
+      .from("participant_profiles")
+      .select("id, first_name, last_name")
+      .is("assigned_peer_id", null)
+      .is("deleted_at", null);
+
+    if (unassigned && unassigned.length > 0) {
+      const names = unassigned.map((p) => `${p.first_name} ${p.last_name}`.trim());
+      const shown = names.slice(0, 3).join(", ");
+      const extra = names.length > 3 ? `, and ${names.length - 3} more` : "";
+      items.push({
+        id: "unassigned-summary",
+        type: "unassigned_participants",
+        severity: "amber",
+        text: `${names.length} participant${names.length === 1 ? "" : "s"} need peer assignment: ${shown}${extra}`,
+        link: "/admin/participants",
+      });
+    }
+
     // Overdue check-ins
     const { data: activeParticipants } = await supabase
       .from("participant_profiles")
@@ -130,9 +150,11 @@ const AdminDashboardPage = () => {
           .limit(1);
 
         const lastDate = lastCheckin?.[0]?.checkin_date;
-        const days = lastDate ? differenceInDays(new Date(), new Date(lastDate)) : 999;
+        const hasCheckin = !!lastDate;
+        const days = hasCheckin ? differenceInDays(new Date(), new Date(lastDate)) : null;
 
-        if (days >= 7) {
+        // Only escalate if never checked in OR ≥7 days
+        if (!hasCheckin || (days !== null && days >= 7)) {
           let peerName = "Unassigned";
           if (p.assigned_peer_id) {
             const { data: peer } = await supabase
@@ -142,11 +164,30 @@ const AdminDashboardPage = () => {
               .maybeSingle();
             if (peer) peerName = `${peer.first_name} ${peer.last_name}`;
           }
+
+          let badge: AlertItem["badge"];
+          let severity: AlertItem["severity"];
+          let suffix: string;
+          if (!hasCheckin) {
+            badge = { label: "Never Checked In", tone: "red" };
+            severity = "red";
+            suffix = "no check-ins on record";
+          } else if (days !== null && days >= 14) {
+            badge = { label: "Critical — No Contact", tone: "red" };
+            severity = "red";
+            suffix = `${days} days since last check-in`;
+          } else {
+            badge = { label: "Overdue", tone: "amber" };
+            severity = "amber";
+            suffix = `${days} days since last check-in`;
+          }
+
           items.push({
             id: `checkin-${p.id}`,
             type: "overdue_checkin",
-            severity: days >= 14 ? "red" : "amber",
-            text: `${p.first_name} ${p.last_name} — ${days === 999 ? "No check-ins" : `${days} days since last check-in`} — Peer: ${peerName}`,
+            severity,
+            badge,
+            text: `${p.first_name} ${p.last_name} — ${suffix} — Peer: ${peerName}`,
           });
         }
       }
