@@ -449,10 +449,21 @@ const AdminDashboardPage = () => {
               {alerts.map((a) => (
                 <div
                   key={a.id}
-                  className={`text-sm p-3 rounded-lg border cursor-pointer hover:opacity-80 ${severityColor(a.severity)}`}
+                  className={`text-sm p-3 rounded-lg border flex items-start justify-between gap-3 ${a.link ? "cursor-pointer hover:opacity-80" : ""} ${severityColor(a.severity)}`}
                   onClick={() => a.link && navigate(a.link)}
                 >
-                  {a.text}
+                  <span className="flex-1">{a.text}</span>
+                  {a.badge && (
+                    <Badge
+                      className={`shrink-0 text-[10px] uppercase tracking-wide border ${
+                        a.badge.tone === "red"
+                          ? "bg-destructive text-destructive-foreground border-destructive"
+                          : "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                      }`}
+                    >
+                      {a.badge.label}
+                    </Badge>
+                  )}
                 </div>
               ))}
             </div>
@@ -503,9 +514,21 @@ const AdminDashboardPage = () => {
                       </td>
                       <td className="text-center">{p.caseloadCount}</td>
                       <td className="text-center">
-                        <Badge variant={p.complianceRate >= 80 ? "default" : p.complianceRate >= 50 ? "secondary" : "destructive"} className="text-xs">
-                          {p.complianceRate.toFixed(0)}%
-                        </Badge>
+                        {p.caseloadCount === 0 ? (
+                          <span className="text-muted-foreground">—</span>
+                        ) : (
+                          <span
+                            className={`text-sm font-semibold ${
+                              p.complianceRate >= 80
+                                ? "text-green-700"
+                                : p.complianceRate >= 50
+                                ? "text-amber-700"
+                                : "text-destructive"
+                            }`}
+                          >
+                            {p.complianceRate.toFixed(0)}%
+                          </span>
+                        )}
                       </td>
                       <td className="text-center">
                         <div className="flex items-center justify-center gap-2">
