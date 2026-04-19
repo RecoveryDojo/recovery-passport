@@ -7,24 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
-import { Check, X, Clock, AlertCircle, ChevronRight, Heart } from "lucide-react";
-import type { Database } from "@/integrations/supabase/types";
-
-type CardLevel = Database["public"]["Enums"]["card_level"];
-
-const LEVEL_LABELS: Record<CardLevel, string> = {
-  rookie: "ROOKIE",
-  starter: "STARTER",
-  veteran: "VETERAN",
-  all_star: "ALL-STAR",
-};
-
-const LEVEL_STYLES: Record<CardLevel, string> = {
-  rookie: "bg-[hsl(0,0%,63%)] text-white",
-  starter: "bg-[hsl(217,91%,60%)] text-white",
-  veteran: "bg-primary text-primary-foreground",
-  all_star: "bg-accent text-accent-foreground",
-};
+import { Check, X, Clock, Heart } from "lucide-react";
+import CaseloadParticipantCard from "@/components/CaseloadParticipantCard";
 
 const CaseloadPage = () => {
   const { user } = useAuth();
