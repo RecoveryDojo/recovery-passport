@@ -1,0 +1,250 @@
+import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { cn } from "@/lib/utils";
+import type { Database } from "@/integrations/supabase/types";
+
+type ContactMode = Database["public"]["Enums"]["checkin_contact_mode"];
+
+interface LogCheckInSheetProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  participantId: string;
+  participantName: string;
+  peerSpecialistId: string;
+}
+
+const MOOD_OPTIONS = [
+  { value: 1, label: "Crisis", color: "bg-red-500 hover:bg-red-600 text-white" },
+  { value: 2, label: "Struggling", color: "bg-orange-500 hover:bg-orange-600 text-white" },
+  { value: 3, label: "Getting By", color: "bg-amber-500 hover:bg-amber-600 text-white" },
+  { value: 4, label: "Good", color: "bg-primary hover:bg-primary/90 text-primary-foreground" },
+  { value: 5, label: "Thriving", color: "bg-green-600 hover:bg-green-700 text-white" },
+];
+
+const CONTACT_MODES: { value: ContactMode; label: string }[] = [
+  { value: "in_person", label: "In-person" },
+  { value: "phone", label: "Phone" },
+  { value: "text", label: "Text" },
+  { value: "app_message", label: "App message" },
+  { value: "no_contact", label: "No contact made" },
+];
+
+const LogCheckInSheet = ({
+  open,
+  onOpenChange,
+  participantId,
+  participantName,
+  peerSpecialistId,
+}: LogCheckInSheetProps) => {
+  const queryClient = useQueryClient();
+  const [moodScore, setMoodScore] = useState<number | null>(null);
+  const [contactMode, setContactMode] = useState<ContactMode | "">("");
+  const [notes, setNotes] = useState("");
+  const [discussedPlan, setDiscussedPlan] = useState<boolean | null>(null);
+
+  const reset = () => {
+    setMoodScore(null);
+    setContactMode("");
+    setNotes("");
+    setDiscussedPlan(null);
+  };
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      if (!moodScore || !contactMode || discussedPlan === null) {
+        throw new Error("Please complete all required fields");
+      }
+
+      // Insert check-in
+      const { data: checkin, error: insertErr } = await supabase
+        .from("weekly_checkins")
+        .insert({
+          participant_id: participantId,
+          peer_specialist_id: peerSpecialistId,
+          mood_status: moodScore,
+          contact_mode: contactMode as ContactMode,
+          discussed_plan: discussedPlan,
+          summary: notes.trim() || null,
+        })
+        .select("id")
+        .single();
+      if (insertErr) throw insertErr;
+
+      // Log CRPS hours via existing RPC
+      if (checkin?.id) {
+        await supabase.rpc("log_checkin_crps_hours", {
+          p_checkin_id: checkin.id,
+          p_peer_id: peerSpecialistId,
+        });
+      }
+
+      // Low-mood alert: notify all admins
+      if (moodScore <= 2) {
+        const { data: admins } = await supabase
+          .from("users")
+          .select("id")
+          .eq("role", "admin");
+
+        if (admins && admins.length > 0) {
+          const rows = admins.map((a) => ({
+            user_id: a.id,
+            type: "general" as const,
+            title: "Low mood check-in",
+            body: `${participantName} reported a low mood score during check-in. Please review.`,
+            link: `/caseload/${participantId}`,
+            related_id: checkin?.id ?? null,
+            related_type: "weekly_checkin",
+          }));
+          await supabase.from("notifications").insert(rows);
+        }
+      }
+    },
+    onSuccess: () => {
+      toast.success(`Check-in logged for ${participantName}`);
+      queryClient.invalidateQueries({ queryKey: ["caseload-checkins"] });
+      queryClient.invalidateQueries({ queryKey: ["caseload"] });
+      queryClient.invalidateQueries({ queryKey: ["participant-checkins", participantId] });
+      reset();
+      onOpenChange(false);
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to log check-in");
+    },
+  });
+
+  return (
+    <Sheet
+      open={open}
+      onOpenChange={(o) => {
+        if (!o) reset();
+        onOpenChange(o);
+      }}
+    >
+      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Log Check-In</SheetTitle>
+          <SheetDescription>For {participantName}</SheetDescription>
+        </SheetHeader>
+
+        <div className="mt-6 space-y-6">
+          {/* Mood */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">
+              Mood score <span className="text-destructive">*</span>
+            </Label>
+            <div className="grid grid-cols-1 gap-2">
+              {MOOD_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setMoodScore(opt.value)}
+                  className={cn(
+                    "flex items-center justify-between rounded-lg px-4 py-3 text-sm font-medium transition-all",
+                    moodScore === opt.value
+                      ? `${opt.color} ring-2 ring-offset-2 ring-foreground/20`
+                      : "bg-muted text-foreground hover:bg-muted/70",
+                  )}
+                >
+                  <span>{opt.value} — {opt.label}</span>
+                  {moodScore === opt.value && <span aria-hidden>✓</span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact mode */}
+          <div className="space-y-2">
+            <Label htmlFor="contact-mode" className="text-sm font-medium">
+              Mode of contact <span className="text-destructive">*</span>
+            </Label>
+            <Select value={contactMode} onValueChange={(v) => setContactMode(v as ContactMode)}>
+              <SelectTrigger id="contact-mode">
+                <SelectValue placeholder="Select how you connected" />
+              </SelectTrigger>
+              <SelectContent>
+                {CONTACT_MODES.map((m) => (
+                  <SelectItem key={m.value} value={m.value}>
+                    {m.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-2">
+            <Label htmlFor="notes" className="text-sm font-medium">
+              Notes <span className="text-muted-foreground font-normal">(optional)</span>
+            </Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value.slice(0, 500))}
+              maxLength={500}
+              placeholder="Optional: brief notes about this check-in"
+              className="min-h-[100px]"
+            />
+            <p className="text-xs text-muted-foreground text-right">{notes.length}/500</p>
+          </div>
+
+          {/* Discussed plan */}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">
+              Did you discuss their recovery plan? <span className="text-destructive">*</span>
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                variant={discussedPlan === true ? "default" : "outline"}
+                onClick={() => setDiscussedPlan(true)}
+                className={discussedPlan === true ? "bg-primary hover:bg-primary/90" : ""}
+              >
+                Yes
+              </Button>
+              <Button
+                type="button"
+                variant={discussedPlan === false ? "default" : "outline"}
+                onClick={() => setDiscussedPlan(false)}
+                className={discussedPlan === false ? "bg-primary hover:bg-primary/90" : ""}
+              >
+                No
+              </Button>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => mutation.mutate()}
+            disabled={
+              mutation.isPending || !moodScore || !contactMode || discussedPlan === null
+            }
+            className="w-full bg-primary hover:bg-primary/90"
+            size="lg"
+          >
+            {mutation.isPending ? "Saving…" : "Save Check-In"}
+          </Button>
+        </div>
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+export default LogCheckInSheet;
