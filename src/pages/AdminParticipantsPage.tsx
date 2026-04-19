@@ -461,6 +461,12 @@ const AdminParticipantsPage = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      <AdminParticipantDetailSheet
+        participant={detailParticipant}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
     </div>
   );
 };
