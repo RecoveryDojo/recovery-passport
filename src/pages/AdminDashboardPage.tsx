@@ -17,9 +17,10 @@ interface MetricCard {
 
 interface AlertItem {
   id: string;
-  type: "overdue_checkin" | "crisis_note" | "pending_assessment" | "pending_peer";
+  type: "overdue_checkin" | "crisis_note" | "pending_assessment" | "pending_peer" | "unassigned_participants";
   severity: "red" | "amber" | "blue" | "purple";
   text: string;
+  badge?: { label: string; tone: "red" | "amber" };
   link?: string;
 }
 
@@ -113,6 +114,26 @@ const AdminDashboardPage = () => {
   const loadAlerts = async () => {
     const items: AlertItem[] = [];
 
+    // Unassigned participants summary alert
+    const { data: unassigned } = await supabase
+      .from("participant_profiles")
+      .select("id, first_name, last_name")
+      .is("assigned_peer_id", null)
+      .is("deleted_at", null);
+
+    if (unassigned && unassigned.length > 0) {
+      const names = unassigned.map((p) => `${p.first_name} ${p.last_name}`.trim());
+      const shown = names.slice(0, 3).join(", ");
+      const extra = names.length > 3 ? `, and ${names.length - 3} more` : "";
+      items.push({
+        id: "unassigned-summary",
+        type: "unassigned_participants",
+        severity: "amber",
+        text: `${names.length} participant${names.length === 1 ? "" : "s"} need peer assignment: ${shown}${extra}`,
+        link: "/admin/participants",
+      });
+    }
+
     // Overdue check-ins
     const { data: activeParticipants } = await supabase
       .from("participant_profiles")
@@ -129,9 +150,11 @@ const AdminDashboardPage = () => {
           .limit(1);
 
         const lastDate = lastCheckin?.[0]?.checkin_date;
-        const days = lastDate ? differenceInDays(new Date(), new Date(lastDate)) : 999;
+        const hasCheckin = !!lastDate;
+        const days = hasCheckin ? differenceInDays(new Date(), new Date(lastDate)) : null;
 
-        if (days >= 7) {
+        // Only escalate if never checked in OR ≥7 days
+        if (!hasCheckin || (days !== null && days >= 7)) {
           let peerName = "Unassigned";
           if (p.assigned_peer_id) {
             const { data: peer } = await supabase
@@ -141,11 +164,30 @@ const AdminDashboardPage = () => {
               .maybeSingle();
             if (peer) peerName = `${peer.first_name} ${peer.last_name}`;
           }
+
+          let badge: AlertItem["badge"];
+          let severity: AlertItem["severity"];
+          let suffix: string;
+          if (!hasCheckin) {
+            badge = { label: "Never Checked In", tone: "red" };
+            severity = "red";
+            suffix = "no check-ins on record";
+          } else if (days !== null && days >= 14) {
+            badge = { label: "Critical — No Contact", tone: "red" };
+            severity = "red";
+            suffix = `${days} days since last check-in`;
+          } else {
+            badge = { label: "Overdue", tone: "amber" };
+            severity = "amber";
+            suffix = `${days} days since last check-in`;
+          }
+
           items.push({
             id: `checkin-${p.id}`,
             type: "overdue_checkin",
-            severity: days >= 14 ? "red" : "amber",
-            text: `${p.first_name} ${p.last_name} — ${days === 999 ? "No check-ins" : `${days} days since last check-in`} — Peer: ${peerName}`,
+            severity,
+            badge,
+            text: `${p.first_name} ${p.last_name} — ${suffix} — Peer: ${peerName}`,
           });
         }
       }
@@ -407,10 +449,21 @@ const AdminDashboardPage = () => {
               {alerts.map((a) => (
                 <div
                   key={a.id}
-                  className={`text-sm p-3 rounded-lg border cursor-pointer hover:opacity-80 ${severityColor(a.severity)}`}
+                  className={`text-sm p-3 rounded-lg border flex items-start justify-between gap-3 ${a.link ? "cursor-pointer hover:opacity-80" : ""} ${severityColor(a.severity)}`}
                   onClick={() => a.link && navigate(a.link)}
                 >
-                  {a.text}
+                  <span className="flex-1">{a.text}</span>
+                  {a.badge && (
+                    <Badge
+                      className={`shrink-0 text-[10px] uppercase tracking-wide border ${
+                        a.badge.tone === "red"
+                          ? "bg-destructive text-destructive-foreground border-destructive"
+                          : "bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                      }`}
+                    >
+                      {a.badge.label}
+                    </Badge>
+                  )}
                 </div>
               ))}
             </div>
@@ -461,9 +514,21 @@ const AdminDashboardPage = () => {
                       </td>
                       <td className="text-center">{p.caseloadCount}</td>
                       <td className="text-center">
-                        <Badge variant={p.complianceRate >= 80 ? "default" : p.complianceRate >= 50 ? "secondary" : "destructive"} className="text-xs">
-                          {p.complianceRate.toFixed(0)}%
-                        </Badge>
+                        {p.caseloadCount === 0 ? (
+                          <span className="text-muted-foreground">—</span>
+                        ) : (
+                          <span
+                            className={`text-sm font-semibold ${
+                              p.complianceRate >= 80
+                                ? "text-green-700"
+                                : p.complianceRate >= 50
+                                ? "text-amber-700"
+                                : "text-destructive"
+                            }`}
+                          >
+                            {p.complianceRate.toFixed(0)}%
+                          </span>
+                        )}
                       </td>
                       <td className="text-center">
                         <div className="flex items-center justify-center gap-2">
