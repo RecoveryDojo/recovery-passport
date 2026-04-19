@@ -120,6 +120,7 @@ const App = () => (
               <Route path="/caseload" element={<CaseloadPage />} />
               <Route path="/caseload/:participantId" element={<ParticipantDetailPage />} />
               <Route path="/caseload/:participantId/checkin" element={<CheckInFormPage />} />
+              <Route path="/checkin/:participantId" element={<CheckInFormPage />} />
               <Route path="/crps" element={<CrpsPage />} />
               <Route path="/crps/selfcare" element={<SelfCarePage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
