@@ -16,12 +16,31 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle, UserCheck, UserX, Clock } from "lucide-react";
+import { CheckCircle, UserCheck, UserX, Clock, ChevronRight } from "lucide-react";
+import AdminParticipantDetailSheet from "@/components/AdminParticipantDetailSheet";
 
 type Peer = { user_id: string; first_name: string; last_name: string };
 
+type AllParticipantRow = {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  recovery_start_date: string | null;
+  assigned_peer_id: string | null;
+  email: string;
+  peer: Peer | null | undefined;
+};
+
 const AdminParticipantsPage = () => {
   const [tab, setTab] = useState("needs");
+  const [detailParticipant, setDetailParticipant] = useState<AllParticipantRow | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const openDetail = (p: AllParticipantRow) => {
+    setDetailParticipant(p);
+    setDetailOpen(true);
+  };
   const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -365,32 +384,40 @@ const AdminParticipantsPage = () => {
               return (
                 <Card key={p.id}>
                   <CardContent className="p-4 space-y-3">
-                    <div className="flex items-start justify-between gap-4 flex-wrap">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-foreground">{fullName(p)}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                          {p.email}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {days !== null
-                            ? `${days} day${days === 1 ? "" : "s"} in recovery`
-                            : "Recovery start date not set"}
-                        </p>
+                    <button
+                      type="button"
+                      onClick={() => openDetail(p)}
+                      className="w-full -m-1 p-1 rounded-md text-left hover:bg-muted/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label={`View details for ${fullName(p)}`}
+                    >
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-foreground">{fullName(p)}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                            {p.email}
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {days !== null
+                              ? `${days} day${days === 1 ? "" : "s"} in recovery`
+                              : "Recovery start date not set"}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {p.assigned_peer_id && p.peer ? (
+                            <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
+                              <UserCheck className="h-3 w-3 mr-1" />
+                              {fullName(p.peer)}
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
+                              <UserX className="h-3 w-3 mr-1" />
+                              Unassigned
+                            </Badge>
+                          )}
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                        </div>
                       </div>
-                      <div>
-                        {p.assigned_peer_id && p.peer ? (
-                          <Badge className="bg-green-100 text-green-800 border-green-200 hover:bg-green-100">
-                            <UserCheck className="h-3 w-3 mr-1" />
-                            {fullName(p.peer)}
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100">
-                            <UserX className="h-3 w-3 mr-1" />
-                            Unassigned
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
+                    </button>
 
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-xs text-muted-foreground">
@@ -434,6 +461,12 @@ const AdminParticipantsPage = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      <AdminParticipantDetailSheet
+        participant={detailParticipant}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+      />
     </div>
   );
 };
