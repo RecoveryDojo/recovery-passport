@@ -13,6 +13,9 @@ import type { Database } from "@/integrations/supabase/types";
 import { emitEvent } from "@/lib/events";
 import { channels } from "@/lib/realtime-channels";
 import TodaySection from "@/components/card/TodaySection";
+import StreakStats from "@/components/card/StreakStats";
+import RcSparkline from "@/components/card/RcSparkline";
+import QuickActionFab from "@/components/card/QuickActionFab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -382,13 +385,11 @@ const CardPage = () => {
                 label="Milestones"
               />
             </Link>
-            <Link to="/assessment/take" className="cursor-pointer">
-              <StatBox
-                value={rcScore != null ? `${rcScore}${trendIndicator ? ` ${trendIndicator}` : ""}` : "—"}
-                label={isUnconfirmed ? "RC (pending)" : "RC Score"}
-              />
-            </Link>
+            <RcSparkline participantId={profile.id} />
           </div>
+
+          {/* Streak stats (Phase 2B) */}
+          <StreakStats participantId={profile.id} />
         </div>
 
         {/* ROW 3 — Level badge */}
