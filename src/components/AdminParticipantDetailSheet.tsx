@@ -8,7 +8,9 @@
  * Tabs: Overview · Journey · Engagement · Care Team · Notes
  */
 import { format, formatDistanceToNow, differenceInDays } from "date-fns";
+import { Link } from "react-router-dom";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
