@@ -33,6 +33,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import MilestonesTab from "@/components/MilestonesTab";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -337,43 +338,13 @@ const CaseloadParticipantDetailPage = () => {
             </CardContent>
           </Card>
 
-          {/* Milestones */}
-          <Card id="milestones">
-            <CardContent className="p-4 space-y-3">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                Earned Milestones ({data.earnedMilestones.length} / {data.totalMilestoneCount})
-              </p>
-              {data.earnedMilestones.length === 0 ? (
-                <p className="text-sm text-muted-foreground">None yet.</p>
-              ) : (
-                <ul className="space-y-2">
-                  {data.earnedMilestones.slice(0, 6).map((m) => (
-                    <li key={m.id} className="flex items-center gap-2 text-sm">
-                      <Award className="h-4 w-4 text-accent" />
-                      <span className="text-foreground flex-1">
-                        {m.milestone?.name ?? "Milestone"}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDistanceToNow(new Date(m.unlocked_at), { addSuffix: true })}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {data.nextMilestones.length > 0 && (
-                <div className="pt-3 border-t border-border">
-                  <p className="text-xs text-muted-foreground mb-2">Up next</p>
-                  <ul className="space-y-1.5">
-                    {data.nextMilestones.map((m) => (
-                      <li key={m.id} className="text-sm text-muted-foreground">
-                        • {m.name}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <div id="milestones">
+            <MilestonesTab
+              participantId={profile.id}
+              participantName={name}
+              assignedPeerId={profile.assigned_peer_id}
+            />
+          </div>
 
           {/* Recent assessments */}
           <Card>
