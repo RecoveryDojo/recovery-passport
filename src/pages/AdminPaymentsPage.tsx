@@ -77,6 +77,24 @@ const AdminPaymentsPage = () => {
 
   if (!participantId) return null;
 
+  if (!participantId || !UUID_RE.test(participantId)) {
+    return (
+      <div className="px-4 pt-6 pb-4 max-w-2xl mx-auto space-y-4">
+        <div className="bg-card border border-border rounded-xl p-8 text-center space-y-3">
+          <h1 className="text-lg font-bold text-foreground">Select a participant</h1>
+          <p className="text-sm text-muted-foreground">
+            Open a participant from the list, then click <span className="font-medium">Payments</span> in their detail panel.
+          </p>
+          <Button asChild className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Link to="/admin/participants">
+              <ArrowLeft className="h-4 w-4 mr-1" /> Go to participants
+            </Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   const fullName = profile
     ? [profile.first_name, profile.last_name].filter(Boolean).join(" ") || "Participant"
     : "Participant";
