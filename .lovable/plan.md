@@ -1,57 +1,52 @@
 
 
-# Unified Sprint v2 — Execution Plan (approved, building now)
+# Where everything lives + finish the Phase 3 wiring
 
-This is the build I'm executing top-to-bottom. No new decisions in this plan — it's the v2 plan you already approved, restated as the execution checklist with the 5 sub-phase checkpoints I'll post against.
+## What IS already wired (you just need to find it on screen)
 
-## Execution order
+**On `/card` — scroll DOWN past the baseball card:**
 
 ```text
-Phase 1   Shared hook                          → checkpoint
-Phase 2A  Migration + Today section            → checkpoint
-Phase 2B  Card enhancements                    → checkpoint
-Phase 2C  Conversation surfaces (+ migration)  → checkpoint
-Phase 3   Peer caseload + detail page          ┐
-Phase 4   Admin sheet 5-tab refactor           ├ → final checkpoint
-Phase 5   Notification sweep → emitEvent()     ┘
+┌─────────────────────────────┐
+│ TODAY section               │ ← Phase 2A (mood + focus + next milestone)
+├─────────────────────────────┤
+│ ⚾ BASEBALL CARD            │ ← Phase 2B (streaks, RC sparkline inside)
+│   [tap level badge ↓]       │ ← opens LevelRoadmapModal ✅
+├─────────────────────────────┤
+│ Ask Your Peer card          │ ← Phase 2C ✅ (only visible if a peer is assigned)
+│ Reflection Journal          │ ← Phase 2C ✅
+│ Resource of the Day         │ ← Phase 2C ✅ (only visible if community_partners exist)
+├─────────────────────────────┤
+│ Journey stage banner        │
+└─────────────────────────────┘
++ floating QuickActionFab      ← Phase 2B ✅ (bottom-right circle button)
 ```
 
-## Phase 1 — Shared data spine
-**New:** `src/hooks/use-participant-clinical-summary.ts` — single React Query hook returning profile, active phase, plan steps, milestones (earned + next-eligible), last 6 assessment sessions, 8 weeks of `weekly_checkins`, last 5 `progress_notes`, agreement/consent/shared_link counts, assigned peer's caseload size, supervisor_feedback. Subscribes to `channels.checkins/notes/milestones/assessments/plan` and invalidates matching `qk.*` keys.
+**Why specific cards may be invisible right now:**
+- **Ask Your Peer** — hides itself when no peer is assigned (returns `null`). Check your participant has `assigned_peer_id` set.
+- **Resource of the Day** — hides itself when no `community_partners` rows are approved + available. Check the table has data.
+- **Reflection Journal** — always visible. If you don't see it, you haven't scrolled far enough.
+- **Level Roadmap Modal** — only opens when you tap the colored level badge (⚾ ROOKIE / STARTER / etc.) at the bottom of the baseball card.
 
-## Phase 2A — Migration + "Today" section
-**Migration:** RLS policy on `weekly_checkins` to allow participant self-insert + drop NOT NULL on `peer_specialist_id`.
-**New hook:** `src/hooks/use-log-mood.ts` — mood-only insert, no peer/contact_mode required, emits `checkin.logged` + `checkin.low_mood`.
-**New components under `src/components/card/`:** `TodaySection.tsx`, `MoodWidget.tsx`, `TodayFocusCard.tsx`, `NextMilestonePreview.tsx`.
-**Edited:** `CardPage.tsx` — mount `<TodaySection />` above the card (~10 line delta).
+## What is NOT wired yet (the actual gap)
 
-## Phase 2B — Card enhancements
-**New components under `src/components/card/`:** `StreakStats.tsx`, `RcSparkline.tsx`, `QuickActionFab.tsx`.
-**Edited:** `CardPage.tsx` — mount streaks inside card, swap RC number for sparkline, mount FAB at page root (~15 line delta).
+`CaseloadHealthHeader` and `QuickActionsMenu` exist as files but are not mounted. The original Phase 3 plan included this and it was missed. I'll finish it now:
 
-## Phase 2C — Conversation surfaces
-**Migration:** RLS policy on `progress_notes` to allow participants to insert their own notes (author_id = auth.uid() AND participant_id = own).
-**New components under `src/components/card/`:** `AskYourPeerCard.tsx`, `ReflectionJournal.tsx`, `ResourceOfTheDay.tsx`, `LevelRoadmapModal.tsx`.
-**Edited:** `CardPage.tsx` — stack the four under the card, wire level badge to open modal (~15 line delta).
+### Edit `src/pages/CaseloadPage.tsx`
+- Import `CaseloadHealthHeader`
+- Build a `lastMoods` map from the existing `weekly_checkins` query (one extra `mood_status` column, no new query)
+- Mount `<CaseloadHealthHeader participants={caseload} lastCheckins={lastCheckins} lastMoods={lastMoods} />` directly under the "My Caseload" h1, above the self-care banner
 
-## Phase 3 — Peer caseload + detail
-**New:** `src/components/caseload/CaseloadHealthHeader.tsx`, `src/components/caseload/QuickActionsMenu.tsx`, `src/pages/CaseloadParticipantDetailPage.tsx` (5 tabs: Overview · Journey · Engagement · Care Team · Notes), all using `useParticipantClinicalSummary`.
-**Edited:** `CaseloadPage.tsx` (mount header + sort/filter), `CaseloadParticipantCard.tsx` (crisis dot, feedback badge, `…` menu), `App.tsx` (add `/caseload/:id` route).
+### Edit `src/components/CaseloadParticipantCard.tsx`
+- Import `QuickActionsMenu`
+- Add a `…` button in the top-right of the card header (next to the chevron) that opens `QuickActionsMenu`
+- Wire its actions: "Log Check-In" opens the existing `LogCheckInSheet`, "View Full History" navigates to `/caseload/:id`, "Add Note" navigates to `/caseload/:id?tab=notes`
 
-## Phase 4 — Admin sheet 5-tab refactor
-**New:** `src/hooks/use-supervisor-feedback.ts` (shared with `AdminPeerReviewPage`).
-**Edited:** `AdminParticipantDetailSheet.tsx` — sticky header + 5 tabs (Overview · Journey · Engagement · Care Team · Notes & Compliance), uses `useParticipantClinicalSummary`.
+No new queries, no new files, no DB changes. This is purely the missing wiring from Phase 3.
 
-## Phase 5 — Notification sweep
-Replace ad-hoc `notifications`/`audit_log` inserts at: peer approve/reject, payment recorded, agreement published, peer assignment, peer_request create/respond, referral created, consent created, shared_link created — all → `emitEvent()`. No behavior change.
+## After this fix, your verification path
 
-## Guardrails enforced during build
-- `CardPage.tsx` ≤40 line delta total across 2A+2B+2C
-- One feature = one file under `src/components/card/`
-- Every new component reads from `useParticipantClinicalSummary` (no per-component Supabase queries)
-- No cross-sub-phase imports
-- Sub-phase boundary = short summary post before continuing
-
-## Final deliverable
-A "sprint complete" message listing every file changed + a 4-step verification checklist (test `/card` → `/caseload` → `/caseload/:id` → admin sheet).
+1. **`/card`** (participant) — scroll down, confirm you see Ask Your Peer (if peer assigned) → Reflection Journal → Resource of the Day. Tap the ⚾ level badge → LevelRoadmapModal opens.
+2. **`/caseload`** (peer) — confirm the 4-tile health header (Caseload / Crisis / Overdue / All-Star) appears at the top.
+3. **Caseload card `…` menu** — tap it on any participant row, confirm Log Check-In / Add Note / View Full History work.
 
