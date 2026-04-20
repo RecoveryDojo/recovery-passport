@@ -307,8 +307,13 @@ export function useParticipantClinicalSummary(participantId: string | null | und
       });
     };
 
+    // Unique suffix per mount to avoid colliding with Supabase's internal
+    // channel cache when StrictMode / re-renders cause the effect to re-run
+    // before the previous removeChannel() has completed.
+    const uid = Math.random().toString(36).slice(2, 10);
+
     const checkinsChan = supabase
-      .channel(channels.checkins(participantId))
+      .channel(`${channels.checkins(participantId)}-${uid}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "weekly_checkins", filter: `participant_id=eq.${participantId}` },
@@ -321,7 +326,7 @@ export function useParticipantClinicalSummary(participantId: string | null | und
       .subscribe();
 
     const notesChan = supabase
-      .channel(channels.notes(participantId))
+      .channel(`${channels.notes(participantId)}-${uid}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "progress_notes", filter: `participant_id=eq.${participantId}` },
@@ -333,7 +338,7 @@ export function useParticipantClinicalSummary(participantId: string | null | und
       .subscribe();
 
     const milestonesChan = supabase
-      .channel(channels.milestones(participantId))
+      .channel(`${channels.milestones(participantId)}-${uid}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "participant_milestones", filter: `participant_id=eq.${participantId}` },
@@ -346,7 +351,7 @@ export function useParticipantClinicalSummary(participantId: string | null | und
       .subscribe();
 
     const assessmentsChan = supabase
-      .channel(channels.assessments(participantId))
+      .channel(`${channels.assessments(participantId)}-${uid}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "assessment_sessions", filter: `participant_id=eq.${participantId}` },
@@ -358,7 +363,7 @@ export function useParticipantClinicalSummary(participantId: string | null | und
       .subscribe();
 
     const planChan = supabase
-      .channel(channels.plan(participantId))
+      .channel(`${channels.plan(participantId)}-${uid}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "plan_action_steps" },
