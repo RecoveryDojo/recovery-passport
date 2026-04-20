@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import { Link2, Lock, Copy, Share2, Download, XCircle } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { format, formatDistanceToNow, isPast } from "date-fns";
+import { emitEvent } from "@/lib/events";
 
 const SECTION_DEFAULTS = [
   { key: "milestones", label: "Milestones", defaultOn: true, locked: false },
@@ -128,16 +129,29 @@ const PassportConfigPage = () => {
         .single();
       if (linkErr) throw linkErr;
 
-      await supabase.from("consent_records").insert({
-        participant_id: profileId, shared_link_id: link.id,
-        recipient_description: recipient.trim(), purpose: purpose.trim(),
-        sections_disclosed: visibleSections,
-      });
+      const { data: consentRow } = await supabase
+        .from("consent_records")
+        .insert({
+          participant_id: profileId, shared_link_id: link.id,
+          recipient_description: recipient.trim(), purpose: purpose.trim(),
+          sections_disclosed: visibleSections,
+        })
+        .select("id")
+        .single();
 
-      await supabase.from("audit_log").insert({
-        user_id: user.id, action: "generate_passport_link",
-        target_type: "shared_links", target_id: link.id,
-      });
+      // Emit shared_link.created (audit) and consent.created (audit)
+      await Promise.all([
+        emitEvent("shared_link.created", {
+          target_type: "shared_links",
+          target_id: link.id,
+          metadata: { participant_id: profileId, recipient: recipient.trim(), purpose: purpose.trim() },
+        }),
+        emitEvent("consent.created", {
+          target_type: "consent_records",
+          target_id: consentRow?.id,
+          metadata: { participant_id: profileId, shared_link_id: link.id },
+        }),
+      ]);
 
       return token;
     },

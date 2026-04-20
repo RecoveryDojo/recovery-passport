@@ -136,14 +136,25 @@ const TransitionsTab = ({ participantId, participantName, participantUserId, vie
         .single();
       if (error) throw error;
 
-      // Notify participant
+      // Emit referral.created → audit + participant notification
       const peerName = peerProfile ? `${peerProfile.first_name} ${peerProfile.last_name}`.trim() : "Your peer specialist";
-      await supabase.from("notifications").insert({
-        user_id: participantUserId,
-        type: "referral_received" as any,
-        title: "Transition initiated",
-        body: `${peerName} has initiated your transition to ${selectedPartner.name}. You will be contacted soon.`,
-        link: "/plan",
+      await emitEvent("referral.created", {
+        target_type: "referrals",
+        target_id: data?.id,
+        metadata: {
+          participant_id: participantId,
+          partner_id: selectedPartner.id,
+          partner_name: selectedPartner.name,
+        },
+        recipients: participantUserId
+          ? [{
+              user_id: participantUserId,
+              type: "referral_received",
+              title: "Transition initiated",
+              body: `${peerName} has initiated your transition to ${selectedPartner.name}. You will be contacted soon.`,
+              link: "/plan",
+            }]
+          : [],
       });
 
       updateCrpsCompetencies({ action: "referral", peer_id: user.id, participant_id: participantId });
