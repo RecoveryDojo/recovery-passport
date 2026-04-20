@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import PaymentLedger from "@/components/PaymentLedger";
+import { emitEvent } from "@/lib/events";
 import type { Database } from "@/integrations/supabase/types";
 
 type PaymentType = Database["public"]["Enums"]["payment_type"];
@@ -38,14 +39,28 @@ const AdminPaymentsPage = () => {
 
   const addMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("payment_records").insert({
-        participant_id: participantId!,
-        type,
-        amount: parseFloat(amount),
-        description: description.trim(),
-        recorded_by: user!.id,
-      });
+      const { data: inserted, error } = await supabase
+        .from("payment_records")
+        .insert({
+          participant_id: participantId!,
+          type,
+          amount: parseFloat(amount),
+          description: description.trim(),
+          recorded_by: user!.id,
+        })
+        .select("id")
+        .single();
       if (error) throw error;
+
+      await emitEvent("payment.recorded", {
+        target_type: "payment_records",
+        target_id: inserted?.id,
+        metadata: {
+          participant_id: participantId,
+          type,
+          amount: parseFloat(amount),
+        },
+      });
     },
     onSuccess: () => {
       toast.success("Entry logged");

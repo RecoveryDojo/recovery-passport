@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { updateCrpsCompetencies } from "@/lib/crps-updater";
+import { emitEvent } from "@/lib/events";
 import { format } from "date-fns";
 
 interface MilestonesTabProps {
@@ -114,30 +115,30 @@ const MilestonesTab = ({ participantId, participantName, assignedPeerId }: Miles
       }).select("id").single();
       if (insertErr) throw insertErr;
 
-      // Audit: unlock_milestone
-      await supabase.from("audit_log").insert({
-        user_id: user!.id,
-        action: "unlock_milestone",
-        target_type: "participant_milestones",
-        target_id: inserted.id,
-        metadata: { milestone_name: milestoneName, participant_id: participantId },
-      });
-
       // 2. Recalculate card level
       await supabase.rpc("recalculate_card_level", { p_participant_id: participantId });
 
-      // 3. Notify participant
-      if (participantUserId) {
-        await supabase.from("notifications").insert({
-          user_id: participantUserId,
-          type: "milestone_unlocked" as const,
-          title: `Milestone unlocked: ${milestoneName}!`,
-          body: `Your peer specialist ${currentPeerName ?? "your peer specialist"} verified this.`,
-          link: "/card",
-          related_id: milestoneId,
-          related_type: "milestone",
-        });
-      }
+      // 3. Emit milestone.unlocked → audit + participant notification
+      await emitEvent("milestone.unlocked", {
+        target_type: "participant_milestones",
+        target_id: inserted.id,
+        metadata: {
+          milestone_name: milestoneName,
+          milestone_id: milestoneId,
+          participant_id: participantId,
+        },
+        recipients: participantUserId
+          ? [
+              {
+                user_id: participantUserId,
+                type: "milestone_unlocked",
+                title: `Milestone unlocked: ${milestoneName}!`,
+                body: `Your peer specialist ${currentPeerName ?? "your peer specialist"} verified this.`,
+                link: "/card",
+              },
+            ]
+          : [],
+      });
 
       // Update CRPS competencies
       updateCrpsCompetencies({ action: "milestone_unlocked", peer_id: user!.id });

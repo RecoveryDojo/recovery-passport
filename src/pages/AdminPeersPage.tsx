@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, XCircle, Ban, RotateCcw, Eye, AlertTriangle, Users, GraduationCap, Calendar, UserCheck, Shield } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { emitEvent } from "@/lib/events";
 
 type PeerProfile = Tables<"peer_specialist_profiles">;
 type ApprovalStatus = "pending" | "approved" | "rejected" | "suspended";
@@ -94,36 +95,36 @@ const AdminPeersPage = () => {
         .eq("user_id", userId);
       if (error) throw error;
 
-      // Audit: peer approval action
-      const actionMap: Record<string, string> = {
-        approved: "approve_peer",
-        rejected: "reject_peer",
-        suspended: "suspend_peer",
-        pending: "reinstate_peer",
+      // Emit peer status change → audit + notification fan-out
+      const eventMap: Record<string, "peer.approved" | "peer.rejected" | "peer.suspended"> = {
+        approved: "peer.approved",
+        rejected: "peer.rejected",
+        suspended: "peer.suspended",
       };
-      await supabase.from("audit_log").insert({
-        user_id: user?.id,
-        action: actionMap[status] || `peer_status_${status}`,
-        target_type: "peer_specialist_profiles",
-        target_id: userId,
-        metadata: { new_status: status, ...(reason ? { reason } : {}) },
-      });
-
-      // Create notification for the peer
-      if (status === "approved") {
-        await supabase.from("notifications").insert({
-          user_id: userId,
-          type: "peer_application_approved" as const,
-          title: "Account Approved",
-          body: "Your account has been approved. You can now access your caseload.",
-          link: "/caseload",
-        });
-      } else if (status === "rejected") {
-        await supabase.from("notifications").insert({
-          user_id: userId,
-          type: "peer_application_rejected" as const,
-          title: "Application Not Approved",
-          body: reason || "Your application was not approved at this time.",
+      const event = eventMap[status];
+      if (event) {
+        const recipients =
+          status === "approved"
+            ? [{
+                user_id: userId,
+                type: "peer_application_approved" as const,
+                title: "Account Approved",
+                body: "Your account has been approved. You can now access your caseload.",
+                link: "/caseload",
+              }]
+            : status === "rejected"
+            ? [{
+                user_id: userId,
+                type: "peer_application_rejected" as const,
+                title: "Application Not Approved",
+                body: reason || "Your application was not approved at this time.",
+              }]
+            : [];
+        await emitEvent(event, {
+          target_type: "peer_specialist_profiles",
+          target_id: userId,
+          metadata: { new_status: status, ...(reason ? { reason } : {}) },
+          recipients,
         });
       }
     },
@@ -149,11 +150,15 @@ const AdminPeersPage = () => {
         .eq("user_id", peer.user_id);
       if (error) throw error;
 
-      await supabase.from("notifications").insert({
-        user_id: peer.user_id,
-        type: "peer_edits_approved" as const,
-        title: "Profile Changes Approved",
-        body: "Your profile changes have been reviewed and approved.",
+      await emitEvent("peer.edits_approved", {
+        target_type: "peer_specialist_profiles",
+        target_id: peer.user_id,
+        recipients: [{
+          user_id: peer.user_id,
+          type: "peer_edits_approved",
+          title: "Profile Changes Approved",
+          body: "Your profile changes have been reviewed and approved.",
+        }],
       });
     },
     onSuccess: () => {
