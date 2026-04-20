@@ -70,9 +70,44 @@ const PHASE_LABELS: Record<string, string> = {
   six_month: "6-Month Phase",
 };
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const CaseloadParticipantDetailPage = () => {
   const { participantId } = useParams<{ participantId: string }>();
-  const { data, isLoading } = useParticipantClinicalSummary(participantId);
+  const validId = participantId && UUID_RE.test(participantId) ? participantId : null;
+  const { data, isLoading, isError, error } = useParticipantClinicalSummary(validId);
+
+  // Invalid / missing participant id in the URL — show actionable message
+  if (!validId) {
+    return (
+      <div className="p-6 max-w-3xl mx-auto text-center space-y-3">
+        <p className="text-muted-foreground">
+          No participant selected. The link you followed is missing a valid participant ID.
+        </p>
+        <Button asChild variant="outline">
+          <Link to="/caseload">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to caseload
+          </Link>
+        </Button>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-6 max-w-3xl mx-auto text-center space-y-3">
+        <p className="text-destructive">Failed to load participant.</p>
+        <p className="text-xs text-muted-foreground">{(error as Error)?.message}</p>
+        <Button asChild variant="outline">
+          <Link to="/caseload">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to caseload
+          </Link>
+        </Button>
+      </div>
+    );
+  }
 
   if (isLoading || !data) {
     return (
@@ -86,8 +121,14 @@ const CaseloadParticipantDetailPage = () => {
   const profile = data.profile;
   if (!profile) {
     return (
-      <div className="p-6 max-w-3xl mx-auto text-center text-muted-foreground">
-        Participant not found.
+      <div className="p-6 max-w-3xl mx-auto text-center space-y-3">
+        <p className="text-muted-foreground">Participant not found.</p>
+        <Button asChild variant="outline">
+          <Link to="/caseload">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to caseload
+          </Link>
+        </Button>
       </div>
     );
   }
