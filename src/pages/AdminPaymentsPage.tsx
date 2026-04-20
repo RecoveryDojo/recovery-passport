@@ -75,7 +75,7 @@ const AdminPaymentsPage = () => {
     onError: () => toast.error("Failed to log entry"),
   });
 
-  if (!participantId) return null;
+
 
   if (!participantId || !UUID_RE.test(participantId)) {
     return (
