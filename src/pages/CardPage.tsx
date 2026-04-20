@@ -10,6 +10,8 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { X } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
+import { emitEvent } from "@/lib/events";
+import { channels } from "@/lib/realtime-channels";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -55,7 +57,7 @@ const CardPage = () => {
     if (!profile?.id) return;
 
     const channel = supabase
-      .channel(`card-level-${profile.id}`)
+      .channel(channels.cardLevel(profile.id))
       .on(
         "postgres_changes",
         {
@@ -84,17 +86,22 @@ const CardPage = () => {
                 duration: 5000,
               });
 
-              // Save notification
-              supabase
-                .from("notifications")
-                .insert({
-                  user_id: user!.id,
-                  type: "level_up" as const,
-                  title: `Level Up: ${LEVEL_LABELS[newLevel]}!`,
-                  body: `Congratulations! You've reached ${LEVEL_LABELS[newLevel]} level.`,
-                  link: "/card",
-                })
-                .then(() => {});
+              // Emit level_up event (audit + participant notification).
+              // See docs/interdependency-map.md → "level_up".
+              emitEvent("level_up", {
+                target_type: "participant_profile",
+                target_id: profile.id,
+                metadata: { from: oldLevel, to: newLevel },
+                recipients: [
+                  {
+                    user_id: user!.id,
+                    type: "level_up",
+                    title: `Level Up: ${LEVEL_LABELS[newLevel]}!`,
+                    body: `Congratulations! You've reached ${LEVEL_LABELS[newLevel]} level.`,
+                    link: "/card",
+                  },
+                ],
+              });
 
               setTimeout(() => setCelebrating(false), 4500);
             }
@@ -113,7 +120,7 @@ const CardPage = () => {
     if (!profile?.id) return;
 
     const channel = supabase
-      .channel(`milestones-${profile.id}`)
+      .channel(channels.milestones(profile.id))
       .on(
         "postgres_changes",
         {
@@ -140,7 +147,7 @@ const CardPage = () => {
     if (!profile?.id) return;
 
     const channel = supabase
-      .channel(`assessments-${profile.id}`)
+      .channel(channels.assessments(profile.id))
       .on(
         "postgres_changes",
         {
