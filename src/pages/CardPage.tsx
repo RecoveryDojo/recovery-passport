@@ -558,6 +558,14 @@ const CardPage = () => {
           View All Milestones <ChevronRight className="h-4 w-4" />
         </Link>
       </div>
+
+      {/* Quick action FAB (Phase 2B) */}
+      <QuickActionFab
+        participantId={profile.id}
+        participantUserId={profile.user_id}
+        participantName={fullName}
+        hasPeer={!!profile.assigned_peer_id}
+      />
     </div>
   );
 };
