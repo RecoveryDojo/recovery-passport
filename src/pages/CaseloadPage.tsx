@@ -9,6 +9,7 @@ import { differenceInDays } from "date-fns";
 import { toast } from "sonner";
 import { Check, X, Clock, Heart } from "lucide-react";
 import CaseloadParticipantCard from "@/components/CaseloadParticipantCard";
+import CaseloadHealthHeader from "@/components/caseload/CaseloadHealthHeader";
 
 const CaseloadPage = () => {
   const { user } = useAuth();
@@ -89,23 +90,29 @@ const CaseloadPage = () => {
     },
   });
 
-  // Latest check-in dates for caseload participants
-  const { data: lastCheckins = {} } = useQuery({
+  // Latest check-in dates + most recent mood per participant
+  const { data: checkinsData = { lastCheckins: {}, lastMoods: {} } } = useQuery({
     queryKey: ["caseload-checkins", participantIds],
     enabled: participantIds.length > 0,
     queryFn: async () => {
       const { data } = await supabase
         .from("weekly_checkins")
-        .select("participant_id, checkin_date")
+        .select("participant_id, checkin_date, mood_status")
         .in("participant_id", participantIds)
         .order("checkin_date", { ascending: false });
-      const map: Record<string, string> = {};
+      const lastCheckins: Record<string, string> = {};
+      const lastMoods: Record<string, number> = {};
       data?.forEach((c) => {
-        if (!map[c.participant_id]) map[c.participant_id] = c.checkin_date;
+        if (!lastCheckins[c.participant_id]) {
+          lastCheckins[c.participant_id] = c.checkin_date;
+          lastMoods[c.participant_id] = c.mood_status;
+        }
       });
-      return map;
+      return { lastCheckins, lastMoods };
     },
   });
+  const lastCheckins = checkinsData.lastCheckins;
+  const lastMoods = checkinsData.lastMoods;
 
   // Total milestone definitions count
   const { data: totalMilestones = 12 } = useQuery({
@@ -215,6 +222,14 @@ const CaseloadPage = () => {
   return (
     <div className="px-4 pt-6 pb-4 max-w-lg mx-auto space-y-6">
       <h1 className="text-2xl font-bold text-foreground">My Caseload</h1>
+
+      {caseload.length > 0 && (
+        <CaseloadHealthHeader
+          participants={caseload as any}
+          lastCheckins={lastCheckins}
+          lastMoods={lastMoods}
+        />
+      )}
 
       {/* Self-care banner */}
       {selfCareOverdue && (

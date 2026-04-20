@@ -9,6 +9,7 @@ import { Check, Clock, AlertCircle, ChevronDown, ChevronUp, MessageSquarePlus } 
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import LogCheckInSheet from "./LogCheckInSheet";
+import QuickActionsMenu from "./caseload/QuickActionsMenu";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -110,7 +111,13 @@ const CaseloadParticipantCard = ({
 
   return (
     <>
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden relative">
+        <div className="absolute top-2 right-2 z-10">
+          <QuickActionsMenu
+            participantId={participant.id}
+            onLogCheckIn={() => setSheetOpen(true)}
+          />
+        </div>
         <button
           type="button"
           onClick={() => setExpanded((e) => !e)}
