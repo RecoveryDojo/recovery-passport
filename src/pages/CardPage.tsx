@@ -12,6 +12,7 @@ import { X } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { emitEvent } from "@/lib/events";
 import { channels } from "@/lib/realtime-channels";
+import TodaySection from "@/components/card/TodaySection";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -331,6 +332,14 @@ const CardPage = () => {
           </button>
         </Link>
       )}
+
+      {/* === TODAY SECTION (Phase 2A) === */}
+      <TodaySection
+        participantId={profile.id}
+        participantUserId={profile.user_id}
+        participantName={fullName}
+      />
+
       {/* === BASEBALL CARD === */}
       <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>
         {/* Card body */}
