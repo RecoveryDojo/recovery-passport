@@ -46,6 +46,7 @@ import AdminProgramsPage from "@/pages/AdminProgramsPage";
 import CaseloadPage from "@/pages/CaseloadPage";
 import PeerCheckInsPage from "@/pages/PeerCheckInsPage";
 import ParticipantDetailPage from "@/pages/ParticipantDetailPage";
+import CaseloadParticipantDetailPage from "@/pages/CaseloadParticipantDetailPage";
 import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
 import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
@@ -118,7 +119,8 @@ const App = () => (
             {/* Peer Specialist */}
             <Route element={<ProtectedRoute allowedRoles={["peer_specialist"]}><PeerLayout /></ProtectedRoute>}>
               <Route path="/caseload" element={<CaseloadPage />} />
-              <Route path="/caseload/:participantId" element={<ParticipantDetailPage />} />
+              <Route path="/caseload/:participantId" element={<CaseloadParticipantDetailPage />} />
+              <Route path="/caseload/:participantId/legacy" element={<ParticipantDetailPage />} />
               <Route path="/caseload/:participantId/checkin" element={<CheckInFormPage />} />
               <Route path="/checkin/:participantId" element={<CheckInFormPage />} />
               <Route path="/crps" element={<CrpsPage />} />
