@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { emitEvent } from "@/lib/events";
 
 type ContactMode = Database["public"]["Enums"]["checkin_contact_mode"];
 
@@ -56,25 +57,26 @@ export function useLogCheckIn({ onSuccess, onError }: UseLogCheckInOptions = {})
         });
       }
 
-      // 3. Low-mood alert: notify all admins
+      // 3. Low-mood alert: notify all admins via the event contract.
+      // See docs/interdependency-map.md → "checkin.low_mood".
       if (moodScore <= 2) {
         const { data: admins } = await supabase
           .from("users")
           .select("id")
           .eq("role", "admin");
 
-        if (admins && admins.length > 0) {
-          const rows = admins.map((a) => ({
+        await emitEvent("checkin.low_mood", {
+          target_type: "weekly_checkin",
+          target_id: checkin?.id,
+          metadata: { participantId, participantName, moodScore },
+          recipients: (admins ?? []).map((a) => ({
             user_id: a.id,
-            type: "general" as const,
+            type: "general",
             title: "Low mood check-in",
             body: `${participantName} reported a low mood score during check-in. Please review.`,
             link: `/caseload/${participantId}`,
-            related_id: checkin?.id ?? null,
-            related_type: "weekly_checkin",
-          }));
-          await supabase.from("notifications").insert(rows);
-        }
+          })),
+        });
       }
 
       return checkin;
