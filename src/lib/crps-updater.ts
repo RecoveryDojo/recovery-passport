@@ -21,9 +21,16 @@ interface CrpsUpdateParams {
  * Non-blocking — errors are silently logged.
  */
 export function updateCrpsCompetencies(params: CrpsUpdateParams) {
-  supabase.functions.invoke("update-crps-competencies", {
-    body: params,
-  }).catch((err) => {
-    console.warn("CRPS update failed (non-blocking):", err);
-  });
+  try {
+    const result = supabase.functions.invoke("update-crps-competencies", {
+      body: params,
+    });
+    // Handle async rejection without surfacing to caller
+    Promise.resolve(result).catch((err) => {
+      console.warn("CRPS update failed (non-blocking):", err);
+    });
+  } catch (err) {
+    // Catch any synchronous throws too
+    console.warn("CRPS update failed synchronously (non-blocking):", err);
+  }
 }
