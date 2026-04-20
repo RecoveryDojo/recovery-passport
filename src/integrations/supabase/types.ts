@@ -1456,7 +1456,7 @@ export type Database = {
           mood_status: number
           next_steps: string | null
           participant_id: string
-          peer_specialist_id: string
+          peer_specialist_id: string | null
           plan_progress_notes: string | null
           summary: string | null
         }
@@ -1473,7 +1473,7 @@ export type Database = {
           mood_status: number
           next_steps?: string | null
           participant_id: string
-          peer_specialist_id: string
+          peer_specialist_id?: string | null
           plan_progress_notes?: string | null
           summary?: string | null
         }
@@ -1490,7 +1490,7 @@ export type Database = {
           mood_status?: number
           next_steps?: string | null
           participant_id?: string
-          peer_specialist_id?: string
+          peer_specialist_id?: string | null
           plan_progress_notes?: string | null
           summary?: string | null
         }
