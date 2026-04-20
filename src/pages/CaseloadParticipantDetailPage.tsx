@@ -9,7 +9,8 @@
  * Replaces the older `ParticipantDetailPage` for `/caseload/:participantId`
  * once the route is updated in App.tsx.
  */
-import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useParams, useSearchParams, useLocation } from "react-router-dom";
 import { format, formatDistanceToNow, differenceInDays } from "date-fns";
 import { useParticipantClinicalSummary } from "@/hooks/use-participant-clinical-summary";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,6 +32,11 @@ import {
   ShieldCheck,
   Users,
   TrendingUp,
+  LayoutDashboard,
+  Trophy,
+  MessageCircle,
+  UsersRound,
+  NotebookPen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilestonesTab from "@/components/MilestonesTab";
@@ -73,10 +79,32 @@ const PHASE_LABELS: Record<string, string> = {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+const VALID_TABS = ["overview", "journey", "engagement", "care-team", "notes"] as const;
+type TabValue = (typeof VALID_TABS)[number];
+
 const CaseloadParticipantDetailPage = () => {
   const { participantId } = useParams<{ participantId: string }>();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
   const validId = participantId && UUID_RE.test(participantId) ? participantId : null;
   const { data, isLoading, isError, error } = useParticipantClinicalSummary(validId);
+
+  const tabParam = searchParams.get("tab");
+  const initialTab: TabValue = (VALID_TABS as readonly string[]).includes(tabParam ?? "")
+    ? (tabParam as TabValue)
+    : "overview";
+
+  // Scroll to hash target (e.g. #milestones) once data is loaded.
+  useEffect(() => {
+    if (!data || !location.hash) return;
+    const id = location.hash.replace("#", "");
+    // Small delay so the tab content has mounted
+    const t = setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200);
+    return () => clearTimeout(t);
+  }, [data, location.hash, initialTab]);
 
   // Invalid / missing participant id in the URL — show actionable message
   if (!validId) {
@@ -196,13 +224,28 @@ const CaseloadParticipantDetailPage = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="w-full grid grid-cols-5">
-          <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-          <TabsTrigger value="journey" className="text-xs">Journey</TabsTrigger>
-          <TabsTrigger value="engagement" className="text-xs">Engagement</TabsTrigger>
-          <TabsTrigger value="care-team" className="text-xs">Care Team</TabsTrigger>
-          <TabsTrigger value="notes" className="text-xs">Notes</TabsTrigger>
+      <Tabs defaultValue={initialTab} className="space-y-4">
+        <TabsList className="w-full grid grid-cols-5 h-auto p-1">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+            <LayoutDashboard className="h-4 w-4" />
+            <span>Overview</span>
+          </TabsTrigger>
+          <TabsTrigger value="journey" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+            <Trophy className="h-4 w-4" />
+            <span>Journey</span>
+          </TabsTrigger>
+          <TabsTrigger value="engagement" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+            <MessageCircle className="h-4 w-4" />
+            <span>Engagement</span>
+          </TabsTrigger>
+          <TabsTrigger value="care-team" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+            <UsersRound className="h-4 w-4" />
+            <span>Care Team</span>
+          </TabsTrigger>
+          <TabsTrigger value="notes" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+            <NotebookPen className="h-4 w-4" />
+            <span>Notes</span>
+          </TabsTrigger>
         </TabsList>
 
         {/* OVERVIEW */}
@@ -284,6 +327,9 @@ const CaseloadParticipantDetailPage = () => {
 
         {/* JOURNEY */}
         <TabsContent value="journey" className="space-y-3">
+          <p className="text-xs text-muted-foreground -mt-2 px-1">
+            Active plan steps, milestones, and assessments.
+          </p>
           {/* Plan phase */}
           <Card>
             <CardContent className="p-4 space-y-3">
