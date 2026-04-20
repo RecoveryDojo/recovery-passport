@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, XCircle, Ban, RotateCcw, Eye, AlertTriangle, Users, GraduationCap, Calendar, UserCheck, Shield } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { emitEvent } from "@/lib/events";
 
 type PeerProfile = Tables<"peer_specialist_profiles">;
 type ApprovalStatus = "pending" | "approved" | "rejected" | "suspended";
@@ -149,11 +150,15 @@ const AdminPeersPage = () => {
         .eq("user_id", peer.user_id);
       if (error) throw error;
 
-      await supabase.from("notifications").insert({
-        user_id: peer.user_id,
-        type: "peer_edits_approved" as const,
-        title: "Profile Changes Approved",
-        body: "Your profile changes have been reviewed and approved.",
+      await emitEvent("peer.edits_approved", {
+        target_type: "peer_specialist_profiles",
+        target_id: peer.user_id,
+        recipients: [{
+          user_id: peer.user_id,
+          type: "peer_edits_approved",
+          title: "Profile Changes Approved",
+          body: "Your profile changes have been reviewed and approved.",
+        }],
       });
     },
     onSuccess: () => {
