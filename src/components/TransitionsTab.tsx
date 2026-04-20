@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ArrowRight, CheckCircle2, FileText, Send } from "lucide-react";
 import { updateCrpsCompetencies } from "@/lib/crps-updater";
+import { emitEvent } from "@/lib/events";
 
 const STATUS_STYLES: Record<string, { label: string; color: string }> = {
   pending: { label: "Pending", color: "bg-amber-100 text-amber-700" },
