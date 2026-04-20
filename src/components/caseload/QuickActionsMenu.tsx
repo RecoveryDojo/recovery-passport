@@ -1,8 +1,9 @@
 /**
- * Caseload Quick Actions Menu — `…` dropdown attached to each card.
+ * Caseload Quick Actions Menu — labeled "Actions" button attached to each card.
  *
- * Routes the peer to the most common actions for one participant without
- * needing to open the full detail page first.
+ * Routes the peer to the most common actions for one participant. Each menu
+ * item deep-links to the appropriate tab on the detail page so peers don't
+ * have to hunt for it.
  */
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,25 +13,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, ClipboardCheck, FileText, Award, Eye } from "lucide-react";
+import {
+  ChevronDown,
+  ClipboardCheck,
+  FileText,
+  Award,
+  Eye,
+  Users,
+} from "lucide-react";
 
 interface Props {
   participantId: string;
   onLogCheckIn: () => void;
 }
 
+const stop = (e: React.MouseEvent | React.PointerEvent) => {
+  e.stopPropagation();
+  e.preventDefault();
+};
+
 const QuickActionsMenu = ({ participantId, onLogCheckIn }: Props) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={(e) => e.stopPropagation()}
-          aria-label="More actions"
+          variant="secondary"
+          size="sm"
+          className="h-8 gap-1 shadow-sm"
+          onClick={stop}
+          aria-label="Quick actions"
         >
-          <MoreHorizontal className="h-4 w-4" />
+          Actions
+          <ChevronDown className="h-3.5 w-3.5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -42,21 +56,27 @@ const QuickActionsMenu = ({ participantId, onLogCheckIn }: Props) => {
           Log check-in
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to={`/caseload/${participantId}`}>
+          <Link to={`/caseload/${participantId}?tab=journey`}>
             <Eye className="h-4 w-4 mr-2" />
-            View full detail
+            View journey
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to={`/caseload/${participantId}#notes`}>
+          <Link to={`/caseload/${participantId}?tab=notes`}>
             <FileText className="h-4 w-4 mr-2" />
             Add note
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
-          <Link to={`/caseload/${participantId}#milestones`}>
+          <Link to={`/caseload/${participantId}?tab=journey#milestones`}>
             <Award className="h-4 w-4 mr-2" />
             Unlock milestone
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to={`/caseload/${participantId}?tab=care-team`}>
+            <Users className="h-4 w-4 mr-2" />
+            View care team
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -1,12 +1,9 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import { differenceInDays, format } from "date-fns";
+import { differenceInDays } from "date-fns";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Check, Clock, AlertCircle, ChevronDown, ChevronUp, MessageSquarePlus } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Check, Clock, AlertCircle, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LogCheckInSheet from "./LogCheckInSheet";
 import QuickActionsMenu from "./caseload/QuickActionsMenu";
@@ -26,14 +23,6 @@ const LEVEL_STYLES: Record<CardLevel, string> = {
   starter: "bg-[hsl(217,91%,60%)] text-white",
   veteran: "bg-primary text-primary-foreground",
   all_star: "bg-accent text-accent-foreground",
-};
-
-const MOOD_DOT_COLORS: Record<number, string> = {
-  1: "bg-red-500",
-  2: "bg-orange-500",
-  3: "bg-amber-500",
-  4: "bg-primary",
-  5: "bg-green-600",
 };
 
 interface Participant {
@@ -63,7 +52,6 @@ const CaseloadParticipantCard = ({
   lastCheckin,
   peerSpecialistId,
 }: Props) => {
-  const [expanded, setExpanded] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const name =
@@ -94,35 +82,22 @@ const CaseloadParticipantCard = ({
     }
   }
 
-  // Mood trend (last 5 check-ins) — only fetched when expanded
-  const { data: moodTrend = [], isLoading: loadingTrend } = useQuery({
-    queryKey: ["mood-trend", participant.id],
-    enabled: expanded,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("weekly_checkins")
-        .select("mood_status, checkin_date")
-        .eq("participant_id", participant.id)
-        .order("checkin_date", { ascending: false })
-        .limit(5);
-      return (data ?? []).reverse();
-    },
-  });
-
   return (
     <>
-      <div className="bg-card border border-border rounded-xl overflow-hidden relative">
-        <div className="absolute top-2 right-2 z-10">
+      <div className="bg-card border border-border rounded-xl overflow-hidden relative hover:border-primary/40 hover:shadow-sm transition-all">
+        {/* Top-right Actions button (does not navigate) */}
+        <div className="absolute top-3 right-3 z-10">
           <QuickActionsMenu
             participantId={participant.id}
             onLogCheckIn={() => setSheetOpen(true)}
           />
         </div>
-        <button
-          type="button"
-          onClick={() => setExpanded((e) => !e)}
-          className="w-full p-4 text-left hover:bg-muted/30 transition-colors"
-          aria-expanded={expanded}
+
+        {/* Whole card is a link to the detail page */}
+        <Link
+          to={`/caseload/${participant.id}`}
+          className="block p-4 pr-24"
+          aria-label={`Open ${name}'s chart`}
         >
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -151,17 +126,11 @@ const CaseloadParticipantCard = ({
                   {LEVEL_LABELS[level]}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">{programName}</p>
+              <p className="text-sm text-muted-foreground truncate">{programName}</p>
             </div>
-
-            {expanded ? (
-              <ChevronUp className="h-5 w-5 text-muted-foreground shrink-0" />
-            ) : (
-              <ChevronDown className="h-5 w-5 text-muted-foreground shrink-0" />
-            )}
           </div>
 
-          <div className="mt-3 flex gap-4 text-xs text-muted-foreground">
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
             <span>{daysInRecovery} days</span>
             <span>{earnedMilestones} / {totalMilestones} milestones</span>
             <span>
@@ -178,69 +147,12 @@ const CaseloadParticipantCard = ({
                 : `Check-in overdue — ${daysSinceCheckin} days since last check-in`}
             </div>
           )}
-        </button>
 
-        {expanded && (
-          <div className="border-t border-border bg-muted/20 p-4 space-y-4">
-            {/* Mood trend */}
-            <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
-                Mood trend (last 5)
-              </p>
-              {loadingTrend ? (
-                <p className="text-sm text-muted-foreground">Loading…</p>
-              ) : moodTrend.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No mood data yet.</p>
-              ) : (
-                <div className="flex items-center gap-2">
-                  {moodTrend.map((c, idx) => (
-                    <div key={idx} className="flex flex-col items-center gap-1">
-                      <span
-                        className={cn(
-                          "h-4 w-4 rounded-full",
-                          MOOD_DOT_COLORS[c.mood_status] ?? "bg-muted",
-                        )}
-                        title={`${c.mood_status}/5 on ${format(new Date(c.checkin_date), "MMM d")}`}
-                      />
-                      <span className="text-[10px] text-muted-foreground">
-                        {format(new Date(c.checkin_date), "M/d")}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Last check-in */}
-            <div>
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
-                Last check-in
-              </p>
-              <p className="text-sm text-foreground">
-                {lastCheckin
-                  ? format(new Date(lastCheckin), "MMM d, yyyy")
-                  : "No check-ins yet"}
-              </p>
-            </div>
-
-            {/* Actions */}
-            <div className="flex flex-col gap-2 pt-1">
-              <Button
-                onClick={() => setSheetOpen(true)}
-                className="w-full bg-primary hover:bg-primary/90"
-              >
-                <MessageSquarePlus className="h-4 w-4 mr-2" />
-                Log Check-In
-              </Button>
-              <Link
-                to={`/caseload/${participant.id}`}
-                className="text-sm text-primary hover:underline text-center"
-              >
-                View Full History →
-              </Link>
-            </div>
+          <div className="mt-3 flex items-center justify-end text-xs text-primary font-medium">
+            Open chart
+            <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
           </div>
-        )}
+        </Link>
       </div>
 
       <LogCheckInSheet
