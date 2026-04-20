@@ -327,6 +327,9 @@ const CaseloadParticipantDetailPage = () => {
 
         {/* JOURNEY */}
         <TabsContent value="journey" className="space-y-3">
+          <p className="text-xs text-muted-foreground -mt-2 px-1">
+            Active plan steps, milestones, and assessments.
+          </p>
           {/* Plan phase */}
           <Card>
             <CardContent className="p-4 space-y-3">
