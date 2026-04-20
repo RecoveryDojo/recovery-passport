@@ -15,6 +15,8 @@ import type { Database } from "@/integrations/supabase/types";
 
 type PaymentType = Database["public"]["Enums"]["payment_type"];
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const AdminPaymentsPage = () => {
   const { participantId } = useParams<{ participantId: string }>();
   const { user } = useAuth();
