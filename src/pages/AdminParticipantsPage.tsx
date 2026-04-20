@@ -18,6 +18,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, UserCheck, UserX, Clock, ChevronRight } from "lucide-react";
 import AdminParticipantDetailSheet from "@/components/AdminParticipantDetailSheet";
+import { emitEvent } from "@/lib/events";
 
 type Peer = { user_id: string; first_name: string; last_name: string };
 
@@ -171,44 +172,35 @@ const AdminParticipantsPage = () => {
         if (reqErr) throw reqErr;
       }
 
-      await supabase.from("audit_log").insert({
-        user_id: user?.id,
-        action: "assign_peer",
+      const peer = approvedPeers?.find((p) => p.user_id === peerUserId);
+      const peerName = peer ? `${peer.first_name} ${peer.last_name}` : "Your peer specialist";
+
+      // Emit participant.assigned_peer → audit + dual notification (peer + participant)
+      await emitEvent("participant.assigned_peer", {
         target_type: "participant_profiles",
         target_id: participantProfileId,
         metadata: {
           peer_specialist_id: peerUserId,
           via_request: !!pendingRequestId,
+          pending_request_id: pendingRequestId ?? null,
         },
+        recipients: [
+          {
+            user_id: peerUserId,
+            type: "new_participant",
+            title: "New Participant Assigned",
+            body: "A new participant has been added to your caseload. Check your Caseload tab.",
+            link: "/caseload",
+          },
+          {
+            user_id: participantUserId,
+            type: "general",
+            title: "Your Peer Specialist is Ready",
+            body: `${peerName} has been assigned. Visit My Card to meet them.`,
+            link: "/card",
+          },
+        ],
       });
-
-      const peer = approvedPeers?.find((p) => p.user_id === peerUserId);
-
-      // Fire both notifications in parallel
-      await Promise.all([
-        // Notify the peer specialist
-        supabase.from("notifications").insert({
-          user_id: peerUserId,
-          type: "new_participant" as const,
-          title: "New Participant Assigned",
-          body: "A new participant has been added to your caseload. Check your Caseload tab.",
-          link: "/caseload",
-          is_read: false,
-          related_id: pendingRequestId ?? null,
-          related_type: "peer_request",
-        }),
-        // Notify the participant
-        supabase.from("notifications").insert({
-          user_id: participantUserId,
-          type: "general" as const,
-          title: "Your Peer Specialist is Ready",
-          body: "Your peer specialist has been assigned. Visit My Card to meet them.",
-          link: "/card",
-          is_read: false,
-          related_id: pendingRequestId ?? null,
-          related_type: "peer_request",
-        }),
-      ]);
 
       return { peer, viaRequest: !!pendingRequestId };
     },
