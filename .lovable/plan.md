@@ -1,33 +1,30 @@
 
 
-# Sprint Status — Where we are
+# 💰 Fix Admin Payments — make it actually reachable + participant-aware
 
-## ✅ Done
+## What's broken
+You're at `/admin/participants/:participantId/payments` with the literal string `:participantId` in the URL. The page expects a real UUID, but you arrived without one — so there's no participant context and no picker.
 
-| Phase | Scope | Surface |
-|---|---|---|
-| **2A** | Today section (mood + focus + next milestone preview) | 🟢 Participant `/card` |
-| **2B** | Baseball card refactor (streaks, RC sparkline, QuickActionFab) | 🟢 Participant `/card` |
-| **2C** | AskYourPeer + ReflectionJournal + ResourceOfTheDay + LevelRoadmapModal | 🟢 Participant `/card` |
-| **3** | CaseloadHealthHeader (4 tiles) + QuickActionsMenu (`…`) + 5-tab CaseloadParticipantDetailPage | 🔵 Peer `/caseload` and `/caseload/:id` |
-| **3.1 fix** | CRPS edge function 500 fix + fire-and-forget wrapper | 🔵 Peer check-in / note flows |
-| **3.2 fix** | UUID guard on `/caseload/:participantId` | 🔵 Peer detail page |
+## Root cause
+- Nothing in the app links to this page (no sidebar entry, no row action, no tab in the new participant sheet).
+- The page was built as a deep-link sub-page of a participant, but the parent participant sheet never got a "Payments" link added.
 
-## 🟡 Not done — what's left in the sprint
+## The fix — 2 small edits
 
-### Phase 4 — 👑 Admin Participant Detail Sheet 5-tab refactor
-**Where you'll see it:** `/admin/participants` → click any participant row → side sheet
-**Currently showing:** old 3-card layout (Overview / Peer Assignment / Recent Check-ins) — confirmed still in `src/components/AdminParticipantDetailSheet.tsx`
-**Will become:** sticky header (name, email, recovery days, peer badge, level pill, phase pill) + 5 tabs (Overview · Journey · Engagement · Care Team · Notes), powered by the same `useParticipantClinicalSummary` hook the peer side uses. One source of truth across both roles.
+### 1. `src/components/AdminParticipantDetailSheet.tsx` (Care Team or Notes tab area, or sticky header action row)
+Add a "View Payments" button/link in the participant sheet that navigates to `/admin/participants/${participant.id}/payments`. Place it in the **sticky header action row** next to the existing nav buttons (Check-ins, Notes) so it's consistent with the existing deep-link pattern.
 
-### Phase 5 — 🔧 Notification + audit emitEvent sweep
-**Where you'll see it:** 🟢 participant notification bell + 👑 admin `/admin/audit` page
-**What it does:** Audit existing write paths (milestone unlock, peer request approve/reject, plan generation, payment record, referral creation, consent record creation) and add the missing `emitEvent()` calls so notifications fire and audit_log rows get written. No new UI — fills gaps in existing UI.
+### 2. `src/pages/AdminPaymentsPage.tsx` — add a guard for missing/invalid IDs
+Same UUID guard pattern we used on `/caseload/:participantId`:
+- If `participantId` is missing, equal to `:participantId`, or not a valid UUID → render a friendly "Select a participant first" empty state with a button back to `/admin/participants`
+- Prevents the broken state you just hit
 
-## Recommended order
+## What you'll see after the fix
+- 👑 `/admin/participants` → click any participant row → sheet opens → click **"Payments"** in the header → lands on that participant's payment ledger with their name shown and the "Log Entry" form scoped to them.
+- Typing `/admin/participants/:participantId/payments` directly → friendly empty state, not a broken form.
 
-1. **Phase 4 first** (visible, high-value — fixes the admin sheet you opened earlier)
-2. **Phase 5 second** (polish + compliance — completes the sprint)
-
-Reply "do Phase 4" or "do both" and I'll execute.
+## Verification
+1. Admin → `/admin/participants` → click any row → click "Payments" in the header → confirm participant name shows at top
+2. Log a $10 charge → confirm it appears in the ledger and an `audit_log` row is created (already wired from Phase 5)
+3. Try `/admin/participants/abc/payments` directly → confirm friendly empty state with "back to participants" button
 
