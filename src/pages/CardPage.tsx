@@ -16,6 +16,10 @@ import TodaySection from "@/components/card/TodaySection";
 import StreakStats from "@/components/card/StreakStats";
 import RcSparkline from "@/components/card/RcSparkline";
 import QuickActionFab from "@/components/card/QuickActionFab";
+import AskYourPeerCard from "@/components/card/AskYourPeerCard";
+import ReflectionJournal from "@/components/card/ReflectionJournal";
+import ResourceOfTheDay from "@/components/card/ResourceOfTheDay";
+import LevelRoadmapModal from "@/components/card/LevelRoadmapModal";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -295,6 +299,7 @@ const CardPage = () => {
   });
 
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const [roadmapOpen, setRoadmapOpen] = useState(false);
 
   if (!profile) {
     return (
@@ -392,14 +397,26 @@ const CardPage = () => {
           <StreakStats participantId={profile.id} />
         </div>
 
-        {/* ROW 3 — Level badge */}
-        <div className={`flex items-center justify-center py-3 gap-2 transition-colors duration-500 ${LEVEL_STYLES[level]}`}>
+        {/* ROW 3 — Level badge (tap to open roadmap) */}
+        <button
+          type="button"
+          onClick={() => setRoadmapOpen(true)}
+          className={`w-full flex items-center justify-center py-3 gap-2 transition-colors duration-500 hover:opacity-90 ${LEVEL_STYLES[level]}`}
+          aria-label="View level roadmap"
+        >
           {level === "all_star" && <Star className="h-5 w-5 fill-current" />}
           <span className="font-extrabold text-lg tracking-widest">
             ⚾ {LEVEL_LABELS[level]}
           </span>
           {level === "all_star" && <Star className="h-5 w-5 fill-current" />}
-        </div>
+        </button>
+      </div>
+
+      {/* === CONVERSATION SURFACES (Phase 2C) === */}
+      <div className="space-y-3">
+        <AskYourPeerCard participantId={profile.id} />
+        <ReflectionJournal participantId={profile.id} />
+        <ResourceOfTheDay />
       </div>
 
       {/* === JOURNEY STAGE BANNER === */}
@@ -565,6 +582,14 @@ const CardPage = () => {
         participantUserId={profile.user_id}
         participantName={fullName}
         hasPeer={!!profile.assigned_peer_id}
+      />
+
+      {/* Level roadmap modal (Phase 2C) */}
+      <LevelRoadmapModal
+        open={roadmapOpen}
+        onOpenChange={setRoadmapOpen}
+        participantId={profile.id}
+        currentLevel={level}
       />
     </div>
   );
