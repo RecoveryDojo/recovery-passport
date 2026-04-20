@@ -161,6 +161,11 @@ const AdminParticipantDetailSheet = ({ participant, open, onOpenChange }: Props)
               <span className="text-amber-600">Unassigned</span>
             )}
           </div>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Button asChild size="sm" variant="outline" className="h-8 text-xs">
+              <Link to={`/admin/participants/${participant.id}/payments`}>Payments</Link>
+            </Button>
+          </div>
         </div>
 
         {/* Tabs */}
