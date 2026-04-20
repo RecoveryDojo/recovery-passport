@@ -1,30 +1,47 @@
 
 
-# 💰 Fix Admin Payments — make it actually reachable + participant-aware
+# Make the caseload card actually navigable and intuitive
 
-## What's broken
-You're at `/admin/participants/:participantId/payments` with the literal string `:participantId` in the URL. The page expects a real UUID, but you arrived without one — so there's no participant context and no picker.
+## What changes (UX)
 
-## Root cause
-- Nothing in the app links to this page (no sidebar entry, no row action, no tab in the new participant sheet).
-- The page was built as a deep-link sub-page of a participant, but the parent participant sheet never got a "Payments" link added.
+**On the caseload list (`/caseload`):**
+- **Tapping the participant card itself opens the detail page.** No more accordion expand. One tap = go to chart.
+- **The `…` menu becomes a prominent "Quick Actions" button** with label + icon (not a tiny dot icon). Sits top-right of each card.
+- **Quick Actions menu items deep-link straight to the right tab** on the detail page:
+  - "Log check-in" → opens the check-in sheet (unchanged)
+  - "View journey" → `/caseload/:id?tab=journey`
+  - "Add note" → `/caseload/:id?tab=notes`
+  - "Unlock milestone" → `/caseload/:id?tab=journey#milestones`
+  - "View care team" → `/caseload/:id?tab=care-team`
+- **Card surface shows the most useful at-a-glance info inline** (no expand needed): name, level, program, days, milestones progress, last check-in age, mood dot, status pill. Same data you saw before but visible without expanding.
+- **Remove the accordion entirely.** No chevron, no expand state, no inline "View Full History" link.
 
-## The fix — 2 small edits
+**On the detail page (`/caseload/:id`):**
+- **Read `?tab=` from the URL** so the deep-links above land on the right tab.
+- **Make the 5 tabs more readable** — currently `text-xs` and cramped on the 5-column grid. Increase to `text-sm`, add icons next to labels (Overview 📋, Journey 🏆, Engagement 💬, Care Team 👥, Notes 📝) so peers can scan visually.
+- **"Journey" tab gets a brief subtitle** under the tab list when active: "Active plan steps, milestones, and assessments" — so first-time users know what's there.
 
-### 1. `src/components/AdminParticipantDetailSheet.tsx` (Care Team or Notes tab area, or sticky header action row)
-Add a "View Payments" button/link in the participant sheet that navigates to `/admin/participants/${participant.id}/payments`. Place it in the **sticky header action row** next to the existing nav buttons (Check-ins, Notes) so it's consistent with the existing deep-link pattern.
+## What this fixes (mapped to your concerns)
 
-### 2. `src/pages/AdminPaymentsPage.tsx` — add a guard for missing/invalid IDs
-Same UUID guard pattern we used on `/caseload/:participantId`:
-- If `participantId` is missing, equal to `:participantId`, or not a valid UUID → render a friendly "Select a participant first" empty state with a button back to `/admin/participants`
-- Prevents the broken state you just hit
+| Your complaint | Fix |
+|---|---|
+| "I don't easily see Journey tab" | Tabs become bigger with icons; deep-link from caseload menu lands you directly on Journey |
+| "The 3 dots need to be much more prominent" | Replaced with a labeled "Actions" button (icon + word) that's clearly clickable |
+| "None of this is intuitive" | Tapping the card now does what users expect (opens the chart). No hidden accordion. |
+| "Tremendous training needed" | Each menu item names the destination ("View journey", "Add note") so peers learn by reading |
 
-## What you'll see after the fix
-- 👑 `/admin/participants` → click any participant row → sheet opens → click **"Payments"** in the header → lands on that participant's payment ledger with their name shown and the "Log Entry" form scoped to them.
-- Typing `/admin/participants/:participantId/payments` directly → friendly empty state, not a broken form.
+## Files touched (4)
+
+1. `src/components/CaseloadParticipantCard.tsx` — remove accordion, make whole card a `<Link>` to `/caseload/:id`, show key stats always-visible, replace `…` with labeled Actions button
+2. `src/components/caseload/QuickActionsMenu.tsx` — relabel "Actions" button (visible word + icon), add `?tab=` query params to all destination links
+3. `src/pages/CaseloadParticipantDetailPage.tsx` — read `?tab=` from `useSearchParams` to set `defaultValue` on Tabs; bump tab labels from `text-xs` to `text-sm` with icons; add hash scroll for `#milestones`
+4. *(no DB changes, no new components)*
 
 ## Verification
-1. Admin → `/admin/participants` → click any row → click "Payments" in the header → confirm participant name shows at top
-2. Log a $10 charge → confirm it appears in the ledger and an `audit_log` row is created (already wired from Phase 5)
-3. Try `/admin/participants/abc/payments` directly → confirm friendly empty state with "back to participants" button
+
+1. 🔵 Peer → `/caseload` → tap a card → lands on detail page with Overview tab open
+2. 🔵 Peer → `/caseload` → tap "Actions" → "View journey" → lands on detail page with **Journey tab already selected**
+3. 🔵 Peer → `/caseload` → tap "Actions" → "Unlock milestone" → lands on Journey tab, scrolled to milestones section
+4. 🔵 Peer → `/caseload` → tap "Actions" → "Log check-in" → check-in sheet opens (no navigation)
+5. Confirm the card no longer expands inline — one clean tap = full chart
 
