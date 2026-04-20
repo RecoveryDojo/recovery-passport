@@ -94,36 +94,36 @@ const AdminPeersPage = () => {
         .eq("user_id", userId);
       if (error) throw error;
 
-      // Audit: peer approval action
-      const actionMap: Record<string, string> = {
-        approved: "approve_peer",
-        rejected: "reject_peer",
-        suspended: "suspend_peer",
-        pending: "reinstate_peer",
+      // Emit peer status change → audit + notification fan-out
+      const eventMap: Record<string, "peer.approved" | "peer.rejected" | "peer.suspended"> = {
+        approved: "peer.approved",
+        rejected: "peer.rejected",
+        suspended: "peer.suspended",
       };
-      await supabase.from("audit_log").insert({
-        user_id: user?.id,
-        action: actionMap[status] || `peer_status_${status}`,
-        target_type: "peer_specialist_profiles",
-        target_id: userId,
-        metadata: { new_status: status, ...(reason ? { reason } : {}) },
-      });
-
-      // Create notification for the peer
-      if (status === "approved") {
-        await supabase.from("notifications").insert({
-          user_id: userId,
-          type: "peer_application_approved" as const,
-          title: "Account Approved",
-          body: "Your account has been approved. You can now access your caseload.",
-          link: "/caseload",
-        });
-      } else if (status === "rejected") {
-        await supabase.from("notifications").insert({
-          user_id: userId,
-          type: "peer_application_rejected" as const,
-          title: "Application Not Approved",
-          body: reason || "Your application was not approved at this time.",
+      const event = eventMap[status];
+      if (event) {
+        const recipients =
+          status === "approved"
+            ? [{
+                user_id: userId,
+                type: "peer_application_approved" as const,
+                title: "Account Approved",
+                body: "Your account has been approved. You can now access your caseload.",
+                link: "/caseload",
+              }]
+            : status === "rejected"
+            ? [{
+                user_id: userId,
+                type: "peer_application_rejected" as const,
+                title: "Application Not Approved",
+                body: reason || "Your application was not approved at this time.",
+              }]
+            : [];
+        await emitEvent(event, {
+          target_type: "peer_specialist_profiles",
+          target_id: userId,
+          metadata: { new_status: status, ...(reason ? { reason } : {}) },
+          recipients,
         });
       }
     },
