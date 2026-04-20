@@ -12,6 +12,10 @@ import { X } from "lucide-react";
 import type { Database } from "@/integrations/supabase/types";
 import { emitEvent } from "@/lib/events";
 import { channels } from "@/lib/realtime-channels";
+import TodaySection from "@/components/card/TodaySection";
+import StreakStats from "@/components/card/StreakStats";
+import RcSparkline from "@/components/card/RcSparkline";
+import QuickActionFab from "@/components/card/QuickActionFab";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -331,6 +335,14 @@ const CardPage = () => {
           </button>
         </Link>
       )}
+
+      {/* === TODAY SECTION (Phase 2A) === */}
+      <TodaySection
+        participantId={profile.id}
+        participantUserId={profile.user_id}
+        participantName={fullName}
+      />
+
       {/* === BASEBALL CARD === */}
       <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>
         {/* Card body */}
@@ -373,13 +385,11 @@ const CardPage = () => {
                 label="Milestones"
               />
             </Link>
-            <Link to="/assessment/take" className="cursor-pointer">
-              <StatBox
-                value={rcScore != null ? `${rcScore}${trendIndicator ? ` ${trendIndicator}` : ""}` : "—"}
-                label={isUnconfirmed ? "RC (pending)" : "RC Score"}
-              />
-            </Link>
+            <RcSparkline participantId={profile.id} />
           </div>
+
+          {/* Streak stats (Phase 2B) */}
+          <StreakStats participantId={profile.id} />
         </div>
 
         {/* ROW 3 — Level badge */}
@@ -548,6 +558,14 @@ const CardPage = () => {
           View All Milestones <ChevronRight className="h-4 w-4" />
         </Link>
       </div>
+
+      {/* Quick action FAB (Phase 2B) */}
+      <QuickActionFab
+        participantId={profile.id}
+        participantUserId={profile.user_id}
+        participantName={fullName}
+        hasPeer={!!profile.assigned_peer_id}
+      />
     </div>
   );
 };
