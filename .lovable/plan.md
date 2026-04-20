@@ -1,52 +1,33 @@
 
 
-# Where everything lives + finish the Phase 3 wiring
+# 🔵 Fix peer check-in submit error (CRPS edge function 500)
 
-## What IS already wired (you just need to find it on screen)
+## What's broken
 
-**On `/card` — scroll DOWN past the baseball card:**
+When you submitted the check-in, the `update-crps-competencies` edge function returned 500: `"supabaseKey is required."`
 
-```text
-┌─────────────────────────────┐
-│ TODAY section               │ ← Phase 2A (mood + focus + next milestone)
-├─────────────────────────────┤
-│ ⚾ BASEBALL CARD            │ ← Phase 2B (streaks, RC sparkline inside)
-│   [tap level badge ↓]       │ ← opens LevelRoadmapModal ✅
-├─────────────────────────────┤
-│ Ask Your Peer card          │ ← Phase 2C ✅ (only visible if a peer is assigned)
-│ Reflection Journal          │ ← Phase 2C ✅
-│ Resource of the Day         │ ← Phase 2C ✅ (only visible if community_partners exist)
-├─────────────────────────────┤
-│ Journey stage banner        │
-└─────────────────────────────┘
-+ floating QuickActionFab      ← Phase 2B ✅ (bottom-right circle button)
-```
+**Root cause:** The function at `supabase/functions/update-crps-competencies/index.ts` line 36 reads `Deno.env.get("SUPABASE_PUBLISHABLE_KEY")`, but that env var does not exist inside Supabase edge functions. Only three keys are auto-injected: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. So `createClient(url, undefined)` throws.
 
-**Why specific cards may be invisible right now:**
-- **Ask Your Peer** — hides itself when no peer is assigned (returns `null`). Check your participant has `assigned_peer_id` set.
-- **Resource of the Day** — hides itself when no `community_partners` rows are approved + available. Check the table has data.
-- **Reflection Journal** — always visible. If you don't see it, you haven't scrolled far enough.
-- **Level Roadmap Modal** — only opens when you tap the colored level badge (⚾ ROOKIE / STARTER / etc.) at the bottom of the baseball card.
+Your check-in **did save successfully** to the DB — only the background CRPS competency update failed. But the error surfaced because the call wasn't truly fire-and-forget.
 
-## What is NOT wired yet (the actual gap)
+## The fix (2 small edits, no DB changes, no new files)
 
-`CaseloadHealthHeader` and `QuickActionsMenu` exist as files but are not mounted. The original Phase 3 plan included this and it was missed. I'll finish it now:
+### 1. `supabase/functions/update-crps-competencies/index.ts`
+- Replace `Deno.env.get("SUPABASE_PUBLISHABLE_KEY")` with `Deno.env.get("SUPABASE_ANON_KEY")` on line 36 (this is the correct auto-injected env var name)
+- No other changes needed — the rest of the function is fine
 
-### Edit `src/pages/CaseloadPage.tsx`
-- Import `CaseloadHealthHeader`
-- Build a `lastMoods` map from the existing `weekly_checkins` query (one extra `mood_status` column, no new query)
-- Mount `<CaseloadHealthHeader participants={caseload} lastCheckins={lastCheckins} lastMoods={lastMoods} />` directly under the "My Caseload" h1, above the self-care banner
+### 2. `src/lib/crps-updater.ts`
+- Make it truly fire-and-forget by also catching synchronous throws from `supabase.functions.invoke` (currently the `.catch()` only catches async rejections). Wrap the invoke in a `try`/`catch` that swallows the error and only `console.warn`s it.
+- This guarantees that even if the edge function 500s, the user never sees a runtime error toast — the check-in / note / milestone submit completes cleanly.
 
-### Edit `src/components/CaseloadParticipantCard.tsx`
-- Import `QuickActionsMenu`
-- Add a `…` button in the top-right of the card header (next to the chevron) that opens `QuickActionsMenu`
-- Wire its actions: "Log Check-In" opens the existing `LogCheckInSheet`, "View Full History" navigates to `/caseload/:id`, "Add Note" navigates to `/caseload/:id?tab=notes`
+## What you'll see after the fix
 
-No new queries, no new files, no DB changes. This is purely the missing wiring from Phase 3.
+- 🔵 Peer logs check-in → "Check-in saved" toast → no error
+- 🔵 Peer logs progress note → saves cleanly → no error
+- 👑 Admin actions that touch CRPS → no error
+- CRPS competencies actually start advancing (MI / Documentation tools move from `not_started` → `in_progress`) — they weren't updating before because every call was failing
 
-## After this fix, your verification path
+## Verification
 
-1. **`/card`** (participant) — scroll down, confirm you see Ask Your Peer (if peer assigned) → Reflection Journal → Resource of the Day. Tap the ⚾ level badge → LevelRoadmapModal opens.
-2. **`/caseload`** (peer) — confirm the 4-tile health header (Caseload / Crisis / Overdue / All-Star) appears at the top.
-3. **Caseload card `…` menu** — tap it on any participant row, confirm Log Check-In / Add Note / View Full History work.
+Log in as a peer specialist → `/caseload` → tap any participant's `…` menu → "Log check-in" → fill out and submit. Confirm the success toast appears with no red error.
 
