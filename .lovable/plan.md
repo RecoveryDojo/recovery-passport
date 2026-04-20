@@ -1,33 +1,33 @@
 
 
-# 🔵 Fix peer check-in submit error (CRPS edge function 500)
+# Sprint Status — Where we are
 
-## What's broken
+## ✅ Done
 
-When you submitted the check-in, the `update-crps-competencies` edge function returned 500: `"supabaseKey is required."`
+| Phase | Scope | Surface |
+|---|---|---|
+| **2A** | Today section (mood + focus + next milestone preview) | 🟢 Participant `/card` |
+| **2B** | Baseball card refactor (streaks, RC sparkline, QuickActionFab) | 🟢 Participant `/card` |
+| **2C** | AskYourPeer + ReflectionJournal + ResourceOfTheDay + LevelRoadmapModal | 🟢 Participant `/card` |
+| **3** | CaseloadHealthHeader (4 tiles) + QuickActionsMenu (`…`) + 5-tab CaseloadParticipantDetailPage | 🔵 Peer `/caseload` and `/caseload/:id` |
+| **3.1 fix** | CRPS edge function 500 fix + fire-and-forget wrapper | 🔵 Peer check-in / note flows |
+| **3.2 fix** | UUID guard on `/caseload/:participantId` | 🔵 Peer detail page |
 
-**Root cause:** The function at `supabase/functions/update-crps-competencies/index.ts` line 36 reads `Deno.env.get("SUPABASE_PUBLISHABLE_KEY")`, but that env var does not exist inside Supabase edge functions. Only three keys are auto-injected: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. So `createClient(url, undefined)` throws.
+## 🟡 Not done — what's left in the sprint
 
-Your check-in **did save successfully** to the DB — only the background CRPS competency update failed. But the error surfaced because the call wasn't truly fire-and-forget.
+### Phase 4 — 👑 Admin Participant Detail Sheet 5-tab refactor
+**Where you'll see it:** `/admin/participants` → click any participant row → side sheet
+**Currently showing:** old 3-card layout (Overview / Peer Assignment / Recent Check-ins) — confirmed still in `src/components/AdminParticipantDetailSheet.tsx`
+**Will become:** sticky header (name, email, recovery days, peer badge, level pill, phase pill) + 5 tabs (Overview · Journey · Engagement · Care Team · Notes), powered by the same `useParticipantClinicalSummary` hook the peer side uses. One source of truth across both roles.
 
-## The fix (2 small edits, no DB changes, no new files)
+### Phase 5 — 🔧 Notification + audit emitEvent sweep
+**Where you'll see it:** 🟢 participant notification bell + 👑 admin `/admin/audit` page
+**What it does:** Audit existing write paths (milestone unlock, peer request approve/reject, plan generation, payment record, referral creation, consent record creation) and add the missing `emitEvent()` calls so notifications fire and audit_log rows get written. No new UI — fills gaps in existing UI.
 
-### 1. `supabase/functions/update-crps-competencies/index.ts`
-- Replace `Deno.env.get("SUPABASE_PUBLISHABLE_KEY")` with `Deno.env.get("SUPABASE_ANON_KEY")` on line 36 (this is the correct auto-injected env var name)
-- No other changes needed — the rest of the function is fine
+## Recommended order
 
-### 2. `src/lib/crps-updater.ts`
-- Make it truly fire-and-forget by also catching synchronous throws from `supabase.functions.invoke` (currently the `.catch()` only catches async rejections). Wrap the invoke in a `try`/`catch` that swallows the error and only `console.warn`s it.
-- This guarantees that even if the edge function 500s, the user never sees a runtime error toast — the check-in / note / milestone submit completes cleanly.
+1. **Phase 4 first** (visible, high-value — fixes the admin sheet you opened earlier)
+2. **Phase 5 second** (polish + compliance — completes the sprint)
 
-## What you'll see after the fix
-
-- 🔵 Peer logs check-in → "Check-in saved" toast → no error
-- 🔵 Peer logs progress note → saves cleanly → no error
-- 👑 Admin actions that touch CRPS → no error
-- CRPS competencies actually start advancing (MI / Documentation tools move from `not_started` → `in_progress`) — they weren't updating before because every call was failing
-
-## Verification
-
-Log in as a peer specialist → `/caseload` → tap any participant's `…` menu → "Log check-in" → fill out and submit. Confirm the success toast appears with no red error.
+Reply "do Phase 4" or "do both" and I'll execute.
 
