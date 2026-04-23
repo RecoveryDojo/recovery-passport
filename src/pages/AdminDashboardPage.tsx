@@ -52,11 +52,27 @@ const AdminDashboardPage = () => {
 
   useEffect(() => {
     loadDashboard();
+    // Safety: never let the dashboard spin forever
+    const safety = setTimeout(() => setLoading(false), 15000);
+    return () => clearTimeout(safety);
   }, []);
 
   const loadDashboard = async () => {
+    // Run each loader independently so one failure can't hang the others
+    const safe = async (label: string, fn: () => Promise<void>) => {
+      try {
+        await fn();
+      } catch (err) {
+        console.error(`[AdminDashboard] ${label} failed:`, err);
+      }
+    };
     try {
-      await Promise.all([loadMetrics(), loadAlerts(), loadPeers(), loadPrograms()]);
+      await Promise.all([
+        safe("metrics", loadMetrics),
+        safe("alerts", loadAlerts),
+        safe("peers", loadPeers),
+        safe("programs", loadPrograms),
+      ]);
     } finally {
       setLoading(false);
     }
