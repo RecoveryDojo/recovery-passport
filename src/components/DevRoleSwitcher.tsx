@@ -65,8 +65,10 @@ const DevRoleSwitcher = () => {
     }
   };
 
+  const currentRoleEmoji = roles.find((r) => r.value === role)?.emoji ?? "🔧";
+
   return (
-    <div className="fixed bottom-4 right-4 z-[9999]">
+    <div className="fixed bottom-20 right-4 md:bottom-4 z-[10000]">
       {open && (
         <div className="mb-2 bg-card border border-border rounded-lg shadow-lg p-2 space-y-1 min-w-[140px]">
           {roles.map((r) => (
@@ -88,10 +90,11 @@ const DevRoleSwitcher = () => {
       )}
       <button
         onClick={() => setOpen(!open)}
-        className="h-10 w-10 rounded-full bg-accent text-accent-foreground shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-transform"
+        className="h-12 px-3 rounded-full bg-accent text-accent-foreground shadow-lg flex items-center gap-1.5 text-base font-medium hover:scale-105 transition-transform"
         title="Dev Role Switcher"
       >
-        🔧
+        <span>🔧</span>
+        <span className="text-lg leading-none">{currentRoleEmoji}</span>
       </button>
     </div>
   );
