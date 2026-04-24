@@ -65,6 +65,7 @@ import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
 import AdminProfilePage from "@/pages/AdminProfilePage";
 import AssessmentHistoryPage from "@/pages/AssessmentHistoryPage";
 import NotificationsPage from "@/pages/NotificationsPage";
+import AdminDocsPage from "@/pages/AdminDocsPage";
 import OfflineBanner from "@/components/OfflineBanner";
 import InstallPrompt from "@/components/InstallPrompt";
 
@@ -152,6 +153,8 @@ const App = () => (
               <Route path="/admin/reports" element={<AdminReportsPage />} />
               <Route path="/admin/audit" element={<AdminAuditPage />} />
               <Route path="/admin/profile" element={<AdminProfilePage />} />
+              <Route path="/admin/docs" element={<AdminDocsPage />} />
+              <Route path="/docs" element={<AdminDocsPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
