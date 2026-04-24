@@ -1,61 +1,95 @@
 
 
-# Phase 3 — Workflow Map
+# Phase 3.5 — Reframe: Task Playbook (Training-First)
 
-Translate the Coverage Inventory §7 (16 workflows) into a single operational document that drives every Phase 4 quick-start and Phase 5 reference manual.
+You are right — Phase 3's trigger-oriented map is a **system reference**, not training material. Real staff training has to start from "I am sitting down to do my job — what do I do?"
 
-## Deliverable
+## What changes
 
-One new file: **`docs/training-workflow-map.md`**
+- Phase 3 deliverable (`docs/training-workflow-map.md`) is **renamed and re-labeled** as a system-event reference, not training.
+- A new training-first deliverable is built: the **Task Playbook**.
+- All future Phase 4/5 quick-starts and manuals are sourced from the Task Playbook, not the event map.
 
-## Structure (every workflow uses the same 5-part shape)
+## New deliverables
 
-1. **Trigger** — what real-world event starts it
-2. **Actor & surface** — who acts, where, in what state
-3. **Step-by-step** — exact in-app actions with surface references and signal markers (⚡ realtime, 🔔 notification, 📜 audit)
-4. **Expected result** — toasts, navigation, state changes
-5. **Cross-role impact** — what other roles see, where, via which signal
-6. **Edge states** — empty / pending / error / overdue / expired variants
+### 1. Rename existing file
+`docs/training-workflow-map.md` → `docs/system-event-map.md`
+- Add a header banner: *"This is an engineering / audit reference. For training material, see the Task Playbook."*
+- Keep all 16 trigger-based workflows intact.
 
-## The 16 workflows (all sourced from inventory §7, never from memory)
+### 2. New file: `docs/task-playbook.md`
+The single source of truth for all training. Every task = one job a real person sits down to do.
 
-| ID | Workflow | Inventory rows | Event-contract rows |
-|---|---|---|---|
-| WF-01 | Onboarding (intake → profile setup → first card) | G-2/3/4, P-1 | (pre-account) |
-| WF-02 | Peer request → approval (Stage 3 unlock) | P-10, PS-2, A-1 | peer_request.* |
-| WF-03 | Assessment cycle (self-assess → confirm → plan generated) | P-3/4, PS-7, A-4 | assessment.completed/confirmed |
-| WF-04 | Plan generation & progression | P-5, PS-7 | plan_step.completed / phase.advanced |
-| WF-05 | Weekly check-in cycle (incl. low-mood path) | PS-5/6/7, P-11, A-9 | checkin.logged / checkin.low_mood |
-| WF-06 | Notes & crisis handling | PS-7, A-11 | note.created / note.crisis |
-| WF-07 | Milestone unlock → level-up celebration | PS-7, P-1/2 | milestone.unlocked / level_up |
-| WF-08 | Referrals & resources (placement + discharge) | P-6/7, PS-7, A-8 | referral.created |
-| WF-09 | Agreements & compliance | P-12, A-8 | agreement.published/acknowledged |
-| WF-10 | Passport sharing (consent → share/QR → revoke/expire) | P-8, G-5, A-13 | consent.created / shared_link.created |
-| WF-11 | Payments | A-10, P-13 | payment.recorded |
-| WF-12 | Reports (filter → generate → CSV/Print → audit) | A-12 | (audit-only) |
-| WF-13 | Notifications (cross-role bell + page) | G-6/7 | (all notif-bearing events) |
-| WF-14 | Peer wellness & CRPS (self-care + hours + eligibility) | PS-8/9, A-7, A-1 | self_care.* / crps.eligible |
-| WF-15 | Admin oversight (dashboard alert triage → drill-in) | A-1/3/4/5/6 | (all dashboard signals) |
-| WF-16 | Public passport view (anonymous + audit RPC) | G-5 | (view-only) |
+**Format per task (fixed shape):**
+```text
+TASK ID:   T-ADMIN-04
+TITLE:     Run a weekly peer specialist productivity report
+ROLE:      Admin
+CADENCE:   Weekly (Monday mornings)
+TIME:      ~5 minutes
+GOAL:      One sentence — why you do this
+WHERE:     Exact route(s) in the app
+PREREQS:   What must already exist (e.g. "at least one approved peer")
+STEPS:     Numbered, click-by-click
+RESULT:    What success looks like (toast, screen state, exported file)
+IF SOMETHING'S OFF: 2–3 common edge cases
+LINKED:    System events triggered (cross-reference to system-event-map.md)
+```
 
-## Coverage discipline baked in
+**Estimated count:** 50–70 tasks across all roles (one job per workflow, per your decision).
 
-- Every workflow cites **inventory row IDs** and **event-contract row IDs** so reconciliation in Phase 6 is mechanical
-- Final section is a coverage cross-check table mapping every WF-## to its matrix gate (TCM-W#)
-- Explicit Phase 3 → Phase 4 handoff rules:
-  - Phase 4 quick-starts = top 5–8 high-frequency workflows per role, citing WF-## IDs
-  - Phase 5 references = every WF-## **plus** every inventory row not in a workflow (passive surfaces, Offline banner, Install prompt, 404, etc.)
-  - Phase 6 reconciles all of it against the matrix before any PDF export
+### 3. Source discipline (the path I recommend for training)
+
+Hybrid — gets the rigor without the rigid 1:1 cage:
+
+- **Inventory is the ceiling, not the cage.** Every surface, action, and state in `training-coverage-inventory.md` must be reachable by **at least one** task. Reconciliation pass at the end flags orphans.
+- **Tasks may span multiple inventory rows.** A real task like "Approve a pending peer specialist" naturally touches the peer review queue, the peer detail sheet, the approval action, and the notification — that's one task, not four.
+- **Tasks may NOT invent surfaces.** If a step references something not in the inventory, it's flagged in a `?` queue for me to verify against the actual app before publishing.
+- **Final reconciliation table** at the bottom of `task-playbook.md`:
+  - Inventory row → covered by which T-### tasks
+  - Any inventory row with zero tasks = a known training gap (called out, not hidden)
+  - Any task referencing nothing in inventory = blocked until verified
+
+This is how staff manuals are actually built: write the job, then prove every screen the job touches is real.
+
+## How the playbook is organized
+
+Three role sections, alphabetized within each by cadence then alphabetical:
+
+```text
+## Participant tasks         (~15–20 tasks)
+   Daily:    log a check-in, update mood, view today's focus
+   Weekly:   complete weekly check-in, review plan progress
+   Periodic: take an assessment, share passport with provider, update profile
+
+## Peer Specialist tasks     (~20–25 tasks)
+   Daily:    triage caseload, respond to peer requests, log notes
+   Weekly:   review check-ins for caseload, log CRPS hours, run self-care check
+   Periodic: discharge planning, agreement re-acknowledgment, crisis protocol
+
+## Admin tasks               (~15–20 tasks)
+   Daily:    review dashboard alerts, approve pending peers
+   Weekly:   run peer productivity report, run participant outcomes report, review audit log
+   Periodic: publish new agreement, add resource, configure milestones, generate program report
+```
 
 ## What this does NOT touch
 
-- No code changes
-- No edits to inventory, matrix, interdependency-map (those stay frozen as source of truth)
-- No quick-start or reference prose yet — that's Phase 4 / 5
+- No code changes.
+- No edits to `training-coverage-inventory.md`, `training-coverage-matrix.md`, `interdependency-map.md`, or `recovery-capital-ladder.md`.
+- The old `training-workflow-map.md` content is preserved (just renamed and relabeled).
+
+## Viewer integration
+
+`/docs` sidebar gets a new top group: **"Playbooks"** containing the Task Playbook. The renamed System Event Map moves into the **"Reference"** group alongside the inventory and matrix.
 
 ## After approval
 
-I switch to default mode, write `docs/training-workflow-map.md`, and the new file becomes selectable in the `/admin/docs` viewer automatically (just need to add one entry in the sidebar list).
+I switch to default mode and:
+1. Rename `training-workflow-map.md` → `system-event-map.md` and add the banner.
+2. Create `docs/task-playbook.md` with the full task list (all 50–70 tasks written out).
+3. Update `src/pages/AdminDocsPage.tsx` to add the new "Playbooks" group and the renamed system-event entry.
+4. Run the reconciliation pass and append the inventory-coverage table.
 
 Approve and I'll execute.
 
