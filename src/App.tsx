@@ -155,7 +155,6 @@ const App = () => (
               <Route path="/admin/audit" element={<AdminAuditPage />} />
               <Route path="/admin/profile" element={<AdminProfilePage />} />
               <Route path="/admin/docs" element={<AdminDocsPage />} />
-              <Route path="/docs" element={<AdminDocsPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
