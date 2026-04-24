@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { FileText, BookOpen, Network, ListChecks, Layers, Workflow } from "lucide-react";
+import { FileText, BookOpen, Network, ListChecks, Layers, Workflow, ClipboardList } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Bundle markdown source at build time
+import taskPlaybookMd from "../../docs/task-playbook.md?raw";
 import inventoryMd from "../../docs/training-coverage-inventory.md?raw";
 import matrixMd from "../../docs/training-coverage-matrix.md?raw";
-import workflowMapMd from "../../docs/training-workflow-map.md?raw";
+import systemEventMapMd from "../../docs/system-event-map.md?raw";
 import interdepMd from "../../docs/interdependency-map.md?raw";
 import roleSurfaceMd from "../../docs/role-surface-matrix.md?raw";
 import ladderMd from "../../docs/recovery-capital-ladder.md?raw";
@@ -19,12 +20,20 @@ type DocEntry = {
   id: string;
   title: string;
   blurb: string;
-  group: "Training" | "Reference";
+  group: "Playbooks" | "Training" | "Reference";
   icon: React.ComponentType<{ className?: string }>;
   source: string;
 };
 
 const DOCS: DocEntry[] = [
+  {
+    id: "task-playbook",
+    title: "Task Playbook",
+    blurb: "Step-by-step staff training: one job per task, by role.",
+    group: "Playbooks",
+    icon: ClipboardList,
+    source: taskPlaybookMd,
+  },
   {
     id: "training-coverage-inventory",
     title: "Training Coverage Inventory",
@@ -42,12 +51,12 @@ const DOCS: DocEntry[] = [
     source: matrixMd,
   },
   {
-    id: "training-workflow-map",
-    title: "Training Workflow Map",
-    blurb: "Phase 3 — 16 trigger-based scenarios across all roles.",
-    group: "Training",
+    id: "system-event-map",
+    title: "System Event Map",
+    blurb: "Engineering / audit reference — what fires when an event happens.",
+    group: "Reference",
     icon: Workflow,
-    source: workflowMapMd,
+    source: systemEventMapMd,
   },
   {
     id: "role-surface-matrix",
