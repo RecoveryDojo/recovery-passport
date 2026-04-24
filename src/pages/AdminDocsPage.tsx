@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { FileText, BookOpen, Network, ListChecks, Layers } from "lucide-react";
+import { FileText, BookOpen, Network, ListChecks, Layers, Workflow } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 // Bundle markdown source at build time
 import inventoryMd from "../../docs/training-coverage-inventory.md?raw";
 import matrixMd from "../../docs/training-coverage-matrix.md?raw";
+import workflowMapMd from "../../docs/training-workflow-map.md?raw";
 import interdepMd from "../../docs/interdependency-map.md?raw";
 import roleSurfaceMd from "../../docs/role-surface-matrix.md?raw";
 import ladderMd from "../../docs/recovery-capital-ladder.md?raw";
@@ -39,6 +40,14 @@ const DOCS: DocEntry[] = [
     group: "Training",
     icon: Layers,
     source: matrixMd,
+  },
+  {
+    id: "training-workflow-map",
+    title: "Training Workflow Map",
+    blurb: "Phase 3 — 16 trigger-based scenarios across all roles.",
+    group: "Training",
+    icon: Workflow,
+    source: workflowMapMd,
   },
   {
     id: "role-surface-matrix",
