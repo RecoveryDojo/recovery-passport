@@ -1,9 +1,23 @@
-# Training Workflow Map (Phase 3)
+# System Event Map (Engineering / Audit Reference)
 
-> **Purpose.** Translate the [Coverage Inventory](./training-coverage-inventory.md) §7 into
-> real-world operational scenarios. Every workflow below is built from the inventory
-> (never from memory) and is the source for Phase 4 (quick-start) and Phase 5 (full
-> reference) manuals.
+> ⚠️ **This is NOT training material.** This is a trigger-oriented reference for engineers,
+> auditors, and QA — it documents what the system does when an event fires (e.g.
+> "when a check-in is logged, who gets notified, what RPCs fire, what state changes").
+>
+> **For staff training, see [`docs/task-playbook.md`](./task-playbook.md)** — that is the
+> task-oriented document organized by "I am sitting down to do my job."
+>
+> **Original purpose.** Translate the [Coverage Inventory](./training-coverage-inventory.md) §7 into
+> system-event scenarios. Each entry below is sourced from the inventory and the cross-role
+> event contract (never from memory).
+>
+> **Format.** Each event uses a five-part structure:
+>
+> 1. **Trigger** — what real-world event starts this
+> 2. **Actor & surface** — who responds, where, in what state
+> 3. **Step-by-step** — exact in-app actions, in order, with surface references
+> 4. **Expected result** — what the actor should see (toast, state change, navigation)
+> 5. **Cross-role impact** — what other roles see, on which surface, via which signal
 >
 > **Format.** Each workflow uses the same five-part structure so manuals can be generated
 > consistently:
