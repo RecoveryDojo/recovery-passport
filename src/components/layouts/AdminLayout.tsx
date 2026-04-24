@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
-import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock, Shield, UserCircle } from "lucide-react";
+import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock, Shield, UserCircle, FileText } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
 import { Link } from "react-router-dom";
 import {
@@ -25,6 +25,7 @@ const navItems = [
   { to: "/admin/content", label: "Content", icon: BookOpen },
   { to: "/admin/reports", label: "Reports", icon: BarChart2 },
   { to: "/admin/audit", label: "Audit Log", icon: Clock },
+  { to: "/admin/docs", label: "Docs", icon: FileText },
 ];
 
 const AdminSidebar = () => {
