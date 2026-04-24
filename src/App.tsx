@@ -90,6 +90,7 @@ const App = () => (
             <Route path="/intake" element={<IntakePage />} />
             <Route path="/passport/:token" element={<PublicPassportPage />} />
             <Route path="/notifications" element={<ProtectedRoute allowedRoles={["participant","peer_specialist","admin"]}><NotificationsPage /></ProtectedRoute>} />
+            <Route path="/docs" element={<ProtectedRoute allowedRoles={["participant","peer_specialist","admin"]}><AdminDocsPage /></ProtectedRoute>} />
 
             {/* Profile setup (participant only, before layout) */}
             <Route path="/profile/setup" element={<ProtectedRoute allowedRoles={["participant"]}><ProfileSetup /></ProtectedRoute>} />
@@ -154,7 +155,6 @@ const App = () => (
               <Route path="/admin/audit" element={<AdminAuditPage />} />
               <Route path="/admin/profile" element={<AdminProfilePage />} />
               <Route path="/admin/docs" element={<AdminDocsPage />} />
-              <Route path="/docs" element={<AdminDocsPage />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
