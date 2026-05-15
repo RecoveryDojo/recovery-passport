@@ -1,95 +1,125 @@
+# Fundraiser Deck Plan
 
+A self-playing PowerPoint loop for the fundraiser laptop. Built in three stages: seed the demo, capture real screenshots from inside the live app, then assemble a branded 60-slide deck.
 
-# Phase 3.5 — Reframe: Task Playbook (Training-First)
+## Stage 1 — Seed 6 months of demo content
 
-You are right — Phase 3's trigger-oriented map is a **system reference**, not training material. Real staff training has to start from "I am sitting down to do my job — what do I do?"
+Expand the existing `demo-seed` edge function so the app looks like an org that has been running since November. All demo accounts use `@demo.recoverypassport.org` emails and stay tagged via `app_config.demo_user_ids` for one-click cleanup later.
 
-## What changes
+**Cohort (12 users)**
+- 1 admin: Director persona (Pat Reyes)
+- 3 peer specialists: Maria (certified, full caseload, all CRPS hours logged), Daniela (in-training, partial hours), James (recently approved)
+- 8 participants spread across stages:
+  - 2 all-star (180+ days, full plan, 10+ milestones, passport shared with employer/landlord)
+  - 2 veteran (90 days, phase 3 active, 7 milestones)
+  - 2 starter (45 days, phase 2, 4 milestones, one with crisis check-in + supervisor feedback)
+  - 1 rookie (14 days, phase 1, intake just done, first assessment)
+  - 1 day-one (intake today, empty state)
 
-- Phase 3 deliverable (`docs/training-workflow-map.md`) is **renamed and re-labeled** as a system-event reference, not training.
-- A new training-first deliverable is built: the **Task Playbook**.
-- All future Phase 4/5 quick-starts and manuals are sourced from the Task Playbook, not the event map.
+**Per participant, 6 months back-dated where applicable**
+- Weekly check-ins (mood trend, MI techniques, contact mode mix)
+- Progress notes (general, crisis, milestone, transition types)
+- Assessments at intake, 30/60/90 day with scores trending upward
+- Recovery plan via `generate_recovery_plan` RPC, then phase progression + completed steps
+- Milestone unlocks back-dated, then `recalculate_card_level` per participant
+- Payment ledger (charges + payments) for 2 participants
+- Agreement acknowledgments
+- Notifications history
+- 1 shared passport link + consent record (for the all-star personas)
+- 1 referral to a community partner (Jasmine → sober living)
 
-## New deliverables
+**Per peer**
+- CRPS hours auto-logged from check-ins via `log_checkin_crps_hours`
+- Manual hours, training, supervised categories
+- Self-care checks (one flagged for Daniela)
+- Supervisor feedback entries from admin
 
-### 1. Rename existing file
-`docs/training-workflow-map.md` → `docs/system-event-map.md`
-- Add a header banner: *"This is an engineering / audit reference. For training material, see the Task Playbook."*
-- Keep all 16 trigger-based workflows intact.
+**Admin-side**
+- Audit log entries for passport views, peer approvals, payment edits
+- 2 pending peer approvals + 1 pending profile edit awaiting review
 
-### 2. New file: `docs/task-playbook.md`
-The single source of truth for all training. Every task = one job a real person sits down to do.
+## Stage 2 — Capture screenshots live
 
-**Format per task (fixed shape):**
-```text
-TASK ID:   T-ADMIN-04
-TITLE:     Run a weekly peer specialist productivity report
-ROLE:      Admin
-CADENCE:   Weekly (Monday mornings)
-TIME:      ~5 minutes
-GOAL:      One sentence — why you do this
-WHERE:     Exact route(s) in the app
-PREREQS:   What must already exist (e.g. "at least one approved peer")
-STEPS:     Numbered, click-by-click
-RESULT:    What success looks like (toast, screen state, exported file)
-IF SOMETHING'S OFF: 2–3 common edge cases
-LINKED:    System events triggered (cross-reference to system-event-map.md)
-```
+Use the browser tool to log in as each persona at the published preview URL and screenshot every key route at mobile (375px) and a few at desktop. Saved to `/mnt/documents/deck-shots/`.
 
-**Estimated count:** 50–70 tasks across all roles (one job per workflow, per your decision).
+**Participant routes** (capture for 3 personas — all-star, crisis, day-one to show range):
+/card, /plan, /milestones, /assessment/history, /check-ins, /passport-config, /resources, /agreements, /payments, /peers/browse, /profile
 
-### 3. Source discipline (the path I recommend for training)
+**Peer specialist routes** (Maria + Daniela):
+/caseload, /caseload/:id, /caseload/:id check-in form, /caseload/:id notes, /caseload/:id plan tab, /crps, /self-care, /notifications, /peer-profile, pending-approval holding screen (James)
 
-Hybrid — gets the rigor without the rigid 1:1 cage:
+**Admin routes** (Pat):
+/admin (dashboard), /admin/participants, /admin/participants/:id, /admin/peers, /admin/peer-review, /admin/peers/:id, /admin/reports, /admin/audit, /admin/payments, /admin/programs, /admin/agreements, /admin/milestones, /admin/assessment-domains, /admin/plan-templates, /admin/mi-prompts, /admin/protocols, /admin/resources, /admin/docs, /admin/users
 
-- **Inventory is the ceiling, not the cage.** Every surface, action, and state in `training-coverage-inventory.md` must be reachable by **at least one** task. Reconciliation pass at the end flags orphans.
-- **Tasks may span multiple inventory rows.** A real task like "Approve a pending peer specialist" naturally touches the peer review queue, the peer detail sheet, the approval action, and the notification — that's one task, not four.
-- **Tasks may NOT invent surfaces.** If a step references something not in the inventory, it's flagged in a `?` queue for me to verify against the actual app before publishing.
-- **Final reconciliation table** at the bottom of `task-playbook.md`:
-  - Inventory row → covered by which T-### tasks
-  - Any inventory row with zero tasks = a known training gap (called out, not hidden)
-  - Any task referencing nothing in inventory = blocked until verified
+Roughly 50-60 source screenshots; deck uses ~45 of the strongest.
 
-This is how staff manuals are actually built: write the job, then prove every screen the job touches is real.
+## Stage 3 — Build the .pptx
 
-## How the playbook is organized
+60 slides, 16:9, looped playback ready. Branded with the palette + logo from your upload (waiting on that image — I'll pull the exact hex values from it before generating).
 
-Three role sections, alphabetized within each by cadence then alphabetical:
+**Section A — Mission & problem (5 slides)**
+1. Cover (logo + tagline + REF)
+2. The recovery problem (stat slide)
+3. Why a passport (concept)
+4. The Catcher's Mitt program intro
+5. What Recovery Passport is (one-line + device hero)
 
-```text
-## Participant tasks         (~15–20 tasks)
-   Daily:    log a check-in, update mood, view today's focus
-   Weekly:   complete weekly check-in, review plan progress
-   Periodic: take an assessment, share passport with provider, update profile
+**Section B — Participant journey (15 slides, 3 personas × 5)**
+For each of Marcus (all-star), Jasmine (crisis-to-recovery), Tasha (day one):
+- Persona intro card
+- Their baseball card / today view
+- Their recovery plan progress
+- Their milestones + assessment trend
+- Their passport / shared link
 
-## Peer Specialist tasks     (~20–25 tasks)
-   Daily:    triage caseload, respond to peer requests, log notes
-   Weekly:   review check-ins for caseload, log CRPS hours, run self-care check
-   Periodic: discharge planning, agreement re-acknowledgment, crisis protocol
+**Section C — Peer specialist toolkit (12 slides)**
+- Caseload health overview
+- Participant detail drilldown
+- Logging a check-in (MI prompts)
+- Writing a progress note (template)
+- Crisis protocol surface
+- Unlocking a milestone
+- Recovery plan editing
+- CRPS hours dashboard
+- Competency milestones
+- Self-care check-in
+- Notifications inbox
+- Pending-approval / onboarding
 
-## Admin tasks               (~15–20 tasks)
-   Daily:    review dashboard alerts, approve pending peers
-   Weekly:   run peer productivity report, run participant outcomes report, review audit log
-   Periodic: publish new agreement, add resource, configure milestones, generate program report
-```
+**Section D — Admin oversight & reporting (12 slides)**
+- Admin dashboard
+- Participants table + filters
+- Peer roster + approval queue
+- Profile-edit review
+- Reports page (key metrics)
+- Audit log (compliance proof)
+- Payments ledger
+- Programs & agreements
+- Milestone & assessment configuration
+- Plan templates
+- MI prompt library
+- Resource directory + community partners
 
-## What this does NOT touch
+**Section E — Compliance, impact, CTA (6 slides)**
+- 42 CFR Part 2 compliance (consent + redisclosure)
+- Audit trail / data security
+- Impact stats from the seeded 6 months (#participants, #check-ins, #milestones, #CRPS hours, #passports shared)
+- Quote / testimonial slide (placeholder)
+- Where the funds go
+- Closing / how to support
 
-- No code changes.
-- No edits to `training-coverage-inventory.md`, `training-coverage-matrix.md`, `interdependency-map.md`, or `recovery-capital-ladder.md`.
-- The old `training-workflow-map.md` content is preserved (just renamed and relabeled).
+**Build mechanics**
+- Use the bundled `pptx` skill with `pptxgenjs`
+- Embed all images as base64 (per skill requirement)
+- Wrap mobile screenshots in a phone bezel mockup, desktop shots in a browser frame
+- Branded title/section dividers; consistent footer with logo
+- Output `/mnt/documents/recovery-passport-fundraiser.pptx`
+- Visual QA: convert to PDF, render every slide as JPG, inspect for overflow/contrast/missing-image issues, fix and re-render until clean
 
-## Viewer integration
+## Cleanup
+After delivery, the demo cohort stays loaded so your boss can also do live walk-throughs at the event. The existing `demo-seed clear` action removes everything tagged in `app_config.demo_user_ids` whenever you're ready.
 
-`/docs` sidebar gets a new top group: **"Playbooks"** containing the Task Playbook. The renamed System Event Map moves into the **"Reference"** group alongside the inventory and matrix.
-
-## After approval
-
-I switch to default mode and:
-1. Rename `training-workflow-map.md` → `system-event-map.md` and add the banner.
-2. Create `docs/task-playbook.md` with the full task list (all 50–70 tasks written out).
-3. Update `src/pages/AdminDocsPage.tsx` to add the new "Playbooks" group and the renamed system-event entry.
-4. Run the reconciliation pass and append the inventory-coverage table.
-
-Approve and I'll execute.
-
+## Open items before I start
+- **Brand image** — waiting on your upload so I can pull exact hex + logo into the master slide
+- **Tagline / org name to display on cover** (e.g. "Recovery Passport — powered by Recovery Epicenter Foundation")
+- **Closing CTA** — donation URL, QR, or just a "Thank you / contact" slide?
