@@ -63,7 +63,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     }
   }, [user, role, skipProfileCheck]);
 
-  if (loading || profileCheck === "loading" || peerProfileCheck === "loading") {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -73,6 +73,14 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
 
   if (!user) return <Navigate to="/login" replace />;
   if (!role) return <Navigate to="/login" replace />;
+
+  if (profileCheck === "loading" || peerProfileCheck === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   if (!allowedRoles.includes(role)) {
     const home = role === "participant" ? "/card" : role === "peer_specialist" ? "/caseload" : "/admin";
