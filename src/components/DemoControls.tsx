@@ -40,7 +40,7 @@ const DemoControls = () => {
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-3 p-4 border border-border rounded-lg bg-muted/30 space-y-3">
         <p className="text-xs text-muted-foreground">
-          Load realistic demo data for presentations. Creates 4 participants and 2 peer specialists with full history.
+          Loads the fundraiser demo cohort: 8 participants (rookie → all-star), 4 peer specialists (1 pending), and ~6 months of back-dated check-ins, notes, milestones, assessments, plans, payments, referrals, CRPS hours, shared passports, and audit log entries. Takes 30-60 seconds.
         </p>
         <div className="flex gap-3">
           <Button
