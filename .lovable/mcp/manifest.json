@@ -1,0 +1,141 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://axligiieeuzmahkhmxwy.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "recovery-passport-mcp",
+      "version": "0.1.0",
+      "title": "Recovery Passport"
+    },
+    "tools": [
+      {
+        "name": "get_my_card",
+        "title": "Get my Recovery Card",
+        "description": "Fetch the signed-in participant's Recovery Card: card level, days engaged, program, and profile summary.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_milestones",
+        "title": "List my milestones",
+        "description": "List all milestones for the signed-in participant with their status and unlock dates.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_my_checkins",
+        "title": "List my weekly check-ins",
+        "description": "List the signed-in participant's recent weekly check-ins, most recent first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "description": "Max number of check-ins to return"
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "log_self_care_check",
+        "title": "Log a self-care check",
+        "description": "Record a self-care check-in (mood, energy, stress on a 1-5 scale) for the signed-in user. Auto-flags if stress >= 4 or mood <= 2.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "mood": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "description": "Mood 1 (low) to 5 (great)"
+            },
+            "energy": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "description": "Energy 1 (drained) to 5 (energized)"
+            },
+            "stress": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "description": "Stress 1 (calm) to 5 (overwhelmed)"
+            },
+            "notes": {
+              "type": "string",
+              "maxLength": 2000,
+              "description": "Optional free-text notes"
+            }
+          },
+          "required": [
+            "mood",
+            "energy",
+            "stress"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_my_recovery_plan",
+        "title": "Get my recovery plan",
+        "description": "Fetch the signed-in participant's current recovery plan with its phases and action steps.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

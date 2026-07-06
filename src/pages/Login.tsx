@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -8,14 +8,24 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 
+const safeNext = (raw: string | null): string | null => {
+  if (!raw) return null;
+  // Only allow same-origin relative paths.
+  if (!raw.startsWith("/") || raw.startsWith("//")) return null;
+  return raw;
+};
+
 const Login = () => {
   const { user, role, loading } = useAuth();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [searchParams] = useSearchParams();
+  const next = safeNext(searchParams.get("next"));
 
   if (!loading && user && role) {
+    if (next) return <Navigate to={next} replace />;
     const home = role === "participant" ? "/card" : role === "peer_specialist" ? "/caseload" : "/admin";
     return <Navigate to={home} replace />;
   }
