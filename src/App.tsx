@@ -68,6 +68,7 @@ import NotificationsPage from "@/pages/NotificationsPage";
 import AdminDocsPage from "@/pages/AdminDocsPage";
 import OfflineBanner from "@/components/OfflineBanner";
 import InstallPrompt from "@/components/InstallPrompt";
+import OAuthConsent from "@/pages/OAuthConsent";
 
 const queryClient = new QueryClient();
 
