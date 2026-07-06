@@ -90,6 +90,7 @@ const App = () => (
             <Route path="/reset-password" element={<UpdatePassword />} />
             <Route path="/intake" element={<IntakePage />} />
             <Route path="/passport/:token" element={<PublicPassportPage />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/notifications" element={<ProtectedRoute allowedRoles={["participant","peer_specialist","admin"]}><NotificationsPage /></ProtectedRoute>} />
             <Route path="/docs" element={<ProtectedRoute allowedRoles={["participant","peer_specialist","admin"]}><AdminDocsPage /></ProtectedRoute>} />
 
