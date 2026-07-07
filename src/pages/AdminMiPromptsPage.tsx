@@ -30,8 +30,19 @@ const TAGS: { value: SituationTag; label: string }[] = [
 
 const AdminMiPromptsPage = () => {
   const qc = useQueryClient();
+  const { user } = useAuth();
   const [editing, setEditing] = useState<Partial<MiPrompt> | null>(null);
   const [tab, setTab] = useState<string>("first_checkin");
+
+  const writeAudit = async (action: string, targetId: string, metadata?: Record<string, unknown>) => {
+    await supabase.from("audit_log").insert({
+      user_id: user?.id ?? null,
+      action,
+      target_type: "mi_prompts",
+      target_id: targetId,
+      metadata: (metadata ?? {}) as any,
+    } as any);
+  };
 
   const { data: prompts, isLoading } = useQuery({
     queryKey: ["mi-prompts-admin"],
@@ -52,14 +63,16 @@ const AdminMiPromptsPage = () => {
           is_active: prompt.is_active ?? true,
         }).eq("id", prompt.id);
         if (error) throw error;
+        await writeAudit("edit_mi_prompt", prompt.id, { situation_tag: prompt.situation_tag });
       } else {
-        const { error } = await supabase.from("mi_prompts").insert({
+        const { data, error } = await supabase.from("mi_prompts").insert({
           text: prompt.text!,
           situation_tag: prompt.situation_tag!,
           explanation: prompt.explanation ?? null,
           is_active: prompt.is_active ?? true,
-        });
+        }).select("id").single();
         if (error) throw error;
+        await writeAudit("add_mi_prompt", data.id, { situation_tag: prompt.situation_tag });
       }
     },
     onSuccess: () => {
@@ -70,10 +83,11 @@ const AdminMiPromptsPage = () => {
     onError: () => toast({ title: "Error saving prompt", variant: "destructive" }),
   });
 
-  const deactivate = async (id: string) => {
-    await supabase.from("mi_prompts").update({ is_active: false }).eq("id", id);
+  const toggleActive = async (id: string, next: boolean) => {
+    await supabase.from("mi_prompts").update({ is_active: next }).eq("id", id);
+    await writeAudit(next ? "reactivate_mi_prompt" : "deactivate_mi_prompt", id, { is_active: next });
     qc.invalidateQueries({ queryKey: ["mi-prompts-admin"] });
-    toast({ title: "Prompt deactivated" });
+    toast({ title: next ? "Prompt reactivated" : "Prompt deactivated" });
   };
 
   const grouped = TAGS.reduce((acc, t) => {
