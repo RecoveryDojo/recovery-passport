@@ -53,6 +53,7 @@ import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
 import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
 import AdminMiPromptsPage from "@/pages/AdminMiPromptsPage";
 import AdminProtocolsPage from "@/pages/AdminProtocolsPage";
+import AdminCrisisProtocolPage from "@/pages/AdminCrisisProtocolPage";
 import AdminPlanTemplatesPage from "@/pages/AdminPlanTemplatesPage";
 import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
@@ -144,7 +145,7 @@ const App = () => (
               <Route path="/admin/peers/:peerId" element={<AdminPeerDetailPage />} />
               <Route path="/admin/content" element={<AdminContentHubPage />} />
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
-              <Route path="/admin/content/crisis-protocol" element={<AdminProtocolsPage />} />
+              <Route path="/admin/content/crisis-protocol" element={<AdminCrisisProtocolPage />} />
               
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
