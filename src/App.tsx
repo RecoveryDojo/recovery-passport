@@ -31,6 +31,7 @@ import IntakePage from "@/pages/IntakePage";
 import AdminAuditPage from "@/pages/AdminAuditPage";
 import AdminReportsPage from "@/pages/AdminReportsPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
+import AdminContentHubPage from "@/pages/AdminContentHubPage";
 
 import ResourceDirectoryPage from "@/pages/ResourceDirectoryPage";
 import ResourceDetailPage from "@/pages/ResourceDetailPage";
@@ -141,8 +142,10 @@ const App = () => (
               <Route path="/admin/peers" element={<AdminPeersPage />} />
               <Route path="/admin/peers/review" element={<AdminPeerReviewPage />} />
               <Route path="/admin/peers/:peerId" element={<AdminPeerDetailPage />} />
-              <Route path="/admin/content" element={<AdminContent />} />
+              <Route path="/admin/content" element={<AdminContentHubPage />} />
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
+              <Route path="/admin/content/crisis-protocol" element={<AdminProtocolsPage />} />
+              
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
               <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
