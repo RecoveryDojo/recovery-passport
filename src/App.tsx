@@ -142,8 +142,10 @@ const App = () => (
               <Route path="/admin/peers" element={<AdminPeersPage />} />
               <Route path="/admin/peers/review" element={<AdminPeerReviewPage />} />
               <Route path="/admin/peers/:peerId" element={<AdminPeerDetailPage />} />
-              <Route path="/admin/content" element={<AdminContent />} />
+              <Route path="/admin/content" element={<AdminContentHubPage />} />
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
+              <Route path="/admin/content/crisis-protocol" element={<AdminProtocolsPage />} />
+              <Route path="/admin/content/note-templates" element={<AdminContentHubPage />} />
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
               <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
