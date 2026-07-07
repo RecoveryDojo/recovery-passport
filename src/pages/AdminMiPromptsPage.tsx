@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Pencil, EyeOff, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
+import { Plus, Pencil, EyeOff, Eye, ThumbsUp, ThumbsDown, MessageSquare } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -21,9 +22,10 @@ const TAGS: { value: SituationTag; label: string }[] = [
   { value: "first_checkin", label: "First Check-In" },
   { value: "ambivalence", label: "Ambivalence" },
   { value: "barriers", label: "Barriers" },
+  { value: "crisis", label: "Crisis" },
   { value: "motivation", label: "Motivation" },
   { value: "planning", label: "Planning" },
-  { value: "crisis", label: "Crisis" },
+  { value: "general", label: "General" },
 ];
 
 const AdminMiPromptsPage = () => {
