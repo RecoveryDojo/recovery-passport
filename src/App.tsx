@@ -31,6 +31,7 @@ import IntakePage from "@/pages/IntakePage";
 import AdminAuditPage from "@/pages/AdminAuditPage";
 import AdminReportsPage from "@/pages/AdminReportsPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
+import AdminContentHubPage from "@/pages/AdminContentHubPage";
 
 import ResourceDirectoryPage from "@/pages/ResourceDirectoryPage";
 import ResourceDetailPage from "@/pages/ResourceDetailPage";
