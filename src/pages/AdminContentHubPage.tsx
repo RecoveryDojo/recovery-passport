@@ -8,14 +8,29 @@ import {
   ClipboardList,
   MapPin,
   ChevronRight,
+  ClipboardCheck,
+  FileSignature,
+  Building2,
 } from "lucide-react";
 
 const SECTIONS = [
+  {
+    title: "Programs",
+    description: "Manage the programs (respite, sober living, treatment, outpatient) participants can be enrolled in.",
+    to: "/admin/content/programs",
+    icon: Building2,
+  },
   {
     title: "Milestones",
     description: "Manage the milestones participants earn and how they map to card levels.",
     to: "/admin/content/milestones",
     icon: Trophy,
+  },
+  {
+    title: "Assessment Rubric",
+    description: "Manage the 10 recovery capital domains and their level descriptions.",
+    to: "/admin/content/assessment",
+    icon: ClipboardCheck,
   },
   {
     title: "MI Prompt Library",
@@ -24,10 +39,10 @@ const SECTIONS = [
     icon: MessageSquareQuote,
   },
   {
-    title: "Crisis Protocol",
-    description: "Edit the quick-reference crisis protocol shown to peers.",
-    to: "/admin/content/crisis-protocol",
-    icon: ShieldAlert,
+    title: "Recovery Plan Templates",
+    description: "Manage the default and domain-triggered steps used to generate plans.",
+    to: "/admin/content/plan-templates",
+    icon: ClipboardList,
   },
   {
     title: "Note Templates",
@@ -36,10 +51,16 @@ const SECTIONS = [
     icon: FileText,
   },
   {
-    title: "Recovery Plan Templates",
-    description: "Manage the default and domain-triggered steps used to generate plans.",
-    to: "/admin/content/plan-templates",
-    icon: ClipboardList,
+    title: "Crisis Protocol",
+    description: "Edit the quick-reference crisis protocol shown to peers.",
+    to: "/admin/content/crisis-protocol",
+    icon: ShieldAlert,
+  },
+  {
+    title: "Program Agreements",
+    description: "Manage the program agreements participants review and acknowledge.",
+    to: "/admin/content/agreements",
+    icon: FileSignature,
   },
   {
     title: "Resource Listings",
