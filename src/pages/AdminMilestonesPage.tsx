@@ -70,8 +70,8 @@ const AdminMilestonesPage = () => {
       action,
       target_type: "milestone_definitions",
       target_id: targetId,
-      metadata: metadata ?? {},
-    });
+      metadata: (metadata ?? {}) as any,
+    } as any);
   };
 
   const { data: milestones = [], isLoading } = useQuery({
