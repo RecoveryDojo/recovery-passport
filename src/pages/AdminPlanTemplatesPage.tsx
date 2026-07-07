@@ -20,7 +20,7 @@ const PHASES = Constants.public.Enums.plan_phase;
 
 const AdminPlanTemplatesPage = () => {
   const qc = useQueryClient();
-  const [programType, setProgramType] = useState("respite_house");
+  const [programType, setProgramType] = useState("universal");
   const [phase, setPhase] = useState("thirty_day");
   const [editingStep, setEditingStep] = useState<any>(null);
   const [showDuplicate, setShowDuplicate] = useState(false);
