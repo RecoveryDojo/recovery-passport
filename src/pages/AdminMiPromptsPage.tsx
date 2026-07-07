@@ -140,9 +140,13 @@ const AdminMiPromptsPage = () => {
                       <Button size="sm" variant="ghost" onClick={() => setEditing(p)}>
                         <Pencil className="h-3 w-3 mr-1" /> Edit
                       </Button>
-                      {p.is_active && (
-                        <Button size="sm" variant="ghost" onClick={() => deactivate(p.id)}>
+                      {p.is_active ? (
+                        <Button size="sm" variant="ghost" onClick={() => toggleActive(p.id, false)}>
                           <EyeOff className="h-3 w-3 mr-1" /> Deactivate
+                        </Button>
+                      ) : (
+                        <Button size="sm" variant="ghost" onClick={() => toggleActive(p.id, true)}>
+                          <Eye className="h-3 w-3 mr-1" /> Reactivate
                         </Button>
                       )}
                     </div>
