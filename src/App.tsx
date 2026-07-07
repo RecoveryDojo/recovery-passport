@@ -54,6 +54,7 @@ import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
 import AdminMiPromptsPage from "@/pages/AdminMiPromptsPage";
 import AdminProtocolsPage from "@/pages/AdminProtocolsPage";
 import AdminCrisisProtocolPage from "@/pages/AdminCrisisProtocolPage";
+import AdminNoteTemplatesPage from "@/pages/AdminNoteTemplatesPage";
 import AdminPlanTemplatesPage from "@/pages/AdminPlanTemplatesPage";
 import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
