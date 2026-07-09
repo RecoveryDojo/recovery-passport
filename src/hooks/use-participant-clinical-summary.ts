@@ -199,11 +199,14 @@ export function useParticipantClinicalSummary(participantId: string | null | und
         .slice(0, 3);
       const totalMilestoneCount = (allDefsRes.data ?? []).length;
 
-      // ── 4. Last 6 assessments ───────────────────────────────────────────
+      // ── 4. Last 6 assessments (RC only — instrument_id is null for RC) ──
+      // Non-RC instruments (PHQ-9, GAD-7, custom) use different scales/valence
+      // and must not be color-coded or trended against RC thresholds.
       const { data: assessmentRows } = await supabase
         .from("assessment_sessions")
         .select("id, completed_at, overall_score, confirmed_by")
         .eq("participant_id", pid)
+        .is("instrument_id", null)
         .order("completed_at", { ascending: false })
         .limit(6);
 
