@@ -349,6 +349,9 @@ const CardPage = () => {
         participantName={fullName}
       />
 
+      {/* === PENDING ASSESSMENTS (PHQ-9 / GAD-7 / custom) === */}
+      <PendingAssessmentsCard />
+
       {/* === BASEBALL CARD === */}
       <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>
         {/* Card body */}
