@@ -331,13 +331,12 @@ const AssessmentInstrumentTakePage = () => {
         // Surface crisis protocol inline
         const { data: proto } = await supabase
           .from("crisis_protocol")
-          .select("label, description")
-          .order("sort_order")
-          .limit(1)
+          .select("content")
+          .eq("is_current", true)
           .maybeSingle();
         setCrisis({
-          label: proto?.label ?? "If you are in immediate crisis, call 988 or 911.",
-          guidance: proto?.description ?? null,
+          label: "If you are in immediate crisis, call 988 or 911.",
+          guidance: proto?.content ?? null,
         });
         toast.warning("Assessment submitted — flagged for peer review.");
       } else {
