@@ -250,6 +250,7 @@ const CardPage = () => {
         .from("assessment_sessions")
         .select("overall_score, confirmed_by")
         .eq("participant_id", profile!.id)
+        .is("instrument_id", null)
         .order("completed_at", { ascending: false })
         .limit(2);
       return data ?? [];
