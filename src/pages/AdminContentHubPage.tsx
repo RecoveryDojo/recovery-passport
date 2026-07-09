@@ -34,6 +34,12 @@ const SECTIONS = [
     icon: ClipboardCheck,
   },
   {
+    title: "Assessment Library",
+    description: "Manage standard and custom clinical instruments (PHQ-9, GAD-7, and your own).",
+    to: "/admin/content/instruments",
+    icon: LibraryBig,
+  },
+  {
     title: "MI Prompt Library",
     description: "Curate motivational interviewing prompts peers see during check-ins.",
     to: "/admin/content/mi-prompts",
