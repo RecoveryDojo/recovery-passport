@@ -21,6 +21,9 @@ import NotFound from "@/pages/NotFound";
 import CardPage from "@/pages/CardPage";
 import ParticipantMilestonesPage from "@/pages/ParticipantMilestonesPage";
 import AssessmentTakePage from "@/pages/AssessmentTakePage";
+import AssessmentInstrumentTakePage from "@/pages/AssessmentInstrumentTakePage";
+import AdminAssessmentInstrumentsPage from "@/pages/AdminAssessmentInstrumentsPage";
+import AdminAssessmentInstrumentDetailPage from "@/pages/AdminAssessmentInstrumentDetailPage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
@@ -110,6 +113,7 @@ const App = () => (
               <Route path="/card" element={<CardPage />} />
               <Route path="/milestones" element={<ParticipantMilestonesPage />} />
               <Route path="/assessment/take" element={<AssessmentTakePage />} />
+              <Route path="/assessment/take/:instrumentId" element={<AssessmentInstrumentTakePage />} />
               <Route path="/assessment/history" element={<AssessmentHistoryPage />} />
               <Route path="/plan" element={<PlanPage />} />
               <Route path="/resources" element={<ResourceDirectoryPage />} />
@@ -151,6 +155,8 @@ const App = () => (
               
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
+              <Route path="/admin/content/instruments" element={<AdminAssessmentInstrumentsPage />} />
+              <Route path="/admin/content/instruments/:instrumentId" element={<AdminAssessmentInstrumentDetailPage />} />
               <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
               <Route path="/admin/content/resources" element={<AdminResourcesPage />} />
               <Route path="/admin/content/mi-prompts" element={<AdminMiPromptsPage />} />

@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilestonesTab from "@/components/MilestonesTab";
+import AssignAssessmentSheet from "@/components/AssignAssessmentSheet";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -217,10 +218,13 @@ const CaseloadParticipantDetailPage = () => {
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground pt-1 border-t border-border">
+        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground pt-1 border-t border-border items-center">
           {days !== null && <span>{days} days in recovery</span>}
           <span>{data.earnedMilestones.length} / {data.totalMilestoneCount} milestones</span>
           {profile.pathway && <span className="capitalize">{profile.pathway.replace(/_/g, " ")}</span>}
+          <div className="ml-auto">
+            <AssignAssessmentSheet participantId={profile.id} participantName={name} />
+          </div>
         </div>
       </div>
 

@@ -20,6 +20,7 @@ import AskYourPeerCard from "@/components/card/AskYourPeerCard";
 import ReflectionJournal from "@/components/card/ReflectionJournal";
 import ResourceOfTheDay from "@/components/card/ResourceOfTheDay";
 import LevelRoadmapModal from "@/components/card/LevelRoadmapModal";
+import PendingAssessmentsCard from "@/components/PendingAssessmentsCard";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
@@ -347,6 +348,9 @@ const CardPage = () => {
         participantUserId={profile.user_id}
         participantName={fullName}
       />
+
+      {/* === PENDING ASSESSMENTS (PHQ-9 / GAD-7 / custom) === */}
+      <PendingAssessmentsCard />
 
       {/* === BASEBALL CARD === */}
       <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>

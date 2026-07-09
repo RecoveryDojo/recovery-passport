@@ -11,6 +11,7 @@ import {
   ClipboardCheck,
   FileSignature,
   Building2,
+  LibraryBig,
 } from "lucide-react";
 
 const SECTIONS = [
@@ -31,6 +32,12 @@ const SECTIONS = [
     description: "Manage the 10 recovery capital domains and their level descriptions.",
     to: "/admin/content/assessment",
     icon: ClipboardCheck,
+  },
+  {
+    title: "Assessment Library",
+    description: "Manage standard and custom clinical instruments (PHQ-9, GAD-7, and your own).",
+    to: "/admin/content/instruments",
+    icon: LibraryBig,
   },
   {
     title: "MI Prompt Library",
