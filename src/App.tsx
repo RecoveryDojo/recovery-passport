@@ -21,6 +21,9 @@ import NotFound from "@/pages/NotFound";
 import CardPage from "@/pages/CardPage";
 import ParticipantMilestonesPage from "@/pages/ParticipantMilestonesPage";
 import AssessmentTakePage from "@/pages/AssessmentTakePage";
+import AssessmentInstrumentTakePage from "@/pages/AssessmentInstrumentTakePage";
+import AdminAssessmentInstrumentsPage from "@/pages/AdminAssessmentInstrumentsPage";
+import AdminAssessmentInstrumentDetailPage from "@/pages/AdminAssessmentInstrumentDetailPage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
 import {
