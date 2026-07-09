@@ -11,6 +11,7 @@ import {
   ClipboardCheck,
   FileSignature,
   Building2,
+  LibraryBig,
 } from "lucide-react";
 
 const SECTIONS = [
