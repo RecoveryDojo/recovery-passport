@@ -68,6 +68,104 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_assignments: {
+        Row: {
+          assigned_by: string
+          cadence_tag: Database["public"]["Enums"]["assessment_cadence"]
+          created_at: string
+          due_date: string | null
+          id: string
+          instrument_id: string
+          participant_id: string
+          status: Database["public"]["Enums"]["assessment_assignment_status"]
+          updated_at: string
+        }
+        Insert: {
+          assigned_by: string
+          cadence_tag?: Database["public"]["Enums"]["assessment_cadence"]
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          instrument_id: string
+          participant_id: string
+          status?: Database["public"]["Enums"]["assessment_assignment_status"]
+          updated_at?: string
+        }
+        Update: {
+          assigned_by?: string
+          cadence_tag?: Database["public"]["Enums"]["assessment_cadence"]
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          instrument_id?: string
+          participant_id?: string
+          status?: Database["public"]["Enums"]["assessment_assignment_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_assignments_instrument_id_fkey"
+            columns: ["instrument_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_instruments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_assignments_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participant_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_bands: {
+        Row: {
+          created_at: string
+          guidance: string | null
+          id: string
+          instrument_id: string
+          label: string
+          max_score: number
+          min_score: number
+          severity: Database["public"]["Enums"]["assessment_severity"]
+          triggers_alert: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          guidance?: string | null
+          id?: string
+          instrument_id: string
+          label: string
+          max_score: number
+          min_score: number
+          severity?: Database["public"]["Enums"]["assessment_severity"]
+          triggers_alert?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          guidance?: string | null
+          id?: string
+          instrument_id?: string
+          label?: string
+          max_score?: number
+          min_score?: number
+          severity?: Database["public"]["Enums"]["assessment_severity"]
+          triggers_alert?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_bands_instrument_id_fkey"
+            columns: ["instrument_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_instruments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assessment_domain_levels: {
         Row: {
           description: string | null
@@ -130,6 +228,215 @@ export type Database = {
         }
         Relationships: []
       }
+      assessment_instrument_items: {
+        Row: {
+          created_at: string
+          flag_threshold: number | null
+          help_text: string | null
+          id: string
+          instrument_id: string
+          is_flag_item: boolean
+          is_required: boolean
+          is_reverse_scored: boolean
+          item_type: Database["public"]["Enums"]["assessment_item_type"]
+          prompt: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          flag_threshold?: number | null
+          help_text?: string | null
+          id?: string
+          instrument_id: string
+          is_flag_item?: boolean
+          is_required?: boolean
+          is_reverse_scored?: boolean
+          item_type: Database["public"]["Enums"]["assessment_item_type"]
+          prompt: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          flag_threshold?: number | null
+          help_text?: string | null
+          id?: string
+          instrument_id?: string
+          is_flag_item?: boolean
+          is_required?: boolean
+          is_reverse_scored?: boolean
+          item_type?: Database["public"]["Enums"]["assessment_item_type"]
+          prompt?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_instrument_items_instrument_id_fkey"
+            columns: ["instrument_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_instruments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_instrument_options: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          label: string
+          sort_order: number
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          label: string
+          sort_order?: number
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          label?: string
+          sort_order?: number
+          updated_at?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_instrument_options_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_instrument_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      assessment_instruments: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          higher_is_better: boolean
+          id: string
+          is_locked: boolean
+          max_score: number | null
+          min_score: number | null
+          produces_overall_score: boolean
+          scoring_method: Database["public"]["Enums"]["assessment_scoring_method"]
+          source: Database["public"]["Enums"]["assessment_instrument_source"]
+          status: Database["public"]["Enums"]["assessment_instrument_status"]
+          template_group_id: string | null
+          title: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          higher_is_better?: boolean
+          id?: string
+          is_locked?: boolean
+          max_score?: number | null
+          min_score?: number | null
+          produces_overall_score?: boolean
+          scoring_method?: Database["public"]["Enums"]["assessment_scoring_method"]
+          source?: Database["public"]["Enums"]["assessment_instrument_source"]
+          status?: Database["public"]["Enums"]["assessment_instrument_status"]
+          template_group_id?: string | null
+          title: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          higher_is_better?: boolean
+          id?: string
+          is_locked?: boolean
+          max_score?: number | null
+          min_score?: number | null
+          produces_overall_score?: boolean
+          scoring_method?: Database["public"]["Enums"]["assessment_scoring_method"]
+          source?: Database["public"]["Enums"]["assessment_instrument_source"]
+          status?: Database["public"]["Enums"]["assessment_instrument_status"]
+          template_group_id?: string | null
+          title?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      assessment_responses: {
+        Row: {
+          created_at: string
+          flagged: boolean
+          id: string
+          item_id: string
+          numeric_value: number | null
+          option_id: string | null
+          points: number | null
+          session_id: string
+          text_value: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          flagged?: boolean
+          id?: string
+          item_id: string
+          numeric_value?: number | null
+          option_id?: string | null
+          points?: number | null
+          session_id: string
+          text_value?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          flagged?: boolean
+          id?: string
+          item_id?: string
+          numeric_value?: number | null
+          option_id?: string | null
+          points?: number | null
+          session_id?: string
+          text_value?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_responses_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_instrument_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_option_id_fkey"
+            columns: ["option_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_instrument_options"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_responses_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assessment_scores: {
         Row: {
           domain_id: string
@@ -171,33 +478,46 @@ export type Database = {
       }
       assessment_sessions: {
         Row: {
+          assignment_id: string | null
           completed_at: string
           confirmed_by: string | null
           created_at: string
           id: string
           initiated_by: string
+          instrument_id: string | null
           overall_score: number | null
           participant_id: string
         }
         Insert: {
+          assignment_id?: string | null
           completed_at?: string
           confirmed_by?: string | null
           created_at?: string
           id?: string
           initiated_by: string
+          instrument_id?: string | null
           overall_score?: number | null
           participant_id: string
         }
         Update: {
+          assignment_id?: string | null
           completed_at?: string
           confirmed_by?: string | null
           created_at?: string
           id?: string
           initiated_by?: string
+          instrument_id?: string | null
           overall_score?: number | null
           participant_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "assessment_sessions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_assignments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "assessment_sessions_confirmed_by_fkey"
             columns: ["confirmed_by"]
@@ -210,6 +530,13 @@ export type Database = {
             columns: ["initiated_by"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_sessions_instrument_id_fkey"
+            columns: ["instrument_id"]
+            isOneToOne: false
+            referencedRelation: "assessment_instruments"
             referencedColumns: ["id"]
           },
           {
@@ -1549,6 +1876,29 @@ export type Database = {
       }
     }
     Enums: {
+      assessment_assignment_status:
+        | "pending"
+        | "completed"
+        | "skipped"
+        | "expired"
+      assessment_cadence:
+        | "intake"
+        | "thirty_day"
+        | "sixty_day"
+        | "ninety_day"
+        | "discharge"
+        | "ad_hoc"
+      assessment_instrument_source: "standard" | "custom"
+      assessment_instrument_status: "draft" | "published" | "archived"
+      assessment_item_type:
+        | "labeled_scale"
+        | "single_select"
+        | "multi_select"
+        | "yes_no"
+        | "numeric"
+        | "free_text"
+      assessment_scoring_method: "sum" | "average"
+      assessment_severity: "none" | "mild" | "moderate" | "severe"
       card_level: "rookie" | "starter" | "veteran" | "all_star"
       checkin_contact_mode:
         | "in_person"
@@ -1609,6 +1959,7 @@ export type Database = {
         | "crps_eligible"
         | "new_participant"
         | "general"
+        | "assessment_flagged"
       payment_type: "payment" | "charge" | "adjustment"
       peer_approval_status: "pending" | "approved" | "rejected" | "suspended"
       peer_request_status: "pending" | "approved" | "declined" | "cancelled"
@@ -1758,6 +2109,32 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      assessment_assignment_status: [
+        "pending",
+        "completed",
+        "skipped",
+        "expired",
+      ],
+      assessment_cadence: [
+        "intake",
+        "thirty_day",
+        "sixty_day",
+        "ninety_day",
+        "discharge",
+        "ad_hoc",
+      ],
+      assessment_instrument_source: ["standard", "custom"],
+      assessment_instrument_status: ["draft", "published", "archived"],
+      assessment_item_type: [
+        "labeled_scale",
+        "single_select",
+        "multi_select",
+        "yes_no",
+        "numeric",
+        "free_text",
+      ],
+      assessment_scoring_method: ["sum", "average"],
+      assessment_severity: ["none", "mild", "moderate", "severe"],
       card_level: ["rookie", "starter", "veteran", "all_star"],
       checkin_contact_mode: [
         "in_person",
@@ -1823,6 +2200,7 @@ export const Constants = {
         "crps_eligible",
         "new_participant",
         "general",
+        "assessment_flagged",
       ],
       payment_type: ["payment", "charge", "adjustment"],
       peer_approval_status: ["pending", "approved", "rejected", "suspended"],
