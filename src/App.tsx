@@ -155,6 +155,8 @@ const App = () => (
               
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
+              <Route path="/admin/content/instruments" element={<AdminAssessmentInstrumentsPage />} />
+              <Route path="/admin/content/instruments/:instrumentId" element={<AdminAssessmentInstrumentDetailPage />} />
               <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
               <Route path="/admin/content/resources" element={<AdminResourcesPage />} />
               <Route path="/admin/content/mi-prompts" element={<AdminMiPromptsPage />} />
