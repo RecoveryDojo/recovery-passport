@@ -20,6 +20,7 @@ import AskYourPeerCard from "@/components/card/AskYourPeerCard";
 import ReflectionJournal from "@/components/card/ReflectionJournal";
 import ResourceOfTheDay from "@/components/card/ResourceOfTheDay";
 import LevelRoadmapModal from "@/components/card/LevelRoadmapModal";
+import PendingAssessmentsCard from "@/components/PendingAssessmentsCard";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
 
