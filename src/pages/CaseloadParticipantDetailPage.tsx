@@ -40,6 +40,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilestonesTab from "@/components/MilestonesTab";
+import AssignAssessmentSheet from "@/components/AssignAssessmentSheet";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
