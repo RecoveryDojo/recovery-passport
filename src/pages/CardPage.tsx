@@ -353,6 +353,20 @@ const CardPage = () => {
       {/* === PENDING ASSESSMENTS (PHQ-9 / GAD-7 / custom) === */}
       <PendingAssessmentsCard />
 
+      {/* === MY PROGRESS ENTRY === */}
+      <Link
+        to="/progress"
+        className="flex items-center justify-between rounded-xl border border-border bg-card px-4 py-3 hover:bg-muted/40 transition-colors"
+      >
+        <div>
+          <p className="text-sm font-semibold text-foreground">My Progress</p>
+          <p className="text-xs text-muted-foreground">
+            Recovery Capital, check-ins, assessments, milestones, plan
+          </p>
+        </div>
+        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+      </Link>
+
       {/* === BASEBALL CARD === */}
       <div className={`rounded-2xl overflow-hidden shadow-xl ${celebrating ? "animate-level-up-glow" : ""}`}>
         {/* Card body */}
