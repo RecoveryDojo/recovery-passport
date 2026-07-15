@@ -37,10 +37,12 @@ import {
   MessageCircle,
   UsersRound,
   NotebookPen,
+  LineChart as LineChartIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssignAssessmentSheet from "@/components/AssignAssessmentSheet";
+import ProgressDashboard from "@/components/progress/ProgressDashboard";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -80,7 +82,7 @@ const PHASE_LABELS: Record<string, string> = {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const VALID_TABS = ["overview", "journey", "engagement", "care-team", "notes"] as const;
+const VALID_TABS = ["overview", "journey", "progress", "engagement", "care-team", "notes"] as const;
 type TabValue = (typeof VALID_TABS)[number];
 
 const CaseloadParticipantDetailPage = () => {
@@ -229,28 +231,38 @@ const CaseloadParticipantDetailPage = () => {
       </div>
 
       <Tabs defaultValue={initialTab} className="space-y-4">
-        <TabsList className="w-full grid grid-cols-5 h-auto p-1">
-          <TabsTrigger value="overview" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+        <TabsList className="w-full grid grid-cols-6 h-auto p-1">
+          <TabsTrigger value="overview" className="text-[11px] sm:text-sm flex-col sm:flex-row gap-1 py-2">
             <LayoutDashboard className="h-4 w-4" />
             <span>Overview</span>
           </TabsTrigger>
-          <TabsTrigger value="journey" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+          <TabsTrigger value="journey" className="text-[11px] sm:text-sm flex-col sm:flex-row gap-1 py-2">
             <Trophy className="h-4 w-4" />
             <span>Journey</span>
           </TabsTrigger>
-          <TabsTrigger value="engagement" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+          <TabsTrigger value="progress" className="text-[11px] sm:text-sm flex-col sm:flex-row gap-1 py-2">
+            <LineChartIcon className="h-4 w-4" />
+            <span>Progress</span>
+          </TabsTrigger>
+          <TabsTrigger value="engagement" className="text-[11px] sm:text-sm flex-col sm:flex-row gap-1 py-2">
             <MessageCircle className="h-4 w-4" />
-            <span>Engagement</span>
+            <span>Engage</span>
           </TabsTrigger>
-          <TabsTrigger value="care-team" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+          <TabsTrigger value="care-team" className="text-[11px] sm:text-sm flex-col sm:flex-row gap-1 py-2">
             <UsersRound className="h-4 w-4" />
-            <span>Care Team</span>
+            <span>Care</span>
           </TabsTrigger>
-          <TabsTrigger value="notes" className="text-xs sm:text-sm flex-col sm:flex-row gap-1 py-2">
+          <TabsTrigger value="notes" className="text-[11px] sm:text-sm flex-col sm:flex-row gap-1 py-2">
             <NotebookPen className="h-4 w-4" />
             <span>Notes</span>
           </TabsTrigger>
         </TabsList>
+
+        {/* PROGRESS */}
+        <TabsContent value="progress" className="space-y-3">
+          <ProgressDashboard participantId={profile.id} role="peer" />
+        </TabsContent>
+
 
         {/* OVERVIEW */}
         <TabsContent value="overview" className="space-y-3">

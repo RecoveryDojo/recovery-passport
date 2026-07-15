@@ -75,6 +75,7 @@ import AdminDocsPage from "@/pages/AdminDocsPage";
 import OfflineBanner from "@/components/OfflineBanner";
 import InstallPrompt from "@/components/InstallPrompt";
 import OAuthConsent from "@/pages/OAuthConsent";
+import ProgressPage from "@/pages/ProgressPage";
 
 const queryClient = new QueryClient();
 
@@ -125,6 +126,7 @@ const App = () => (
               <Route path="/checkins" element={<ParticipantCheckInsPage />} />
               <Route path="/agreements" element={<ParticipantAgreementsPage />} />
               <Route path="/payments" element={<ParticipantPaymentsPage />} />
+              <Route path="/progress" element={<ProgressPage />} />
             </Route>
 
             {/* Peer Specialist */}

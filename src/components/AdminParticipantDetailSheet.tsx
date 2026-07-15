@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useParticipantClinicalSummary } from "@/hooks/use-participant-clinical-summary";
+import ProgressDashboard from "@/components/progress/ProgressDashboard";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -178,13 +179,19 @@ const AdminParticipantDetailSheet = ({ participant, open, onOpenChange }: Props)
             </div>
           ) : (
             <Tabs defaultValue="overview" className="space-y-4">
-              <TabsList className="w-full grid grid-cols-5">
-                <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
-                <TabsTrigger value="journey" className="text-xs">Journey</TabsTrigger>
-                <TabsTrigger value="engagement" className="text-xs">Engage</TabsTrigger>
-                <TabsTrigger value="care-team" className="text-xs">Care</TabsTrigger>
-                <TabsTrigger value="notes" className="text-xs">Notes</TabsTrigger>
+              <TabsList className="w-full grid grid-cols-6">
+                <TabsTrigger value="overview" className="text-[10px]">Overview</TabsTrigger>
+                <TabsTrigger value="journey" className="text-[10px]">Journey</TabsTrigger>
+                <TabsTrigger value="progress" className="text-[10px]">Progress</TabsTrigger>
+                <TabsTrigger value="engagement" className="text-[10px]">Engage</TabsTrigger>
+                <TabsTrigger value="care-team" className="text-[10px]">Care</TabsTrigger>
+                <TabsTrigger value="notes" className="text-[10px]">Notes</TabsTrigger>
               </TabsList>
+
+              <TabsContent value="progress" className="space-y-3">
+                {profileId && <ProgressDashboard participantId={profileId} role="admin" />}
+              </TabsContent>
+
 
               {/* OVERVIEW */}
               <TabsContent value="overview" className="space-y-3">
