@@ -37,10 +37,12 @@ import {
   MessageCircle,
   UsersRound,
   NotebookPen,
+  LineChart as LineChartIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssignAssessmentSheet from "@/components/AssignAssessmentSheet";
+import ProgressDashboard from "@/components/progress/ProgressDashboard";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -80,7 +82,7 @@ const PHASE_LABELS: Record<string, string> = {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-const VALID_TABS = ["overview", "journey", "engagement", "care-team", "notes"] as const;
+const VALID_TABS = ["overview", "journey", "progress", "engagement", "care-team", "notes"] as const;
 type TabValue = (typeof VALID_TABS)[number];
 
 const CaseloadParticipantDetailPage = () => {
