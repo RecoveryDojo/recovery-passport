@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { IntakeFormStep } from "@/components/intake/IntakeFormStep";
 import { IntakeGoalsStep } from "@/components/intake/IntakeGoalsStep";
 import { IntakeFirstAssessmentStep } from "@/components/intake/IntakeFirstAssessmentStep";
+import { IntakeSubstanceMedicalStep } from "@/components/intake/IntakeSubstanceMedicalStep";
+import { IntakeDemographicsStep } from "@/components/intake/IntakeDemographicsStep";
 import type { Database } from "@/integrations/supabase/types";
 
 type IntakeFormType = Database["public"]["Enums"]["intake_form_type"];
