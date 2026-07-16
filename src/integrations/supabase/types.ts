@@ -837,6 +837,143 @@ export type Database = {
           },
         ]
       }
+      intake_authorized_contacts: {
+        Row: {
+          created_at: string
+          id: string
+          intake_session_id: string
+          name: string
+          phone: string
+          relationship: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intake_session_id: string
+          name: string
+          phone: string
+          relationship: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intake_session_id?: string
+          name?: string
+          phone?: string
+          relationship?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_authorized_contacts_intake_session_id_fkey"
+            columns: ["intake_session_id"]
+            isOneToOne: false
+            referencedRelation: "intake_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intake_form_signatures: {
+        Row: {
+          created_at: string
+          form_type: Database["public"]["Enums"]["intake_form_type"]
+          id: string
+          initials: Json | null
+          intake_session_id: string
+          signature_image_path: string
+          signed_at: string
+          template_id: string
+          witness_signature_image_path: string
+          witness_staff_id: string
+        }
+        Insert: {
+          created_at?: string
+          form_type: Database["public"]["Enums"]["intake_form_type"]
+          id?: string
+          initials?: Json | null
+          intake_session_id: string
+          signature_image_path: string
+          signed_at?: string
+          template_id: string
+          witness_signature_image_path: string
+          witness_staff_id: string
+        }
+        Update: {
+          created_at?: string
+          form_type?: Database["public"]["Enums"]["intake_form_type"]
+          id?: string
+          initials?: Json | null
+          intake_session_id?: string
+          signature_image_path?: string
+          signed_at?: string
+          template_id?: string
+          witness_signature_image_path?: string
+          witness_staff_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_form_signatures_intake_session_id_fkey"
+            columns: ["intake_session_id"]
+            isOneToOne: false
+            referencedRelation: "intake_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_form_signatures_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "intake_form_templates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_form_signatures_witness_staff_id_fkey"
+            columns: ["witness_staff_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intake_form_templates: {
+        Row: {
+          content: string
+          created_at: string
+          form_type: Database["public"]["Enums"]["intake_form_type"]
+          id: string
+          is_current: boolean
+          program_id: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          form_type: Database["public"]["Enums"]["intake_form_type"]
+          id?: string
+          is_current?: boolean
+          program_id: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          form_type?: Database["public"]["Enums"]["intake_form_type"]
+          id?: string
+          is_current?: boolean
+          program_id?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_form_templates_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intake_sessions: {
         Row: {
           completed_at: string | null
@@ -1999,6 +2136,14 @@ export type Database = {
         | "milestone"
         | "manual"
       feedback_target_type: "checkin" | "progress_note" | "milestone"
+      intake_form_type:
+        | "house_rules"
+        | "disclosure_consent"
+        | "belongings_consent"
+        | "services_consent"
+        | "liability_waiver"
+        | "non_tenancy"
+        | "contribution_agreement"
       intake_status: "in_progress" | "completed" | "abandoned"
       mi_situation_tag:
         | "first_checkin"
@@ -2240,6 +2385,15 @@ export const Constants = {
         "manual",
       ],
       feedback_target_type: ["checkin", "progress_note", "milestone"],
+      intake_form_type: [
+        "house_rules",
+        "disclosure_consent",
+        "belongings_consent",
+        "services_consent",
+        "liability_waiver",
+        "non_tenancy",
+        "contribution_agreement",
+      ],
       intake_status: ["in_progress", "completed", "abandoned"],
       mi_situation_tag: [
         "first_checkin",
