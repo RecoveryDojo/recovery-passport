@@ -8,6 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { IntakeFormStep } from "@/components/intake/IntakeFormStep";
+import { IntakeGoalsStep } from "@/components/intake/IntakeGoalsStep";
+import { IntakeFirstAssessmentStep } from "@/components/intake/IntakeFirstAssessmentStep";
 import type { Database } from "@/integrations/supabase/types";
 
 type IntakeFormType = Database["public"]["Enums"]["intake_form_type"];
