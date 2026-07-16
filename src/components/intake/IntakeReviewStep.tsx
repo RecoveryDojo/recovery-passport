@@ -139,7 +139,7 @@ export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
     );
   }
 
-  const FORMS: { key: string; label: string }[] = [
+  const FORMS = [
     { key: "house_rules", label: "House Rules" },
     { key: "disclosure_consent", label: "Consent to Disclose" },
     { key: "belongings_consent", label: "Personal Belongings Consent" },
@@ -147,7 +147,7 @@ export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
     { key: "liability_waiver", label: "Liability Waiver" },
     { key: "non_tenancy", label: "Non-Tenancy Acknowledgement" },
     { key: "contribution_agreement", label: "Contribution Agreement" },
-  ];
+  ] as const;
 
   const row = (label: string, ok: boolean, extra?: string) => (
     <div className="flex items-center justify-between py-1.5 text-sm">
