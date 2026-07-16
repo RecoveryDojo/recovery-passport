@@ -70,6 +70,12 @@ const SECTIONS = [
     icon: FileSignature,
   },
   {
+    title: "Intake Forms",
+    description: "Manage the seven signed forms peers walk participants through during intake.",
+    to: "/admin/content/intake-forms",
+    icon: FileSignature,
+  },
+  {
     title: "Resource Listings",
     description: "Manage the community partner directory shown to participants and peers.",
     to: "/admin/content/resources",
