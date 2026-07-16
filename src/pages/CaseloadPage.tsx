@@ -262,7 +262,56 @@ const CaseloadPage = () => {
 
   return (
     <div className="px-4 pt-6 pb-4 max-w-lg mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-foreground">My Caseload</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-foreground">My Caseload</h1>
+        <Button
+          onClick={() => setIntakeOpen(true)}
+          className="bg-accent hover:bg-accent/90 text-accent-foreground"
+        >
+          <ClipboardList className="h-4 w-4 mr-2" /> Start Intake
+        </Button>
+      </div>
+
+      {inProgressIntakes.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <PlayCircle className="h-5 w-5 text-primary" />
+            In-progress intakes ({inProgressIntakes.length})
+          </h2>
+          {inProgressIntakes.map((intake) => {
+            const p = intake.participant as { first_name?: string; last_name?: string } | null;
+            const name = [p?.first_name, p?.last_name].filter(Boolean).join(" ").trim();
+            const label = name || "Unnamed — step 1";
+            const starter = starterNames[intake.started_by] ?? "Staff";
+            return (
+              <Link
+                key={intake.id}
+                to={`/intake-session/${intake.id}`}
+                className="block bg-card border border-border rounded-xl p-4 hover:border-primary/50 transition-colors"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground truncate">{label}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Step {intake.current_step} of 16 · started {format(new Date(intake.started_at), "MMM d")} by {starter}
+                    </p>
+                  </div>
+                  <Button size="sm" variant="outline">Resume</Button>
+                </div>
+              </Link>
+            );
+          })}
+        </section>
+      )}
+
+      {user && (
+        <StartIntakeDialog
+          open={intakeOpen}
+          onOpenChange={setIntakeOpen}
+          peerUserId={user.id}
+        />
+      )}
+
 
       {caseload.length > 0 && (
         <CaseloadHealthHeader
