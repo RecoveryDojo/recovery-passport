@@ -148,18 +148,29 @@ export default function IntakeSessionShellPage() {
         <Progress value={(step / TOTAL_STEPS) * 100} className="h-2" />
       </div>
 
-      <Card className="p-6 min-h-[280px] flex items-center justify-center text-center">
-        <div className="space-y-2">
-          <p className="text-sm text-muted-foreground uppercase tracking-wide">
-            Step {step}
-          </p>
-          <h2 className="text-xl font-semibold text-primary">{STEP_TITLES[step]}</h2>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            This screen will be implemented in a later phase. Your progress is saved automatically —
-            you can safely close the tablet and resume from the caseload.
-          </p>
-        </div>
-      </Card>
+      {FORM_STEP_MAP[step] ? (
+        <IntakeFormStep
+          key={step}
+          sessionId={sessionId!}
+          programId={session.program_id}
+          formType={FORM_STEP_MAP[step].formType}
+          title={FORM_STEP_MAP[step].title}
+          onCompleted={goForward}
+        />
+      ) : (
+        <Card className="p-6 min-h-[280px] flex items-center justify-center text-center">
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground uppercase tracking-wide">
+              Step {step}
+            </p>
+            <h2 className="text-xl font-semibold text-primary">{STEP_TITLES[step]}</h2>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              This screen will be implemented in a later phase. Your progress is saved automatically —
+              you can safely close the tablet and resume from the caseload.
+            </p>
+          </div>
+        </Card>
+      )}
 
       <div className="flex gap-3">
         <Button
@@ -170,14 +181,16 @@ export default function IntakeSessionShellPage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        <Button
-          className="flex-1 min-h-[52px]"
-          onClick={goForward}
-          disabled={saving}
-        >
-          {step === TOTAL_STEPS ? "Complete Intake" : "Continue"}
-          {step !== TOTAL_STEPS && <ArrowRight className="ml-2 h-4 w-4" />}
-        </Button>
+        {!FORM_STEP_MAP[step] && (
+          <Button
+            className="flex-1 min-h-[52px]"
+            onClick={goForward}
+            disabled={saving}
+          >
+            {step === TOTAL_STEPS ? "Complete Intake" : "Continue"}
+            {step !== TOTAL_STEPS && <ArrowRight className="ml-2 h-4 w-4" />}
+          </Button>
+        )}
       </div>
     </div>
   );
