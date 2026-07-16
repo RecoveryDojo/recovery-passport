@@ -76,6 +76,7 @@ import OfflineBanner from "@/components/OfflineBanner";
 import InstallPrompt from "@/components/InstallPrompt";
 import OAuthConsent from "@/pages/OAuthConsent";
 import ProgressPage from "@/pages/ProgressPage";
+import IntakeSessionShellPage from "@/pages/IntakeSessionShellPage";
 
 const queryClient = new QueryClient();
 
