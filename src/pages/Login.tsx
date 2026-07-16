@@ -74,11 +74,6 @@ const Login = () => {
           </CardContent>
         </Card>
 
-        <div className="mt-6 text-center">
-          <Link to="/intake" className="text-sm text-accent hover:underline font-medium">
-            Walk-in intake? Start here →
-          </Link>
-        </div>
       </div>
     </div>
   );
