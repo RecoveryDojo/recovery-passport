@@ -56,15 +56,15 @@ export default function IntakeSessionShellPage() {
 
   const saveStep = useMutation({
     mutationFn: async (nextStep: number) => {
-      const patch: Record<string, unknown> = { current_step: nextStep };
-      if (nextStep > TOTAL_STEPS) {
-        patch.status = "completed";
-        patch.completed_at = new Date().toISOString();
-        patch.current_step = TOTAL_STEPS;
-      }
+      const completing = nextStep > TOTAL_STEPS;
       const { error } = await supabase
         .from("intake_sessions")
-        .update(patch)
+        .update({
+          current_step: completing ? TOTAL_STEPS : nextStep,
+          ...(completing
+            ? { status: "completed" as const, completed_at: new Date().toISOString() }
+            : {}),
+        })
         .eq("id", sessionId!);
       if (error) throw error;
     },
