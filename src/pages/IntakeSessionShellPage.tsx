@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { IntakeFormStep } from "@/components/intake/IntakeFormStep";
 import { IntakeGoalsStep } from "@/components/intake/IntakeGoalsStep";
 import { IntakeFirstAssessmentStep } from "@/components/intake/IntakeFirstAssessmentStep";
+import { IntakeSubstanceMedicalStep } from "@/components/intake/IntakeSubstanceMedicalStep";
+import { IntakeDemographicsStep } from "@/components/intake/IntakeDemographicsStep";
 import type { Database } from "@/integrations/supabase/types";
 
 type IntakeFormType = Database["public"]["Enums"]["intake_form_type"];
@@ -176,6 +178,22 @@ export default function IntakeSessionShellPage() {
             </p>
           </Card>
         )
+      ) : step === 11 ? (
+        <IntakeSubstanceMedicalStep key={step} sessionId={sessionId!} onCompleted={goForward} />
+      ) : step === 12 ? (
+        session.participant_id ? (
+          <IntakeDemographicsStep
+            key={step}
+            participantId={session.participant_id}
+            onCompleted={goForward}
+          />
+        ) : (
+          <Card className="p-6 min-h-[240px] flex items-center justify-center text-center">
+            <p className="text-sm text-muted-foreground max-w-sm">
+              A participant account must be created in Step 1 before demographics can be recorded.
+            </p>
+          </Card>
+        )
       ) : (
         <Card className="p-6 min-h-[280px] flex items-center justify-center text-center">
           <div className="space-y-2">
@@ -200,7 +218,7 @@ export default function IntakeSessionShellPage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        {!FORM_STEP_MAP[step] && step !== 9 && step !== 10 && (
+        {!FORM_STEP_MAP[step] && ![9, 10, 11, 12].includes(step) && (
           <Button
             className="flex-1 min-h-[52px]"
             onClick={goForward}

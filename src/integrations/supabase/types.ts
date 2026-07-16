@@ -882,6 +882,50 @@ export type Database = {
           },
         ]
       }
+      intake_clinical_details: {
+        Row: {
+          created_at: string
+          hospitalized_last_90_days: boolean
+          id: string
+          intake_session_id: string
+          medical_concerns: string | null
+          needs_vital_docs: boolean
+          prior_pathways: string | null
+          updated_at: string
+          vital_docs_notes: string | null
+        }
+        Insert: {
+          created_at?: string
+          hospitalized_last_90_days?: boolean
+          id?: string
+          intake_session_id: string
+          medical_concerns?: string | null
+          needs_vital_docs?: boolean
+          prior_pathways?: string | null
+          updated_at?: string
+          vital_docs_notes?: string | null
+        }
+        Update: {
+          created_at?: string
+          hospitalized_last_90_days?: boolean
+          id?: string
+          intake_session_id?: string
+          medical_concerns?: string | null
+          needs_vital_docs?: boolean
+          prior_pathways?: string | null
+          updated_at?: string
+          vital_docs_notes?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_clinical_details_intake_session_id_fkey"
+            columns: ["intake_session_id"]
+            isOneToOne: true
+            referencedRelation: "intake_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intake_form_signatures: {
         Row: {
           created_at: string
@@ -1054,6 +1098,53 @@ export type Database = {
           },
         ]
       }
+      intake_substance_use: {
+        Row: {
+          age_of_first_use: number | null
+          created_at: string
+          frequency_of_use: Database["public"]["Enums"]["substance_frequency"]
+          id: string
+          intake_session_id: string
+          last_use_date: string | null
+          prior_treatment_attempts: number | null
+          route_of_use: string | null
+          substance_name: string
+          updated_at: string
+        }
+        Insert: {
+          age_of_first_use?: number | null
+          created_at?: string
+          frequency_of_use: Database["public"]["Enums"]["substance_frequency"]
+          id?: string
+          intake_session_id: string
+          last_use_date?: string | null
+          prior_treatment_attempts?: number | null
+          route_of_use?: string | null
+          substance_name: string
+          updated_at?: string
+        }
+        Update: {
+          age_of_first_use?: number | null
+          created_at?: string
+          frequency_of_use?: Database["public"]["Enums"]["substance_frequency"]
+          id?: string
+          intake_session_id?: string
+          last_use_date?: string | null
+          prior_treatment_attempts?: number | null
+          route_of_use?: string | null
+          substance_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_substance_use_intake_session_id_fkey"
+            columns: ["intake_session_id"]
+            isOneToOne: false
+            referencedRelation: "intake_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mi_prompts: {
         Row: {
           created_at: string
@@ -1190,6 +1281,47 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      participant_demographics: {
+        Row: {
+          created_at: string
+          gender: string | null
+          id: string
+          participant_id: string
+          primary_language: string | null
+          race_ethnicity: string | null
+          sexual_orientation_gender_identity: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          gender?: string | null
+          id?: string
+          participant_id: string
+          primary_language?: string | null
+          race_ethnicity?: string | null
+          sexual_orientation_gender_identity?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          gender?: string | null
+          id?: string
+          participant_id?: string
+          primary_language?: string | null
+          race_ethnicity?: string | null
+          sexual_orientation_gender_identity?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "participant_demographics_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: true
+            referencedRelation: "participant_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2201,6 +2333,7 @@ export type Database = {
         | "faith_based"
         | "holistic"
         | "other"
+      substance_frequency: "daily" | "weekly" | "occasional" | "not_in_use"
       template_program_type:
         | "respite_house"
         | "sober_living"
@@ -2455,6 +2588,7 @@ export const Constants = {
         "holistic",
         "other",
       ],
+      substance_frequency: ["daily", "weekly", "occasional", "not_in_use"],
       template_program_type: [
         "respite_house",
         "sober_living",
