@@ -163,6 +163,7 @@ const App = () => (
               <Route path="/admin/content/instruments" element={<AdminAssessmentInstrumentsPage />} />
               <Route path="/admin/content/instruments/:instrumentId" element={<AdminAssessmentInstrumentDetailPage />} />
               <Route path="/admin/content/agreements" element={<AdminAgreementsPage />} />
+              <Route path="/admin/content/intake-forms" element={<AdminIntakeFormsPage />} />
               <Route path="/admin/content/resources" element={<AdminResourcesPage />} />
               <Route path="/admin/content/mi-prompts" element={<AdminMiPromptsPage />} />
               <Route path="/admin/content/protocols" element={<AdminProtocolsPage />} />
