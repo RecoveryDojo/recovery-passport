@@ -7,6 +7,20 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { IntakeFormStep } from "@/components/intake/IntakeFormStep";
+import type { Database } from "@/integrations/supabase/types";
+
+type IntakeFormType = Database["public"]["Enums"]["intake_form_type"];
+
+const FORM_STEP_MAP: Record<number, { formType: IntakeFormType; title: string }> = {
+  2: { formType: "house_rules", title: "House Rules" },
+  3: { formType: "disclosure_consent", title: "Consent to Disclose" },
+  4: { formType: "belongings_consent", title: "Personal Belongings Consent" },
+  5: { formType: "services_consent", title: "Consent for Services" },
+  6: { formType: "liability_waiver", title: "Liability Waiver" },
+  7: { formType: "non_tenancy", title: "Non-Tenancy Acknowledgement" },
+  8: { formType: "contribution_agreement", title: "Contribution Agreement" },
+};
 
 const TOTAL_STEPS = 16;
 
