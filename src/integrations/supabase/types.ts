@@ -882,6 +882,57 @@ export type Database = {
           },
         ]
       }
+      intake_belongings_log: {
+        Row: {
+          created_at: string
+          dryer_treatment_completed: boolean
+          id: string
+          intake_session_id: string
+          items_summary: string | null
+          prohibited_items_found: boolean
+          prohibited_items_notes: string | null
+          searched_by: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          dryer_treatment_completed?: boolean
+          id?: string
+          intake_session_id: string
+          items_summary?: string | null
+          prohibited_items_found?: boolean
+          prohibited_items_notes?: string | null
+          searched_by: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          dryer_treatment_completed?: boolean
+          id?: string
+          intake_session_id?: string
+          items_summary?: string | null
+          prohibited_items_found?: boolean
+          prohibited_items_notes?: string | null
+          searched_by?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_belongings_log_intake_session_id_fkey"
+            columns: ["intake_session_id"]
+            isOneToOne: true
+            referencedRelation: "intake_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_belongings_log_searched_by_fkey"
+            columns: ["searched_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intake_clinical_details: {
         Row: {
           created_at: string
@@ -1028,6 +1079,51 @@ export type Database = {
           },
         ]
       }
+      intake_screening_results: {
+        Row: {
+          administered_at: string
+          administered_by: string
+          breathalyzer_result: number | null
+          created_at: string
+          id: string
+          intake_session_id: string
+          updated_at: string
+        }
+        Insert: {
+          administered_at?: string
+          administered_by: string
+          breathalyzer_result?: number | null
+          created_at?: string
+          id?: string
+          intake_session_id: string
+          updated_at?: string
+        }
+        Update: {
+          administered_at?: string
+          administered_by?: string
+          breathalyzer_result?: number | null
+          created_at?: string
+          id?: string
+          intake_session_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_screening_results_administered_by_fkey"
+            columns: ["administered_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_screening_results_intake_session_id_fkey"
+            columns: ["intake_session_id"]
+            isOneToOne: true
+            referencedRelation: "intake_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       intake_sessions: {
         Row: {
           completed_at: string | null
@@ -1141,6 +1237,38 @@ export type Database = {
             columns: ["intake_session_id"]
             isOneToOne: false
             referencedRelation: "intake_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intake_ua_panels: {
+        Row: {
+          created_at: string
+          id: string
+          panel_name: string
+          result: Database["public"]["Enums"]["ua_result"]
+          screening_result_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          panel_name: string
+          result: Database["public"]["Enums"]["ua_result"]
+          screening_result_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          panel_name?: string
+          result?: Database["public"]["Enums"]["ua_result"]
+          screening_result_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_ua_panels_screening_result_id_fkey"
+            columns: ["screening_result_id"]
+            isOneToOne: false
+            referencedRelation: "intake_screening_results"
             referencedColumns: ["id"]
           },
         ]
@@ -1377,6 +1505,7 @@ export type Database = {
       }
       participant_profiles: {
         Row: {
+          admission_date: string | null
           assigned_peer_id: string | null
           card_level: Database["public"]["Enums"]["card_level"]
           created_at: string
@@ -1388,6 +1517,9 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
+          participant_status:
+            | Database["public"]["Enums"]["participant_status"]
+            | null
           pathway: Database["public"]["Enums"]["recovery_pathway"] | null
           photo_url: string | null
           recovery_start_date: string | null
@@ -1396,6 +1528,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          admission_date?: string | null
           assigned_peer_id?: string | null
           card_level?: Database["public"]["Enums"]["card_level"]
           created_at?: string
@@ -1407,6 +1540,9 @@ export type Database = {
           first_name: string
           id?: string
           last_name: string
+          participant_status?:
+            | Database["public"]["Enums"]["participant_status"]
+            | null
           pathway?: Database["public"]["Enums"]["recovery_pathway"] | null
           photo_url?: string | null
           recovery_start_date?: string | null
@@ -1415,6 +1551,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          admission_date?: string | null
           assigned_peer_id?: string | null
           card_level?: Database["public"]["Enums"]["card_level"]
           created_at?: string
@@ -1426,6 +1563,9 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
+          participant_status?:
+            | Database["public"]["Enums"]["participant_status"]
+            | null
           pathway?: Database["public"]["Enums"]["recovery_pathway"] | null
           photo_url?: string | null
           recovery_start_date?: string | null
@@ -2318,6 +2458,7 @@ export type Database = {
         | "new_participant"
         | "general"
         | "assessment_flagged"
+      participant_status: "active" | "discharged"
       payment_type: "payment" | "charge" | "adjustment"
       peer_approval_status: "pending" | "approved" | "rejected" | "suspended"
       peer_request_status: "pending" | "approved" | "declined" | "cancelled"
@@ -2340,6 +2481,7 @@ export type Database = {
         | "treatment"
         | "outpatient"
         | "universal"
+      ua_result: "pass" | "fail"
       user_role: "participant" | "peer_specialist" | "admin"
     }
     CompositeTypes: {
@@ -2571,6 +2713,7 @@ export const Constants = {
         "general",
         "assessment_flagged",
       ],
+      participant_status: ["active", "discharged"],
       payment_type: ["payment", "charge", "adjustment"],
       peer_approval_status: ["pending", "approved", "rejected", "suspended"],
       peer_request_status: ["pending", "approved", "declined", "cancelled"],
@@ -2596,6 +2739,7 @@ export const Constants = {
         "outpatient",
         "universal",
       ],
+      ua_result: ["pass", "fail"],
       user_role: ["participant", "peer_specialist", "admin"],
     },
   },

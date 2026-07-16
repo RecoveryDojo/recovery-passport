@@ -30,7 +30,7 @@ import {
   AdminContent,
 } from "@/pages/placeholder-pages";
 import AdminParticipantsPage from "@/pages/AdminParticipantsPage";
-import IntakePage from "@/pages/IntakePage";
+
 import AdminAuditPage from "@/pages/AdminAuditPage";
 import AdminReportsPage from "@/pages/AdminReportsPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
@@ -97,7 +97,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<UpdatePassword />} />
-            <Route path="/intake" element={<IntakePage />} />
+            
             <Route path="/passport/:token" element={<PublicPassportPage />} />
             <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/notifications" element={<ProtectedRoute allowedRoles={["participant","peer_specialist","admin"]}><NotificationsPage /></ProtectedRoute>} />

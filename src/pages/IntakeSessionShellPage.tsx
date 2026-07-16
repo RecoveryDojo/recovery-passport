@@ -5,13 +5,18 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { IntakeFormStep } from "@/components/intake/IntakeFormStep";
 import { IntakeGoalsStep } from "@/components/intake/IntakeGoalsStep";
 import { IntakeFirstAssessmentStep } from "@/components/intake/IntakeFirstAssessmentStep";
 import { IntakeSubstanceMedicalStep } from "@/components/intake/IntakeSubstanceMedicalStep";
 import { IntakeDemographicsStep } from "@/components/intake/IntakeDemographicsStep";
+import { IntakeScreeningStep } from "@/components/intake/IntakeScreeningStep";
+import { IntakeBelongingsStep } from "@/components/intake/IntakeBelongingsStep";
+import { IntakeRoomStep } from "@/components/intake/IntakeRoomStep";
+import { IntakeReviewStep } from "@/components/intake/IntakeReviewStep";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Database } from "@/integrations/supabase/types";
 
 type IntakeFormType = Database["public"]["Enums"]["intake_form_type"];
@@ -53,6 +58,8 @@ export default function IntakeSessionShellPage() {
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
 
+  const { user } = useAuth();
+
   const { data: session, isLoading } = useQuery({
     queryKey: ["intake-session", sessionId],
     enabled: !!sessionId,
@@ -74,15 +81,10 @@ export default function IntakeSessionShellPage() {
 
   const saveStep = useMutation({
     mutationFn: async (nextStep: number) => {
-      const completing = nextStep > TOTAL_STEPS;
+      const clamped = Math.min(Math.max(nextStep, 1), TOTAL_STEPS);
       const { error } = await supabase
         .from("intake_sessions")
-        .update({
-          current_step: completing ? TOTAL_STEPS : nextStep,
-          ...(completing
-            ? { status: "completed" as const, completed_at: new Date().toISOString() }
-            : {}),
-        })
+        .update({ current_step: clamped })
         .eq("id", sessionId!);
       if (error) throw error;
     },
@@ -104,14 +106,17 @@ export default function IntakeSessionShellPage() {
   const goForward = async () => {
     setSaving(true);
     const next = step + 1;
-    await saveStep.mutateAsync(next);
-    if (next > TOTAL_STEPS) {
-      toast.success("Intake complete");
-      navigate("/caseload");
-    } else {
+    if (next <= TOTAL_STEPS) {
+      await saveStep.mutateAsync(next);
       setStep(next);
     }
     setSaving(false);
+  };
+
+  const handleIntakeCompleted = () => {
+    queryClient.invalidateQueries({ queryKey: ["intake-session", sessionId] });
+    queryClient.invalidateQueries({ queryKey: ["in-progress-intakes"] });
+    navigate("/caseload");
   };
 
   if (isLoading || !session) {
@@ -194,6 +199,28 @@ export default function IntakeSessionShellPage() {
             </p>
           </Card>
         )
+      ) : step === 13 && user ? (
+        <IntakeScreeningStep
+          key={step}
+          sessionId={sessionId!}
+          staffUserId={user.id}
+          onCompleted={goForward}
+        />
+      ) : step === 14 && user ? (
+        <IntakeBelongingsStep
+          key={step}
+          sessionId={sessionId!}
+          staffUserId={user.id}
+          onCompleted={goForward}
+        />
+      ) : step === 15 ? (
+        <IntakeRoomStep key={step} sessionId={sessionId!} onCompleted={goForward} />
+      ) : step === 16 ? (
+        <IntakeReviewStep
+          key={step}
+          sessionId={sessionId!}
+          onCompleted={handleIntakeCompleted}
+        />
       ) : (
         <Card className="p-6 min-h-[280px] flex items-center justify-center text-center">
           <div className="space-y-2">
@@ -202,8 +229,7 @@ export default function IntakeSessionShellPage() {
             </p>
             <h2 className="text-xl font-semibold text-primary">{STEP_TITLES[step]}</h2>
             <p className="text-sm text-muted-foreground max-w-sm">
-              This screen will be implemented in a later phase. Your progress is saved automatically —
-              you can safely close the tablet and resume from the caseload.
+              Loading…
             </p>
           </div>
         </Card>
@@ -218,16 +244,6 @@ export default function IntakeSessionShellPage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        {!FORM_STEP_MAP[step] && ![9, 10, 11, 12].includes(step) && (
-          <Button
-            className="flex-1 min-h-[52px]"
-            onClick={goForward}
-            disabled={saving}
-          >
-            {step === TOTAL_STEPS ? "Complete Intake" : "Continue"}
-            {step !== TOTAL_STEPS && <ArrowRight className="ml-2 h-4 w-4" />}
-          </Button>
-        )}
       </div>
     </div>
   );
