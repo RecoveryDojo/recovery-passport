@@ -159,6 +159,23 @@ export default function IntakeSessionShellPage() {
           title={FORM_STEP_MAP[step].title}
           onCompleted={goForward}
         />
+      ) : step === 9 ? (
+        <IntakeGoalsStep key={step} sessionId={sessionId!} onCompleted={goForward} />
+      ) : step === 10 ? (
+        session.participant_id ? (
+          <IntakeFirstAssessmentStep
+            key={step}
+            sessionId={sessionId!}
+            participantId={session.participant_id}
+            onCompleted={goForward}
+          />
+        ) : (
+          <Card className="p-6 min-h-[240px] flex items-center justify-center text-center">
+            <p className="text-sm text-muted-foreground max-w-sm">
+              A participant account must be created in Step 1 before the first assessment can be recorded.
+            </p>
+          </Card>
+        )
       ) : (
         <Card className="p-6 min-h-[280px] flex items-center justify-center text-center">
           <div className="space-y-2">
@@ -183,7 +200,7 @@ export default function IntakeSessionShellPage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        {!FORM_STEP_MAP[step] && (
+        {!FORM_STEP_MAP[step] && step !== 9 && step !== 10 && (
           <Button
             className="flex-1 min-h-[52px]"
             onClick={goForward}
