@@ -54,6 +54,7 @@ import CaseloadParticipantDetailPage from "@/pages/CaseloadParticipantDetailPage
 import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
 import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
+import AdminIntakeFormsPage from "@/pages/AdminIntakeFormsPage";
 import AdminMiPromptsPage from "@/pages/AdminMiPromptsPage";
 import AdminProtocolsPage from "@/pages/AdminProtocolsPage";
 import AdminCrisisProtocolPage from "@/pages/AdminCrisisProtocolPage";
