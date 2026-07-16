@@ -837,6 +837,76 @@ export type Database = {
           },
         ]
       }
+      intake_sessions: {
+        Row: {
+          completed_at: string | null
+          current_step: number
+          goal_1: string | null
+          goal_2: string | null
+          goal_3: string | null
+          id: string
+          participant_id: string | null
+          program_id: string
+          room_note: string | null
+          started_at: string
+          started_by: string
+          status: Database["public"]["Enums"]["intake_status"]
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          current_step?: number
+          goal_1?: string | null
+          goal_2?: string | null
+          goal_3?: string | null
+          id?: string
+          participant_id?: string | null
+          program_id: string
+          room_note?: string | null
+          started_at?: string
+          started_by: string
+          status?: Database["public"]["Enums"]["intake_status"]
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          current_step?: number
+          goal_1?: string | null
+          goal_2?: string | null
+          goal_3?: string | null
+          id?: string
+          participant_id?: string | null
+          program_id?: string
+          room_note?: string | null
+          started_at?: string
+          started_by?: string
+          status?: Database["public"]["Enums"]["intake_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_sessions_participant_id_fkey"
+            columns: ["participant_id"]
+            isOneToOne: false
+            referencedRelation: "participant_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_sessions_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "intake_sessions_started_by_fkey"
+            columns: ["started_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mi_prompts: {
         Row: {
           created_at: string
@@ -1929,6 +1999,7 @@ export type Database = {
         | "milestone"
         | "manual"
       feedback_target_type: "checkin" | "progress_note" | "milestone"
+      intake_status: "in_progress" | "completed" | "abandoned"
       mi_situation_tag:
         | "first_checkin"
         | "ambivalence"
@@ -2169,6 +2240,7 @@ export const Constants = {
         "manual",
       ],
       feedback_target_type: ["checkin", "progress_note", "milestone"],
+      intake_status: ["in_progress", "completed", "abandoned"],
       mi_situation_tag: [
         "first_checkin",
         "ambivalence",
