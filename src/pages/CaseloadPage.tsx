@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -5,11 +6,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { differenceInDays } from "date-fns";
+import { differenceInDays, format } from "date-fns";
 import { toast } from "sonner";
-import { Check, X, Clock, Heart } from "lucide-react";
+import { Check, X, Clock, Heart, ClipboardList, PlayCircle } from "lucide-react";
 import CaseloadParticipantCard from "@/components/CaseloadParticipantCard";
 import CaseloadHealthHeader from "@/components/caseload/CaseloadHealthHeader";
+import StartIntakeDialog from "@/components/intake/StartIntakeDialog";
 
 const CaseloadPage = () => {
   const { user } = useAuth();
