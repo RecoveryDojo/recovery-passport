@@ -1,0 +1,2 @@
+ALTER TABLE public.assessment_sessions ADD COLUMN IF NOT EXISTS intake_session_id uuid REFERENCES public.intake_sessions(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_assessment_sessions_intake_session ON public.assessment_sessions(intake_session_id);
