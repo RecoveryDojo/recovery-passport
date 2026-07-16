@@ -178,6 +178,22 @@ export default function IntakeSessionShellPage() {
             </p>
           </Card>
         )
+      ) : step === 11 ? (
+        <IntakeSubstanceMedicalStep key={step} sessionId={sessionId!} onCompleted={goForward} />
+      ) : step === 12 ? (
+        session.participant_id ? (
+          <IntakeDemographicsStep
+            key={step}
+            participantId={session.participant_id}
+            onCompleted={goForward}
+          />
+        ) : (
+          <Card className="p-6 min-h-[240px] flex items-center justify-center text-center">
+            <p className="text-sm text-muted-foreground max-w-sm">
+              A participant account must be created in Step 1 before demographics can be recorded.
+            </p>
+          </Card>
+        )
       ) : (
         <Card className="p-6 min-h-[280px] flex items-center justify-center text-center">
           <div className="space-y-2">
