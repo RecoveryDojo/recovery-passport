@@ -199,6 +199,28 @@ export default function IntakeSessionShellPage() {
             </p>
           </Card>
         )
+      ) : step === 13 && user ? (
+        <IntakeScreeningStep
+          key={step}
+          sessionId={sessionId!}
+          staffUserId={user.id}
+          onCompleted={goForward}
+        />
+      ) : step === 14 && user ? (
+        <IntakeBelongingsStep
+          key={step}
+          sessionId={sessionId!}
+          staffUserId={user.id}
+          onCompleted={goForward}
+        />
+      ) : step === 15 ? (
+        <IntakeRoomStep key={step} sessionId={sessionId!} onCompleted={goForward} />
+      ) : step === 16 ? (
+        <IntakeReviewStep
+          key={step}
+          sessionId={sessionId!}
+          onCompleted={handleIntakeCompleted}
+        />
       ) : (
         <Card className="p-6 min-h-[280px] flex items-center justify-center text-center">
           <div className="space-y-2">
@@ -207,8 +229,7 @@ export default function IntakeSessionShellPage() {
             </p>
             <h2 className="text-xl font-semibold text-primary">{STEP_TITLES[step]}</h2>
             <p className="text-sm text-muted-foreground max-w-sm">
-              This screen will be implemented in a later phase. Your progress is saved automatically —
-              you can safely close the tablet and resume from the caseload.
+              Loading…
             </p>
           </div>
         </Card>
@@ -223,16 +244,6 @@ export default function IntakeSessionShellPage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        {!FORM_STEP_MAP[step] && ![9, 10, 11, 12].includes(step) && (
-          <Button
-            className="flex-1 min-h-[52px]"
-            onClick={goForward}
-            disabled={saving}
-          >
-            {step === TOTAL_STEPS ? "Complete Intake" : "Continue"}
-            {step !== TOTAL_STEPS && <ArrowRight className="ml-2 h-4 w-4" />}
-          </Button>
-        )}
       </div>
     </div>
   );
