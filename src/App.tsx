@@ -76,6 +76,7 @@ import OfflineBanner from "@/components/OfflineBanner";
 import InstallPrompt from "@/components/InstallPrompt";
 import OAuthConsent from "@/pages/OAuthConsent";
 import ProgressPage from "@/pages/ProgressPage";
+import IntakeSessionShellPage from "@/pages/IntakeSessionShellPage";
 
 const queryClient = new QueryClient();
 
@@ -140,6 +141,7 @@ const App = () => (
               <Route path="/crps/selfcare" element={<SelfCarePage />} />
               <Route path="/peers/profile" element={<PeerProfile />} />
               <Route path="/peer/checkins" element={<PeerCheckInsPage />} />
+              <Route path="/intake-session/:sessionId" element={<IntakeSessionShellPage />} />
             </Route>
 
             {/* Admin */}
