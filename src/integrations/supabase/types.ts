@@ -485,6 +485,7 @@ export type Database = {
           id: string
           initiated_by: string
           instrument_id: string | null
+          intake_session_id: string | null
           overall_score: number | null
           participant_id: string
         }
@@ -496,6 +497,7 @@ export type Database = {
           id?: string
           initiated_by: string
           instrument_id?: string | null
+          intake_session_id?: string | null
           overall_score?: number | null
           participant_id: string
         }
@@ -507,6 +509,7 @@ export type Database = {
           id?: string
           initiated_by?: string
           instrument_id?: string | null
+          intake_session_id?: string | null
           overall_score?: number | null
           participant_id?: string
         }
@@ -537,6 +540,13 @@ export type Database = {
             columns: ["instrument_id"]
             isOneToOne: false
             referencedRelation: "assessment_instruments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "assessment_sessions_intake_session_id_fkey"
+            columns: ["intake_session_id"]
+            isOneToOne: false
+            referencedRelation: "intake_sessions"
             referencedColumns: ["id"]
           },
           {
