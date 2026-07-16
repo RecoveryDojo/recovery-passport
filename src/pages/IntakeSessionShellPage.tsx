@@ -218,7 +218,7 @@ export default function IntakeSessionShellPage() {
         >
           <ArrowLeft className="mr-2 h-4 w-4" /> Back
         </Button>
-        {!FORM_STEP_MAP[step] && step !== 9 && step !== 10 && (
+        {!FORM_STEP_MAP[step] && ![9, 10, 11, 12].includes(step) && (
           <Button
             className="flex-1 min-h-[52px]"
             onClick={goForward}
