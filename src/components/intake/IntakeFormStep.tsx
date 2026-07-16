@@ -367,9 +367,12 @@ export function IntakeFormStep({
       </Card>
 
       {alreadySigned ? (
-        <p className="text-sm text-primary text-center">
-          <Check className="inline h-4 w-4 mr-1" /> Already signed. Continue to the next step.
-        </p>
+        <Button
+          className="w-full min-h-[52px] bg-accent text-accent-foreground hover:bg-accent/90"
+          onClick={onCompleted}
+        >
+          <Check className="h-4 w-4 mr-1" /> Already signed — Continue
+        </Button>
       ) : (
         <Button
           className="w-full min-h-[52px] bg-accent text-accent-foreground hover:bg-accent/90"
