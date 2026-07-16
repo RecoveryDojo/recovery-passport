@@ -58,6 +58,8 @@ export default function IntakeSessionShellPage() {
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
 
+  const { user } = useAuth();
+
   const { data: session, isLoading } = useQuery({
     queryKey: ["intake-session", sessionId],
     enabled: !!sessionId,
@@ -79,15 +81,10 @@ export default function IntakeSessionShellPage() {
 
   const saveStep = useMutation({
     mutationFn: async (nextStep: number) => {
-      const completing = nextStep > TOTAL_STEPS;
+      const clamped = Math.min(Math.max(nextStep, 1), TOTAL_STEPS);
       const { error } = await supabase
         .from("intake_sessions")
-        .update({
-          current_step: completing ? TOTAL_STEPS : nextStep,
-          ...(completing
-            ? { status: "completed" as const, completed_at: new Date().toISOString() }
-            : {}),
-        })
+        .update({ current_step: clamped })
         .eq("id", sessionId!);
       if (error) throw error;
     },
@@ -109,14 +106,17 @@ export default function IntakeSessionShellPage() {
   const goForward = async () => {
     setSaving(true);
     const next = step + 1;
-    await saveStep.mutateAsync(next);
-    if (next > TOTAL_STEPS) {
-      toast.success("Intake complete");
-      navigate("/caseload");
-    } else {
+    if (next <= TOTAL_STEPS) {
+      await saveStep.mutateAsync(next);
       setStep(next);
     }
     setSaving(false);
+  };
+
+  const handleIntakeCompleted = () => {
+    queryClient.invalidateQueries({ queryKey: ["intake-session", sessionId] });
+    queryClient.invalidateQueries({ queryKey: ["in-progress-intakes"] });
+    navigate("/caseload");
   };
 
   if (isLoading || !session) {
