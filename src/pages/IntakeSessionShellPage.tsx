@@ -12,6 +12,11 @@ import { IntakeGoalsStep } from "@/components/intake/IntakeGoalsStep";
 import { IntakeFirstAssessmentStep } from "@/components/intake/IntakeFirstAssessmentStep";
 import { IntakeSubstanceMedicalStep } from "@/components/intake/IntakeSubstanceMedicalStep";
 import { IntakeDemographicsStep } from "@/components/intake/IntakeDemographicsStep";
+import { IntakeScreeningStep } from "@/components/intake/IntakeScreeningStep";
+import { IntakeBelongingsStep } from "@/components/intake/IntakeBelongingsStep";
+import { IntakeRoomStep } from "@/components/intake/IntakeRoomStep";
+import { IntakeReviewStep } from "@/components/intake/IntakeReviewStep";
+import { useAuth } from "@/contexts/AuthContext";
 import type { Database } from "@/integrations/supabase/types";
 
 type IntakeFormType = Database["public"]["Enums"]["intake_form_type"];
