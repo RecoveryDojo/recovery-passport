@@ -16,6 +16,45 @@ import StartIntakeDialog from "@/components/intake/StartIntakeDialog";
 const CaseloadPage = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const [intakeOpen, setIntakeOpen] = useState(false);
+
+  // In-progress intake sessions (program-wide, not just this peer's)
+  const { data: inProgressIntakes = [] } = useQuery({
+    queryKey: ["in-progress-intakes"],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("intake_sessions")
+        .select(`
+          id, current_step, started_at, started_by, participant_id,
+          participant:participant_profiles(first_name, last_name),
+          starter:users!intake_sessions_started_by_fkey(id)
+        `)
+        .eq("status", "in_progress")
+        .order("started_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  // Names for the peers who started intakes
+  const starterIds = Array.from(new Set(inProgressIntakes.map((i) => i.started_by)));
+  const { data: starterNames = {} } = useQuery({
+    queryKey: ["intake-starter-names", starterIds],
+    enabled: starterIds.length > 0,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("peer_specialist_profiles")
+        .select("user_id, first_name, last_name")
+        .in("user_id", starterIds);
+      const map: Record<string, string> = {};
+      data?.forEach((p) => {
+        map[p.user_id] = `${p.first_name ?? ""} ${p.last_name ?? ""}`.trim() || "Staff";
+      });
+      return map;
+    },
+  });
+
 
   // Peer specialist's own profile for name
   const { data: peerProfile } = useQuery({
