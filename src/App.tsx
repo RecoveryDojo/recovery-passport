@@ -30,7 +30,7 @@ import {
   AdminContent,
 } from "@/pages/placeholder-pages";
 import AdminParticipantsPage from "@/pages/AdminParticipantsPage";
-import IntakePage from "@/pages/IntakePage";
+
 import AdminAuditPage from "@/pages/AdminAuditPage";
 import AdminReportsPage from "@/pages/AdminReportsPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
