@@ -267,6 +267,7 @@ const CaseloadParticipantDetailPage = () => {
 
         {/* OVERVIEW */}
         <TabsContent value="overview" className="space-y-3">
+          <AddParticipantEmailCard participantProfileId={profile.id} userId={profile.user_id} />
           <Card>
             <CardContent className="p-4 space-y-3">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
