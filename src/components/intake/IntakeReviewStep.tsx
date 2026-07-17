@@ -244,22 +244,54 @@ export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
             Participant claims their account on their own device using the login email below.
           </p>
         </div>
-        <div className="text-sm">
-          <span className="text-muted-foreground">Login email: </span>
-          <span className="font-mono break-all">
-            {data.participant?.email ?? "—"}
-          </span>
+        <div className="text-sm space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-muted-foreground">Login email:</span>
+            <span className="font-mono break-all">{data.participant?.email ?? "—"}</span>
+          </div>
+          {data.participant?.email?.endsWith(PLACEHOLDER_DOMAIN) && (
+            <Badge variant="outline" className="text-accent border-accent/60">
+              No real email on file yet
+            </Badge>
+          )}
         </div>
+
+        {data.participant?.email?.endsWith(PLACEHOLDER_DOMAIN) && (
+          <div className="space-y-2">
+            <Input
+              type="email"
+              inputMode="email"
+              placeholder="participant@example.com"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              disabled={savingEmail}
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleSaveEmail}
+              disabled={savingEmail || !newEmail.trim()}
+            >
+              {savingEmail ? "Saving…" : "Save email"}
+            </Button>
+          </div>
+        )}
+
         <Button
           variant="outline"
           size="sm"
           onClick={handleSendReset}
-          disabled={!data.participant?.email || sendingReset}
+          disabled={
+            !data.participant?.email ||
+            data.participant.email.endsWith(PLACEHOLDER_DOMAIN) ||
+            sendingReset
+          }
         >
           <Mail className="h-4 w-4 mr-2" />
           {sendingReset ? "Sending…" : "Send password reset"}
         </Button>
       </Card>
+
 
       <Button
         onClick={handleComplete}
