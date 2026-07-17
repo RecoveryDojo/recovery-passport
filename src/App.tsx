@@ -78,6 +78,7 @@ import InstallPrompt from "@/components/InstallPrompt";
 import OAuthConsent from "@/pages/OAuthConsent";
 import ProgressPage from "@/pages/ProgressPage";
 import IntakeSessionShellPage from "@/pages/IntakeSessionShellPage";
+import MyIntakePage from "@/pages/MyIntakePage";
 
 const queryClient = new QueryClient();
 
@@ -129,6 +130,7 @@ const App = () => (
               <Route path="/agreements" element={<ParticipantAgreementsPage />} />
               <Route path="/payments" element={<ParticipantPaymentsPage />} />
               <Route path="/progress" element={<ProgressPage />} />
+              <Route path="/my-intake" element={<MyIntakePage />} />
             </Route>
 
             {/* Peer Specialist */}

@@ -401,6 +401,11 @@ const Profile = () => {
         {saving ? "Saving..." : "Save Changes"}
       </Button>
 
+      <Button variant="outline" onClick={() => navigate("/my-intake")} className="w-full">
+        View my intake
+      </Button>
+
+
       <Button variant="outline" onClick={signOut} className="w-full gap-2 text-destructive border-destructive/30 hover:bg-destructive/10">
         <LogOut className="h-4 w-4" />
         Sign Out

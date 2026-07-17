@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Loader2, Check, X, Mail } from "lucide-react";
 import { toast } from "sonner";
+
+const PLACEHOLDER_DOMAIN = "@recoverypassport.placeholder";
 
 interface Props {
   sessionId: string;
@@ -12,8 +16,12 @@ interface Props {
 }
 
 export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
+  const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [savingEmail, setSavingEmail] = useState(false);
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["intake-review", sessionId],
@@ -114,6 +122,30 @@ export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
     else toast.success("Password reset email sent");
   };
 
+  const handleSaveEmail = async () => {
+    if (!data?.session.participant_id) return;
+    const email = newEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    setSavingEmail(true);
+    try {
+      const { data: result, error } = await supabase.functions.invoke("update-participant-email", {
+        body: { participant_profile_id: data.session.participant_id, new_email: email },
+      });
+      if (error) throw error;
+      if ((result as any)?.error) throw new Error((result as any).error);
+      toast.success("Email updated");
+      setNewEmail("");
+      queryClient.invalidateQueries({ queryKey: ["intake-review", sessionId] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSavingEmail(false);
+    }
+  };
+
   const handleComplete = async () => {
     setSubmitting(true);
     try {
@@ -212,22 +244,54 @@ export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
             Participant claims their account on their own device using the login email below.
           </p>
         </div>
-        <div className="text-sm">
-          <span className="text-muted-foreground">Login email: </span>
-          <span className="font-mono break-all">
-            {data.participant?.email ?? "—"}
-          </span>
+        <div className="text-sm space-y-1">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-muted-foreground">Login email:</span>
+            <span className="font-mono break-all">{data.participant?.email ?? "—"}</span>
+          </div>
+          {data.participant?.email?.endsWith(PLACEHOLDER_DOMAIN) && (
+            <Badge variant="outline" className="text-accent border-accent/60">
+              No real email on file yet
+            </Badge>
+          )}
         </div>
+
+        {data.participant?.email?.endsWith(PLACEHOLDER_DOMAIN) && (
+          <div className="space-y-2">
+            <Input
+              type="email"
+              inputMode="email"
+              placeholder="participant@example.com"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              disabled={savingEmail}
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleSaveEmail}
+              disabled={savingEmail || !newEmail.trim()}
+            >
+              {savingEmail ? "Saving…" : "Save email"}
+            </Button>
+          </div>
+        )}
+
         <Button
           variant="outline"
           size="sm"
           onClick={handleSendReset}
-          disabled={!data.participant?.email || sendingReset}
+          disabled={
+            !data.participant?.email ||
+            data.participant.email.endsWith(PLACEHOLDER_DOMAIN) ||
+            sendingReset
+          }
         >
           <Mail className="h-4 w-4 mr-2" />
           {sendingReset ? "Sending…" : "Send password reset"}
         </Button>
       </Card>
+
 
       <Button
         onClick={handleComplete}
