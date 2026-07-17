@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { Loader2, Check, X, Mail } from "lucide-react";
 import { toast } from "sonner";
+
+const PLACEHOLDER_DOMAIN = "@recoverypassport.placeholder";
 
 interface Props {
   sessionId: string;
