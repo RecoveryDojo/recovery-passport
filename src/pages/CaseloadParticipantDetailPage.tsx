@@ -43,6 +43,7 @@ import { cn } from "@/lib/utils";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssignAssessmentSheet from "@/components/AssignAssessmentSheet";
 import ProgressDashboard from "@/components/progress/ProgressDashboard";
+import AddParticipantEmailCard from "@/components/caseload/AddParticipantEmailCard";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
