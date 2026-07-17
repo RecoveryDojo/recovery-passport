@@ -16,8 +16,12 @@ interface Props {
 }
 
 export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
+  const queryClient = useQueryClient();
   const [submitting, setSubmitting] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
+  const [newEmail, setNewEmail] = useState("");
+  const [savingEmail, setSavingEmail] = useState(false);
+
 
   const { data, isLoading } = useQuery({
     queryKey: ["intake-review", sessionId],
