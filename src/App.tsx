@@ -130,6 +130,7 @@ const App = () => (
               <Route path="/agreements" element={<ParticipantAgreementsPage />} />
               <Route path="/payments" element={<ParticipantPaymentsPage />} />
               <Route path="/progress" element={<ProgressPage />} />
+              <Route path="/my-intake" element={<MyIntakePage />} />
             </Route>
 
             {/* Peer Specialist */}
