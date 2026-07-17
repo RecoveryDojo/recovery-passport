@@ -43,6 +43,7 @@ import { cn } from "@/lib/utils";
 import MilestonesTab from "@/components/MilestonesTab";
 import AssignAssessmentSheet from "@/components/AssignAssessmentSheet";
 import ProgressDashboard from "@/components/progress/ProgressDashboard";
+import AddParticipantEmailCard from "@/components/caseload/AddParticipantEmailCard";
 import type { Database } from "@/integrations/supabase/types";
 
 type CardLevel = Database["public"]["Enums"]["card_level"];
@@ -266,6 +267,7 @@ const CaseloadParticipantDetailPage = () => {
 
         {/* OVERVIEW */}
         <TabsContent value="overview" className="space-y-3">
+          <AddParticipantEmailCard participantProfileId={profile.id} userId={profile.user_id} />
           <Card>
             <CardContent className="p-4 space-y-3">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
