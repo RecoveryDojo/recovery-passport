@@ -122,6 +122,30 @@ export function IntakeReviewStep({ sessionId, onCompleted }: Props) {
     else toast.success("Password reset email sent");
   };
 
+  const handleSaveEmail = async () => {
+    if (!data?.session.participant_id) return;
+    const email = newEmail.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    setSavingEmail(true);
+    try {
+      const { data: result, error } = await supabase.functions.invoke("update-participant-email", {
+        body: { participant_profile_id: data.session.participant_id, new_email: email },
+      });
+      if (error) throw error;
+      if ((result as any)?.error) throw new Error((result as any).error);
+      toast.success("Email updated");
+      setNewEmail("");
+      queryClient.invalidateQueries({ queryKey: ["intake-review", sessionId] });
+    } catch (e) {
+      toast.error((e as Error).message);
+    } finally {
+      setSavingEmail(false);
+    }
+  };
+
   const handleComplete = async () => {
     setSubmitting(true);
     try {
