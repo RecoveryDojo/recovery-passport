@@ -130,14 +130,14 @@ export default function IntakePacket({ sessionId }: { sessionId: string }) {
       const templateIds = Array.from(
         new Set((sigsRes.data ?? []).map((s) => s.template_id).filter(Boolean) as string[]),
       );
-      const templatesById = new Map<string, { title: string; content: string; version: number }>();
+      const templatesById = new Map<string, { content: string; version: number }>();
       if (templateIds.length) {
         const { data: tpls } = await supabase
           .from("intake_form_templates")
-          .select("id, title, content, version")
+          .select("id, content, version")
           .in("id", templateIds);
         (tpls ?? []).forEach((t) =>
-          templatesById.set(t.id, { title: t.title, content: t.content, version: t.version }),
+          templatesById.set(t.id, { content: t.content, version: t.version }),
         );
       }
       const signatures = await Promise.all(
@@ -197,10 +197,10 @@ export default function IntakePacket({ sessionId }: { sessionId: string }) {
         if (assessmentRes.data.instrument_id) {
           const { data: inst } = await supabase
             .from("assessment_instruments")
-            .select("name")
+            .select("title")
             .eq("id", assessmentRes.data.instrument_id)
             .maybeSingle();
-          instrumentName = inst?.name ?? null;
+          instrumentName = inst?.title ?? null;
         }
       }
 
@@ -336,7 +336,7 @@ export default function IntakePacket({ sessionId }: { sessionId: string }) {
               <div key={s.id} className="border rounded-md p-3 space-y-3">
                 <div className="flex items-baseline justify-between gap-2">
                   <div className="text-sm font-medium">
-                    {s.template?.title ?? FORM_LABELS[s.form_type] ?? s.form_type}
+                    {FORM_LABELS[s.form_type] ?? s.form_type}
                   </div>
                   <div className="text-xs text-muted-foreground">
                     {s.template?.version ? `v${s.template.version} · ` : ""}
