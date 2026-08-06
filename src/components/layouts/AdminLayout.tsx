@@ -23,6 +23,7 @@ const navItems = [
   { to: "/admin/participants", label: "Participants", icon: Users },
   { to: "/admin/peers", label: "Peer Specialists", icon: UserCheck },
   { to: "/admin/content", label: "Content", icon: BookOpen },
+  { to: "/admin/intake-sessions", label: "Intake Packets", icon: ClipboardList },
   { to: "/admin/reports", label: "Reports", icon: BarChart2 },
   { to: "/admin/audit", label: "Audit Log", icon: Clock },
   { to: "/admin/docs", label: "Docs", icon: FileText },
