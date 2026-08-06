@@ -55,6 +55,8 @@ import CheckInFormPage from "@/pages/CheckInFormPage";
 import AdminAssessmentDomainsPage from "@/pages/AdminAssessmentDomainsPage";
 import AdminAgreementsPage from "@/pages/AdminAgreementsPage";
 import AdminIntakeFormsPage from "@/pages/AdminIntakeFormsPage";
+import AdminIntakeSessionsPage from "@/pages/AdminIntakeSessionsPage";
+import IntakePacketPage from "@/pages/IntakePacketPage";
 import AdminMiPromptsPage from "@/pages/AdminMiPromptsPage";
 import AdminProtocolsPage from "@/pages/AdminProtocolsPage";
 import AdminCrisisProtocolPage from "@/pages/AdminCrisisProtocolPage";
@@ -145,6 +147,7 @@ const App = () => (
               <Route path="/peers/profile" element={<PeerProfile />} />
               <Route path="/peer/checkins" element={<PeerCheckInsPage />} />
               <Route path="/intake-session/:sessionId" element={<IntakeSessionShellPage />} />
+              <Route path="/intake-packet/:sessionId" element={<IntakePacketPage backTo="/caseload" />} />
             </Route>
 
             {/* Admin */}
@@ -173,6 +176,8 @@ const App = () => (
               <Route path="/admin/participants/:participantId/checkins" element={<AdminParticipantCheckInsPage />} />
               <Route path="/admin/participants/:participantId/payments" element={<AdminPaymentsPage />} />
               <Route path="/admin/participants/:participantId/notes" element={<AdminParticipantNotesPage />} />
+              <Route path="/admin/intake-sessions" element={<AdminIntakeSessionsPage />} />
+              <Route path="/admin/intake-sessions/:sessionId" element={<IntakePacketPage />} />
               <Route path="/admin/reports" element={<AdminReportsPage />} />
               <Route path="/admin/audit" element={<AdminAuditPage />} />
               <Route path="/admin/profile" element={<AdminProfilePage />} />
