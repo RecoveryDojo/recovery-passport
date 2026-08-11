@@ -2398,6 +2398,7 @@ export type Database = {
         Returns: undefined
       }
       log_passport_view: { Args: { p_token: string }; Returns: undefined }
+      owner_user_id: { Args: never; Returns: string }
       recalculate_card_level: {
         Args: { p_participant_id: string }
         Returns: Database["public"]["Enums"]["card_level"]

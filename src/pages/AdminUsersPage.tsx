@@ -77,6 +77,19 @@ const AdminUsersPage = () => {
     },
   });
 
+  const { data: ownerId } = useQuery({
+    queryKey: ["owner-user-id"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("app_config")
+        .select("value")
+        .eq("key", "owner_user_id")
+        .maybeSingle();
+      if (error) throw error;
+      return data?.value ?? null;
+    },
+  });
+
   const rolesFor = (userId: string): UserRole[] =>
     userRoles.filter((r) => r.user_id === userId).map((r) => r.role as UserRole);
 
@@ -168,12 +181,14 @@ const AdminUsersPage = () => {
             <TableBody>
               {filtered.map((u) => {
                 const isSelf = u.id === user?.id;
+                const isOwner = !!ownerId && u.id === ownerId;
                 const assigned = rolesFor(u.id);
                 return (
                   <TableRow key={u.id}>
                     <TableCell className="font-medium">{u.email}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
+                        {isOwner && <Badge variant="destructive">Owner</Badge>}
                         {(assigned.length ? assigned : [u.role]).map((r) => (
                           <Badge key={r} variant={roleBadgeVariant(r)}>{roleLabel(r)}</Badge>
                         ))}
@@ -190,11 +205,13 @@ const AdminUsersPage = () => {
                           {ALL_ROLES.map((r) => {
                             const checked = assigned.includes(r);
                             const isLastRole = checked && assigned.length <= 1;
+                            const ownerLocked = isOwner && r === "admin" && checked;
                             return (
                               <label key={r} className="flex items-center gap-1.5 text-xs">
                                 <Checkbox
                                   checked={checked}
-                                  disabled={isLastRole || changeRole.isPending}
+                                  disabled={isLastRole || ownerLocked || changeRole.isPending}
+                                  title={ownerLocked ? "Owner admin access can only be removed by the owner" : undefined}
                                   onCheckedChange={() =>
                                     setPendingChange({
                                       userId: u.id,
