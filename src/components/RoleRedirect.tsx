@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth, getRoleHome } from "@/contexts/AuthContext";
 
 const RoleRedirect = () => {
-  const { role, loading } = useAuth();
+  const { activeRole, loading } = useAuth();
 
   if (loading) {
     return (
@@ -12,10 +12,9 @@ const RoleRedirect = () => {
     );
   }
 
-  if (!role) return <Navigate to="/login" replace />;
+  if (!activeRole) return <Navigate to="/login" replace />;
 
-  const home = role === "participant" ? "/card" : role === "peer_specialist" ? "/caseload" : "/admin";
-  return <Navigate to={home} replace />;
+  return <Navigate to={getRoleHome(activeRole)} replace />;
 };
 
 export default RoleRedirect;
