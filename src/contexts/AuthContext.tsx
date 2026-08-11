@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-type UserRole = "participant" | "peer_specialist" | "admin";
+export type UserRole = "participant" | "peer_specialist" | "admin";
 type ApprovalStatus = "pending" | "approved" | "rejected" | "suspended";
 
 const ROLE_PRIORITY: UserRole[] = ["admin", "peer_specialist", "participant"];
