@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAuth, UserRole } from "@/contexts/AuthContext";
+import { useAuth, type UserRole } from "@/contexts/AuthContext";
 import { ChevronDown, Shield, User, HeartPulse } from "lucide-react";
 import {
   DropdownMenu,
@@ -10,9 +10,9 @@ import {
 import { cn } from "@/lib/utils";
 
 const ROLE_META: Record<UserRole, { label: string; icon: React.ElementType; className: string }> = {
-  admin: { label: "Admin", icon: Shield, className: "bg-purple-100 text-purple-900 border-purple-200" },
-  peer_specialist: { label: "Peer Specialist", icon: HeartPulse, className: "bg-amber-100 text-amber-900 border-amber-200" },
-  participant: { label: "Participant", icon: User, className: "bg-teal-100 text-teal-900 border-teal-200" },
+  admin: { label: "Admin", icon: Shield, className: "bg-primary text-primary-foreground border-transparent" },
+  peer_specialist: { label: "Peer Specialist", icon: HeartPulse, className: "bg-accent text-accent-foreground border-transparent" },
+  participant: { label: "Participant", icon: User, className: "bg-muted text-muted-foreground border-border" },
 };
 
 const ROLE_HOME: Record<UserRole, string> = {
@@ -66,7 +66,7 @@ export const RoleSwitcher = ({ className }: RoleSwitcherProps) => {
                 role === activeRole && "font-semibold bg-muted"
               )}
             >
-              <RoleIcon className="h-4 w-4" />
+              <RoleIcon className={cn("h-4 w-4", role === activeRole ? "text-primary" : "text-muted-foreground")} />
               {roleMeta.label}
               {role === activeRole && <span className="ml-auto text-[10px] text-muted-foreground">Current</span>}
             </DropdownMenuItem>
