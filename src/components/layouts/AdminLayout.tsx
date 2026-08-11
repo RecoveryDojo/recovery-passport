@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { LayoutGrid, Users, UserCheck, BookOpen, BarChart2, Clock, Shield, UserCircle, FileText, ClipboardList } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
+import RoleSwitcher from "@/components/RoleSwitcher";
 import { Link } from "react-router-dom";
 import {
   Sidebar,
@@ -82,6 +83,7 @@ const AdminLayout = () => {
               <span className="text-sm font-medium text-primary">Admin</span>
             </div>
             <div className="flex items-center gap-2">
+              <RoleSwitcher />
               <NotificationBell />
               <Link to="/admin/profile" className="text-muted-foreground hover:text-foreground transition-colors">
                 <UserCircle className="h-5 w-5" />

@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import { Home, ClipboardList, MapPin, QrCode, UserCircle } from "lucide-react";
 import NotificationBell from "@/components/NotificationBell";
+import RoleSwitcher from "@/components/RoleSwitcher";
 
 const navItems = [
   { to: "/card", label: "My Card", icon: Home },
@@ -19,6 +20,7 @@ const ParticipantLayout = () => {
       <header className="sticky top-0 z-40 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
         <h1 className="text-lg font-semibold text-foreground">Recovery Passport</h1>
         <div className="flex items-center gap-2">
+          <RoleSwitcher />
           <NotificationBell />
         </div>
       </header>

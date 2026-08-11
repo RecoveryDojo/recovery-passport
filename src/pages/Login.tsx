@@ -16,7 +16,7 @@ const safeNext = (raw: string | null): string | null => {
 };
 
 const Login = () => {
-  const { user, role, loading } = useAuth();
+  const { user, activeRole, loading } = useAuth();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,9 +24,9 @@ const Login = () => {
   const [searchParams] = useSearchParams();
   const next = safeNext(searchParams.get("next"));
 
-  if (!loading && user && role) {
+  if (!loading && user && activeRole) {
     if (next) return <Navigate to={next} replace />;
-    const home = role === "participant" ? "/card" : role === "peer_specialist" ? "/caseload" : "/admin";
+    const home = activeRole === "participant" ? "/card" : activeRole === "peer_specialist" ? "/caseload" : "/admin";
     return <Navigate to={home} replace />;
   }
 

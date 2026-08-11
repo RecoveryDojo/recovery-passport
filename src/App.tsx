@@ -68,7 +68,6 @@ import ParticipantPaymentsPage from "@/pages/ParticipantPaymentsPage";
 import AdminPeerReviewPage from "@/pages/AdminPeerReviewPage";
 import AdminPeerDetailPage from "@/pages/AdminPeerDetailPage";
 import AdminUsersPage from "@/pages/AdminUsersPage";
-import DevRoleSwitcher from "@/components/DevRoleSwitcher";
 import PublicPassportPage from "@/pages/PublicPassportPage";
 import AdminParticipantNotesPage from "@/pages/AdminParticipantNotesPage";
 import AdminProfilePage from "@/pages/AdminProfilePage";
@@ -93,7 +92,6 @@ const App = () => (
       <InstallPrompt />
       <BrowserRouter>
         <AuthProvider>
-          <DevRoleSwitcher />
           <Routes>
             {/* Public */}
             <Route path="/login" element={<Login />} />

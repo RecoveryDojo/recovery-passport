@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import PeerPendingApproval from "./PeerPendingApproval";
+import { getRoleHome } from "@/contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -11,23 +12,23 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedRouteProps) => {
-  const { user, role, approvalStatus, loading } = useAuth();
+  const { user, activeRole, roles, approvalStatus, loading } = useAuth();
   const location = useLocation();
   const [profileCheck, setProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
   const [peerProfileCheck, setPeerProfileCheck] = useState<"loading" | "incomplete" | "complete">("loading");
 
   useEffect(() => {
-    if (!user || !role) {
+    if (!user || !activeRole) {
       return;
     }
 
-    if (skipProfileCheck && role === "peer_specialist") {
+    if (skipProfileCheck && activeRole === "peer_specialist") {
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
       return;
     }
 
-    if (role === "participant") {
+    if (activeRole === "participant") {
       setProfileCheck("loading");
       setPeerProfileCheck("complete");
       supabase
@@ -42,7 +43,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
           }
           setProfileCheck(!data || !data.first_name ? "incomplete" : "complete");
         });
-    } else if (role === "peer_specialist") {
+    } else if (activeRole === "peer_specialist") {
       setPeerProfileCheck("loading");
       setProfileCheck("complete");
       supabase
@@ -61,7 +62,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
       setProfileCheck("complete");
       setPeerProfileCheck("complete");
     }
-  }, [user, role, skipProfileCheck]);
+  }, [user, activeRole, skipProfileCheck]);
 
   if (loading) {
     return (
@@ -72,7 +73,7 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (!role) return <Navigate to="/login" replace />;
+  if (!activeRole) return <Navigate to="/login" replace />;
 
   if (profileCheck === "loading" || peerProfileCheck === "loading") {
     return (
@@ -82,13 +83,13 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
     );
   }
 
-  if (!allowedRoles.includes(role)) {
-    const home = role === "participant" ? "/card" : role === "peer_specialist" ? "/caseload" : "/admin";
+  if (!allowedRoles.includes(activeRole)) {
+    const home = getRoleHome(activeRole);
     return <Navigate to={home} replace />;
   }
 
   // Peer specialist: profile incomplete → setup page (unless already there)
-  if (role === "peer_specialist" && peerProfileCheck === "incomplete") {
+  if (activeRole === "peer_specialist" && peerProfileCheck === "incomplete") {
     if (location.pathname !== "/peers/setup") {
       return <Navigate to="/peers/setup" replace />;
     }
@@ -96,11 +97,11 @@ const ProtectedRoute = ({ children, allowedRoles, skipProfileCheck }: ProtectedR
   }
 
   // Peer specialist: profile complete but not approved → pending/rejected/suspended screen
-  if (role === "peer_specialist" && peerProfileCheck === "complete" && approvalStatus !== "approved") {
+  if (activeRole === "peer_specialist" && peerProfileCheck === "complete" && approvalStatus !== "approved") {
     return <PeerPendingApproval />;
   }
 
-  if (role === "participant") {
+  if (activeRole === "participant") {
     if (profileCheck === "incomplete" && location.pathname !== "/profile/setup") {
       return <Navigate to="/profile/setup" replace />;
     }
