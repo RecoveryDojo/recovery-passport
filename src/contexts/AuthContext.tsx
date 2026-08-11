@@ -96,9 +96,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       // Try the multi-role table first. If it doesn't exist yet, fall back to the single role column.
       const { data: userRoles, error: rolesError } = await supabase
-        .from("user_roles")
+        .from("user_roles" as any)
         .select("role")
-        .eq("user_id", userId);
+        .eq("user_id", userId) as { data: { role: string }[] | null; error: Error | null };
 
       if (!rolesError && userRoles && userRoles.length > 0) {
         const unique = [...new Set(userRoles.map((r) => r.role as UserRole))].filter((r) =>
@@ -113,6 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } catch {
       // user_roles table may not exist yet; fall through.
     }
+
 
     // Fallback: single role from users table.
     try {
