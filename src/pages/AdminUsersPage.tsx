@@ -77,6 +77,19 @@ const AdminUsersPage = () => {
     },
   });
 
+  const { data: ownerId } = useQuery({
+    queryKey: ["owner-user-id"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("app_config")
+        .select("value")
+        .eq("key", "owner_user_id")
+        .maybeSingle();
+      if (error) throw error;
+      return data?.value ?? null;
+    },
+  });
+
   const rolesFor = (userId: string): UserRole[] =>
     userRoles.filter((r) => r.user_id === userId).map((r) => r.role as UserRole);
 
