@@ -2332,6 +2332,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_role_raw: {
+        Args: never
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
       generate_recovery_plan: {
         Args: { p_participant_id: string }
         Returns: string
