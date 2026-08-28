@@ -26,9 +26,8 @@ import AdminAssessmentInstrumentsPage from "@/pages/AdminAssessmentInstrumentsPa
 import AdminAssessmentInstrumentDetailPage from "@/pages/AdminAssessmentInstrumentDetailPage";
 import PlanPage from "@/pages/PlanPage";
 import PeerBrowsePage from "@/pages/PeerBrowsePage";
-import {
-  AdminContent,
-} from "@/pages/placeholder-pages";
+
+
 import AdminParticipantsPage from "@/pages/AdminParticipantsPage";
 
 import AdminAuditPage from "@/pages/AdminAuditPage";
