@@ -847,6 +847,42 @@ export type Database = {
           },
         ]
       }
+      email_templates: {
+        Row: {
+          body_markdown: string
+          created_at: string
+          description: string | null
+          display_name: string
+          enabled: boolean
+          event_key: string
+          id: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body_markdown: string
+          created_at?: string
+          description?: string | null
+          display_name: string
+          enabled?: boolean
+          event_key: string
+          id?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body_markdown?: string
+          created_at?: string
+          description?: string | null
+          display_name?: string
+          enabled?: boolean
+          event_key?: string
+          id?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       intake_authorized_contacts: {
         Row: {
           created_at: string

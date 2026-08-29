@@ -12,6 +12,7 @@ import {
   FileSignature,
   Building2,
   LibraryBig,
+  Mail,
 } from "lucide-react";
 
 const SECTIONS = [
@@ -74,6 +75,12 @@ const SECTIONS = [
     description: "Manage the seven signed forms peers walk participants through during intake.",
     to: "/admin/content/intake-forms",
     icon: FileSignature,
+  },
+  {
+    title: "Email Templates",
+    description: "Edit the wording of the automatic emails sent when app events happen.",
+    to: "/admin/content/email-templates",
+    icon: Mail,
   },
   {
     title: "Resource Listings",

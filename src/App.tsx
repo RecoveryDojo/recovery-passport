@@ -60,6 +60,7 @@ import AdminMiPromptsPage from "@/pages/AdminMiPromptsPage";
 import AdminProtocolsPage from "@/pages/AdminProtocolsPage";
 import AdminCrisisProtocolPage from "@/pages/AdminCrisisProtocolPage";
 import AdminNoteTemplatesPage from "@/pages/AdminNoteTemplatesPage";
+import AdminEmailTemplatesPage from "@/pages/AdminEmailTemplatesPage";
 import AdminPlanTemplatesPage from "@/pages/AdminPlanTemplatesPage";
 import ParticipantAgreementsPage from "@/pages/ParticipantAgreementsPage";
 import AdminPaymentsPage from "@/pages/AdminPaymentsPage";
@@ -159,6 +160,7 @@ const App = () => (
               <Route path="/admin/content/programs" element={<AdminProgramsPage />} />
               <Route path="/admin/content/crisis-protocol" element={<AdminCrisisProtocolPage />} />
               <Route path="/admin/content/note-templates" element={<AdminNoteTemplatesPage />} />
+              <Route path="/admin/content/email-templates" element={<AdminEmailTemplatesPage />} />
               
               <Route path="/admin/content/milestones" element={<AdminMilestonesPage />} />
               <Route path="/admin/content/assessment" element={<AdminAssessmentDomainsPage />} />
